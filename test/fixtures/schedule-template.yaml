@@ -1,0 +1,18 @@
+anchors:
+  planning_day:
+    defaultDate: { month: 3, day: 31 }
+  summer_break:
+    defaultDate: { month: 6, day: 20 }
+items:
+  - id: planning-day
+    status: derived
+    schedule: { kind: anchor, anchor: planning_day }
+  - id: annual-event
+    status: set
+    schedule: { kind: nth_weekday, month: 8, weekday: 6, occurrence: 2 }
+  - id: follow-up
+    status: derived
+    schedule: { kind: next_weekday, anchor: annual-event, weekday: 1 }
+  - id: before-break
+    status: derived
+    schedule: { kind: previous_weekday, anchor: summer_break, weekday: 1 }

@@ -1,0 +1,33 @@
+version: 1
+
+organisation:
+  name: Santa
+  type: individual
+  timezone: Europe/Oslo
+
+initialYear: current
+
+display:
+  title: Santa's schedule
+  description: Christmas Eve.
+
+layers:
+  event:
+    label: Events
+    color: "#c93d3d"
+
+autoLayers:
+  event: event
+
+anchors: {}
+
+items:
+  - id: christmas-eve
+    title: Christmas Eve
+    kind: event
+    layer: auto
+    status: set
+    schedule:
+      kind: fixed
+      month: 12
+      day: 24
