@@ -83,3 +83,15 @@ msgstr "Avhenger av fastsatt anker"
 
 msgid "{count} course days"
 msgstr "{count} kursdager"
+
+msgid "Rendering mode"
+msgstr "Visningsmodus"
+
+msgid "Year by year"
+msgstr "År for år"
+
+msgid "Continuous"
+msgstr "Kontinuerlig"
+
+msgid "Continuous mode: dates enter at the top and leave beneath the lower cut."
+msgstr "Kontinuerlig modus: datoer kommer inn øverst og forsvinner under snittet nederst."

@@ -83,3 +83,15 @@ msgstr "Depends on set anchor"
 
 msgid "{count} course days"
 msgstr "{count} course days"
+
+msgid "Rendering mode"
+msgstr "Rendering mode"
+
+msgid "Year by year"
+msgstr "Year by year"
+
+msgid "Continuous"
+msgstr "Continuous"
+
+msgid "Continuous mode: dates enter at the top and leave beneath the lower cut."
+msgstr "Continuous mode: dates enter at the top and leave beneath the lower cut."
