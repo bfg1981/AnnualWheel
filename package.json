@@ -7,7 +7,8 @@
     "generate:config": "node scripts/generate-config.mjs",
     "generate:minimal": "node scripts/generate-config.mjs examples/minimal.yaml config/minimal.config.js",
     "generate:engine": "node scripts/generate-browser-engine.mjs",
-    "build": "npm run generate:config && npm run generate:engine",
+    "generate:i18n": "node scripts/generate-i18n.mjs",
+    "build": "npm run generate:config && npm run generate:engine && npm run generate:i18n",
     "test": "node --test"
   },
   "dependencies": {

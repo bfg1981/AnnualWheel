@@ -1,0 +1,85 @@
+msgid ""
+msgstr ""
+"Language: nb-NO\\n"
+"Content-Type: text/plain; charset=UTF-8\\n"
+
+msgid "Annual wheel"
+msgstr "Årshjul"
+
+msgid "Annual wheel, home"
+msgstr "Årshjul, forsiden"
+
+msgid "Selected year"
+msgstr "Valgt år"
+
+msgid "Previous year"
+msgstr "Forrige år"
+
+msgid "Next year"
+msgstr "Neste år"
+
+msgid "Open account"
+msgstr "Åpne konto"
+
+msgid "Annual plan"
+msgstr "Sesongplan"
+
+msgid "Filter layers"
+msgstr "Filtrer lag"
+
+msgid "Key dates"
+msgstr "Nøkkeldatoer"
+
+msgid "{organisation} · key dates"
+msgstr "{organisation} · nøkkeldatoer"
+
+msgid "Assumptions"
+msgstr "Forutsetninger"
+
+msgid "View all deadlines"
+msgstr "Se alle frister"
+
+msgid "Today"
+msgstr "I dag"
+
+msgid "Zoom annual wheel"
+msgstr "Zoom i årshjulet"
+
+msgid "Zoom out"
+msgstr "Zoom ut"
+
+msgid "Zoom in"
+msgstr "Zoom inn"
+
+msgid "Recurring rhythm"
+msgstr "Gjentakende rytme"
+
+msgid "a new cycle every year"
+msgstr "en ny runde hvert år"
+
+msgid "Drag the wheel to browse the year · select a marker to see the deadline"
+msgstr "Dra hjulet for å bla i året · trykk på en markør for å se fristen"
+
+msgid "More about {title}"
+msgstr "Mer om {title}"
+
+msgid "Tentative"
+msgstr "Tentativ"
+
+msgid "Set"
+msgstr "Fastsatt"
+
+msgid "Anchor date"
+msgstr "Ankerdato"
+
+msgid "Set date"
+msgstr "Fastsatt dato"
+
+msgid "Depends on anchor"
+msgstr "Avhenger av anker"
+
+msgid "Depends on set anchor"
+msgstr "Avhenger av fastsatt anker"
+
+msgid "{count} course days"
+msgstr "{count} kursdager"

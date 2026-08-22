@@ -1,3 +1,4 @@
 node_modules/
 /config/
 lib/schedule.browser.js
+lib/i18n.browser.js

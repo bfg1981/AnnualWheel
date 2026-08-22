@@ -12,28 +12,29 @@
   <body>
     <main class="app-shell">
       <header class="topbar">
-        <a class="brand" href="#" aria-label="Annual wheel, home"><span class="brand-mark"><i></i><i></i><i></i></span> Annual wheel</a>
-        <div class="year-control" aria-label="Selected year"><button id="previous-year" aria-label="Previous year">‹</button><strong id="selected-year"></strong><button id="next-year" aria-label="Next year">›</button></div>
-        <button class="profile" aria-label="Open account">••</button>
+        <a class="brand" href="#" aria-label="Annual wheel, home" data-i18n-aria-label="Annual wheel, home"><span class="brand-mark"><i></i><i></i><i></i></span> Annual wheel</a>
+        <div class="year-control" aria-label="Selected year" data-i18n-aria-label="Selected year"><button id="previous-year" aria-label="Previous year" data-i18n-aria-label="Previous year">‹</button><strong id="selected-year"></strong><button id="next-year" aria-label="Next year" data-i18n-aria-label="Next year">›</button></div>
+        <button class="profile" aria-label="Open account" data-i18n-aria-label="Open account">••</button>
       </header>
       <section class="intro">
-        <div><p class="eyebrow">Annual plan · <span class="year-text"></span></p><h1>Annual wheel</h1><p class="lede"></p></div>
-        <div class="legend" aria-label="Filter layers"></div>
+        <div><p class="eyebrow"><span data-i18n="Annual plan">Annual plan</span> · <span class="year-text"></span></p><h1>Annual wheel</h1><p class="lede"></p></div>
+        <div class="legend" aria-label="Filter layers" data-i18n-aria-label="Filter layers"></div>
       </section>
       <section class="wheel-layout">
         <aside class="schedule-panel">
-          <div class="panel-heading"><p class="eyebrow">Key dates</p><details class="anchor-disclosure"><summary>Assumptions <span id="anchor-count"></span></summary><div class="anchor-controls"></div></details></div>
-          <button class="all-deadlines">View all deadlines <span>→</span></button>
+          <div class="panel-heading"><p class="eyebrow">Key dates</p><details class="anchor-disclosure"><summary><span data-i18n="Assumptions">Assumptions</span> <span id="anchor-count"></span></summary><div class="anchor-controls"></div></details></div>
+          <button class="all-deadlines"><span data-i18n="View all deadlines">View all deadlines</span> <span>→</span></button>
         </aside>
         <div class="wheel-column">
-          <div class="wheel-toolbar"><p><span class="live-dot"></span>Today</p><div class="wheel-actions"><button class="today-button" id="today-button">Today</button><div class="zoom-control" aria-label="Zoom annual wheel"><button id="zoom-out" aria-label="Zoom out">−</button><span id="zoom-level"></span><button id="zoom-in" aria-label="Zoom in">+</button></div></div></div>
-          <div class="wheel-stage"><div class="year-wheel" aria-label="Annual wheel"><div class="ring ring-outer"></div><div class="ring ring-middle"></div><div class="ring ring-inner"></div><div class="today-line"><span></span></div><div class="center-disc"><span>RECURRING RHYTHM</span><strong class="year-text"></strong><em>a new cycle every year</em></div><div class="month jan"><b>JAN</b></div><div class="month feb"><b>FEB</b></div><div class="month mar"><b>MAR</b></div><div class="month apr"><b>APR</b></div><div class="month may"><b>MAY</b></div><div class="month jun"><b>JUN</b></div><div class="month jul"><b>JUL</b></div><div class="month aug"><b>AUG</b></div><div class="month sep"><b>SEP</b></div><div class="month oct"><b>OCT</b></div><div class="month nov"><b>NOV</b></div><div class="month dec"><b>DEC</b></div></div></div>
-          <p class="wheel-hint">Drag the wheel to browse the year · select a marker to see the deadline</p>
+          <div class="wheel-toolbar"><p><span class="live-dot"></span><span data-i18n="Today">Today</span></p><div class="wheel-actions"><button class="today-button" id="today-button" data-i18n="Today">Today</button><div class="zoom-control" aria-label="Zoom annual wheel" data-i18n-aria-label="Zoom annual wheel"><button id="zoom-out" aria-label="Zoom out" data-i18n-aria-label="Zoom out">−</button><span id="zoom-level"></span><button id="zoom-in" aria-label="Zoom in" data-i18n-aria-label="Zoom in">+</button></div></div></div>
+          <div class="wheel-stage"><div class="year-wheel" aria-label="Annual wheel" data-i18n-aria-label="Annual wheel"><div class="ring ring-outer"></div><div class="ring ring-middle"></div><div class="ring ring-inner"></div><div class="today-line"><span></span></div><div class="center-disc"><span data-i18n="Recurring rhythm">RECURRING RHYTHM</span><strong class="year-text"></strong><em data-i18n="a new cycle every year">a new cycle every year</em></div><div class="month jan"><b>JAN</b></div><div class="month feb"><b>FEB</b></div><div class="month mar"><b>MAR</b></div><div class="month apr"><b>APR</b></div><div class="month may"><b>MAY</b></div><div class="month jun"><b>JUN</b></div><div class="month jul"><b>JUL</b></div><div class="month aug"><b>AUG</b></div><div class="month sep"><b>SEP</b></div><div class="month oct"><b>OCT</b></div><div class="month nov"><b>NOV</b></div><div class="month dec"><b>DEC</b></div></div></div>
+          <p class="wheel-hint" data-i18n="Drag the wheel to browse the year · select a marker to see the deadline">Drag the wheel to browse the year · select a marker to see the deadline</p>
         </div>
       </section>
     </main>
-    <script src="config/minimal.config.js"></script>
+    <script src="config/annual-wheel.config.js"></script>
     <script src="lib/schedule.browser.js"></script>
+    <script src="lib/i18n.browser.js"></script>
     <script src="script.js?v=2"></script>
   </body>
 </html>

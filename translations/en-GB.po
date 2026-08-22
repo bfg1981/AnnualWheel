@@ -1,0 +1,85 @@
+msgid ""
+msgstr ""
+"Language: en-GB\\n"
+"Content-Type: text/plain; charset=UTF-8\\n"
+
+msgid "Annual wheel"
+msgstr "Annual wheel"
+
+msgid "Annual wheel, home"
+msgstr "Annual wheel, home"
+
+msgid "Selected year"
+msgstr "Selected year"
+
+msgid "Previous year"
+msgstr "Previous year"
+
+msgid "Next year"
+msgstr "Next year"
+
+msgid "Open account"
+msgstr "Open account"
+
+msgid "Annual plan"
+msgstr "Annual plan"
+
+msgid "Filter layers"
+msgstr "Filter layers"
+
+msgid "Key dates"
+msgstr "Key dates"
+
+msgid "{organisation} · key dates"
+msgstr "{organisation} · key dates"
+
+msgid "Assumptions"
+msgstr "Assumptions"
+
+msgid "View all deadlines"
+msgstr "View all deadlines"
+
+msgid "Today"
+msgstr "Today"
+
+msgid "Zoom annual wheel"
+msgstr "Zoom annual wheel"
+
+msgid "Zoom out"
+msgstr "Zoom out"
+
+msgid "Zoom in"
+msgstr "Zoom in"
+
+msgid "Recurring rhythm"
+msgstr "Recurring rhythm"
+
+msgid "a new cycle every year"
+msgstr "a new cycle every year"
+
+msgid "Drag the wheel to browse the year · select a marker to see the deadline"
+msgstr "Drag the wheel to browse the year · select a marker to see the deadline"
+
+msgid "More about {title}"
+msgstr "More about {title}"
+
+msgid "Tentative"
+msgstr "Tentative"
+
+msgid "Set"
+msgstr "Set"
+
+msgid "Anchor date"
+msgstr "Anchor date"
+
+msgid "Set date"
+msgstr "Set date"
+
+msgid "Depends on anchor"
+msgstr "Depends on anchor"
+
+msgid "Depends on set anchor"
+msgstr "Depends on set anchor"
+
+msgid "{count} course days"
+msgstr "{count} course days"
