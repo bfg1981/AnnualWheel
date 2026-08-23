@@ -1,5 +1,6 @@
 node_modules/
-/config/
+/config/*
 /setup.json
-lib/schedule.browser.js
-lib/i18n.browser.js
+/annual-wheel-config.js
+/html/
+/assets/fonts/

@@ -8,7 +8,10 @@
     "generate:minimal": "node scripts/generate-config.mjs examples/minimal.yaml config/minimal.config.js",
     "generate:engine": "node scripts/generate-browser-engine.mjs",
     "generate:i18n": "node scripts/generate-i18n.mjs",
+    "prepare:preview": "node scripts/generate-config.mjs",
+    "preview": "npm run prepare:preview && python3 -m http.server 8767",
     "build": "npm run generate:config && npm run generate:engine && npm run generate:i18n",
+    "build:static": "npm run generate:engine && npm run generate:i18n && node scripts/build-static.mjs",
     "test": "node --test"
   },
   "dependencies": {
