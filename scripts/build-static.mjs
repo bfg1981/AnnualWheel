@@ -25,8 +25,17 @@ await Promise.all([
   cp('translations', join(output, 'translations'), { recursive: true }),
 ]);
 
+const fontSettings = config.display?.fonts;
+if (fontSettings?.provider === 'selfHosted') {
+  const directory = fontSettings.directory;
+  if (!directory || directory.startsWith('/') || directory.split('/').includes('..')) {
+    throw new Error('Self-hosted font directory must be a relative path within the project.');
+  }
+  await cp(directory, join(output, directory), { recursive: true });
+}
+
 await writeFile(
-  join(output, 'config', 'annual-wheel.config.js'),
+  join(output, 'annual-wheel-config.js'),
   `// Generated from ${basename(sourceConfig)}. Do not edit directly.\nwindow.annualWheelConfig = ${JSON.stringify(config, null, 2)};\nwindow.annualWheelBuild = ${JSON.stringify(buildSettings)};\n`,
 );
 

@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import YAML from 'yaml';
 
-const [sourceArg, outputArg = 'config/annual-wheel.config.js'] = process.argv.slice(2);
+const [sourceArg, outputArg = 'annual-wheel-config.js'] = process.argv.slice(2);
 const setupPath = new URL('../setup.json', import.meta.url);
 const setup = await readFile(setupPath, 'utf8').then(JSON.parse).catch(error => {
   if (error.code === 'ENOENT') return {};
