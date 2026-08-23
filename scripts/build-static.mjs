@@ -2,9 +2,13 @@ import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import YAML from 'yaml';
 
-const sourceConfig = process.argv[2];
-if (!sourceConfig) throw new Error('Usage: node scripts/build-static.mjs <config.yaml>');
-
+const setup = await readFile('setup.json', 'utf8').then(JSON.parse).catch(error => {
+  if (error.code === 'ENOENT') return {};
+  throw error;
+});
+const debug = setup.debug || {};
+const buildSettings = { animationTime: Number(setup.animationTime) || 400, gracePeriod: Number(setup.gracePeriod) || 31, debug: { enabled: Boolean(debug.enabled), years: Boolean(debug.years), currentDisplayDate: Boolean(debug.currentDisplayDate) } };
+const sourceConfig = process.argv[2] || setup.sourceConfig || 'config/annual-wheel.yaml';
 const config = YAML.parse(await readFile(sourceConfig, 'utf8'));
 if (!config?.organisation?.name || !Array.isArray(config?.items)) {
   throw new Error('Invalid configuration: organisation.name and items are required.');
@@ -23,7 +27,7 @@ await Promise.all([
 
 await writeFile(
   join(output, 'config', 'annual-wheel.config.js'),
-  `// Generated from ${basename(sourceConfig)}. Do not edit directly.\nwindow.annualWheelConfig = ${JSON.stringify(config, null, 2)};\nwindow.annualWheelBuild = ${JSON.stringify({ debugYears: false })};\n`,
+  `// Generated from ${basename(sourceConfig)}. Do not edit directly.\nwindow.annualWheelConfig = ${JSON.stringify(config, null, 2)};\nwindow.annualWheelBuild = ${JSON.stringify(buildSettings)};\n`,
 );
 
 await cp('lib/schedule.browser.js', join(output, 'lib', 'schedule.browser.js'));
