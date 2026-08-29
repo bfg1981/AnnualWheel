@@ -4,7 +4,6 @@ import { createServer } from 'node:http';
 import { extname, normalize, resolve } from 'node:path';
 
 const root = resolve('html');
-const settings = JSON.parse(await readFile(resolve(root, 'annual-wheel-locales.json'), 'utf8'));
 const contentTypes = {
   '.css': 'text/css; charset=utf-8',
   '.html': 'text/html; charset=utf-8',
@@ -15,7 +14,7 @@ const contentTypes = {
   '.woff2': 'font/woff2',
 };
 
-const negotiateLocale = header => {
+const negotiateLocale = (header, settings) => {
   const requested = String(header || '')
     .split(',')
     .map(value => {
@@ -37,7 +36,10 @@ const negotiateLocale = header => {
 
 const server = createServer(async (request, response) => {
   const pathname = new URL(request.url, 'http://localhost').pathname;
-  const requested = pathname === '/' ? '/' + negotiateLocale(request.headers['accept-language']) + '/index.html' : pathname;
+  const settings = pathname === '/'
+    ? JSON.parse(await readFile(resolve(root, 'annual-wheel-locales.json'), 'utf8'))
+    : undefined;
+  const requested = pathname === '/' ? '/' + negotiateLocale(request.headers['accept-language'], settings) + '/index.html' : pathname;
   const file = resolve(root, '.' + normalize(requested));
   if (!file.startsWith(root + '/')) {
     response.writeHead(403).end();

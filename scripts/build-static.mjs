@@ -1,7 +1,7 @@
 import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import YAML from 'yaml';
-import { applyConfigurationTranslations, configurationTranslationValues, translateStrings } from '../lib/config-translations.mjs';
+import { applyConfigurationTranslationOverrides, applyConfigurationTranslations, configurationTranslationValues, translateStrings } from '../lib/config-translations.mjs';
 
 const setup = await readFile('setup.json', 'utf8').then(JSON.parse).catch(error => {
   if (error.code === 'ENOENT') return {};
@@ -56,7 +56,11 @@ if (translation) {
         strings: [...targets].map(([source, target]) => ({ source, target })),
       }, null, 2) + '\n');
     }
-    translatedConfigs.set(locale, applyConfigurationTranslations(config, values.map(value => targets.get(value))));
+    const translatedConfig = applyConfigurationTranslations(config, values.map(value => targets.get(value)));
+    translatedConfigs.set(
+      locale,
+      applyConfigurationTranslationOverrides(translatedConfig, config, config.translations?.overrides?.[locale]),
+    );
   }
 }
 

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { applyConfigurationTranslations, configurationTranslationValues, translateConfiguration, translateStrings } from '../lib/config-translations.mjs';
+import { applyConfigurationTranslationOverrides, applyConfigurationTranslations, configurationTranslationValues, translateConfiguration, translateStrings } from '../lib/config-translations.mjs';
 
 test('translates configuration text without changing scheduling data', async () => {
   const config = {
@@ -47,6 +47,32 @@ test('applies cached translations to the current configuration', () => {
   assert.deepEqual(configurationTranslationValues(translated), ['Jahresrad', 'Ein Plan', 'Sitzung', 'Im Januar']);
   assert.deepEqual(translated.items[0].schedule, config.items[0].schedule);
   assert.equal(config.display.title, 'Årshjul');
+});
+
+test('applies locale overrides using the original configuration string', () => {
+  const source = {
+    display: { title: 'Årshjul', description: 'En plan' },
+    layers: {},
+    groups: { closure: { title: 'Årsavslutning' } },
+    anchors: {},
+    items: [{ title: 'Rapport', rule: 'I januar', schedule: { kind: 'fixed', month: 1, day: 31 } }],
+  };
+  const translated = applyConfigurationTranslations(source, ['Rueda anual', 'Un plan', 'Cierre del ejercicio', 'Informe', 'En enero']);
+  const overridden = applyConfigurationTranslationOverrides(translated, source, {
+    Årsavslutning: 'Cierre anual',
+  });
+
+  assert.equal(overridden.groups.closure.title, 'Cierre anual');
+  assert.equal(overridden.items[0].title, 'Informe');
+  assert.equal(source.groups.closure.title, 'Årsavslutning');
+});
+
+test('rejects an override for text that is not in the configuration', () => {
+  const config = { display: { title: 'Årshjul' }, layers: {}, groups: {}, anchors: {}, items: [] };
+  assert.throws(
+    () => applyConfigurationTranslationOverrides(config, config, { Missing: 'Ausente' }),
+    /does not match a translatable configuration string/,
+  );
 });
 
 test('translates only the provided strings', async () => {
