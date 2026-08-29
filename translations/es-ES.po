@@ -1,0 +1,112 @@
+msgid ""
+msgstr ""
+"Language: es-ES\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Annual wheel"
+msgstr "Rueda anual"
+
+msgid "Annual wheel, home"
+msgstr "Rueda anual, inicio"
+
+msgid "Selected year"
+msgstr "Año seleccionado"
+
+msgid "Previous year"
+msgstr "Año anterior"
+
+msgid "Next year"
+msgstr "Año siguiente"
+
+msgid "Open account"
+msgstr "Abrir cuenta"
+
+msgid "Annual plan"
+msgstr "Plan anual"
+
+msgid "Filter layers"
+msgstr "Filtrar capas"
+
+msgid "Key dates"
+msgstr "Fechas clave"
+
+msgid "{count} deadlines"
+msgstr "{count} plazos"
+
+msgid "Adjust date"
+msgstr "Ajustar fecha"
+
+msgid "Display date"
+msgstr "Fecha de visualización"
+
+msgid "Date at the top of the wheel"
+msgstr "Fecha en la parte superior de la rueda"
+
+msgid "Within {count} days"
+msgstr "Dentro de {count} días"
+
+msgid "{organisation} · key dates"
+msgstr "{organisation} · fechas clave"
+
+msgid "Assumptions"
+msgstr "Supuestos"
+
+msgid "View all deadlines"
+msgstr "Ver todos los plazos"
+
+msgid "Today"
+msgstr "Hoy"
+
+msgid "Zoom annual wheel"
+msgstr "Ampliar rueda anual"
+
+msgid "Zoom out"
+msgstr "Alejar"
+
+msgid "Zoom in"
+msgstr "Acercar"
+
+msgid "Recurring rhythm"
+msgstr "Ritmo recurrente"
+
+msgid "a new cycle every year"
+msgstr "un nuevo ciclo cada año"
+
+msgid "Drag the wheel to browse the year · select a marker to see the deadline"
+msgstr "Arrastre la rueda para explorar el año · seleccione un marcador para ver el plazo"
+
+msgid "More about {title}"
+msgstr "Más sobre {title}"
+
+msgid "Tentative"
+msgstr "Provisional"
+
+msgid "Set"
+msgstr "Fijado"
+
+msgid "Anchor date"
+msgstr "Fecha de referencia"
+
+msgid "Set date"
+msgstr "Fecha fijada"
+
+msgid "Depends on anchor"
+msgstr "Depende de la referencia"
+
+msgid "Depends on set anchor"
+msgstr "Depende de la referencia fijada"
+
+msgid "{count} course days"
+msgstr "{count} días de curso"
+
+msgid "Rendering mode"
+msgstr "Modo de visualización"
+
+msgid "Year by year"
+msgstr "Año por año"
+
+msgid "Continuous"
+msgstr "Continuo"
+
+msgid "Continuous mode: dates enter at the top and leave beneath the lower cut."
+msgstr "Modo continuo: las fechas entran por la parte superior y salen por debajo del corte inferior."
