@@ -3,6 +3,8 @@ anchors:
     defaultDate: { month: 3, day: 31 }
   summer_break:
     defaultDate: { month: 6, day: 20 }
+constraints:
+  board_meeting: { weekday: 3 }
 items:
   - id: planning-day
     status: derived
@@ -22,3 +24,23 @@ items:
   - id: february-end
     status: set
     schedule: { kind: month_end, month: 2 }
+  - id: board-meeting-january
+    status: set
+    schedule: { kind: nth_full_weekday, month: 1, constraints: [board_meeting], occurrence: 2 }
+  - id: board-meeting-before-planning
+    status: derived
+    schedule: { kind: previous_weekday, before: { anchor: planning_day, offsetDays: -7 }, constraints: [board_meeting], inclusive: true }
+  - id: board-meeting-after-planning
+    status: derived
+    schedule:
+      kind: next_weekday
+      after:
+        - planning_day
+        - { anchor: board-meeting-before-planning, offsetDays: 31 }
+      constraints: [board_meeting]
+  - id: board-meeting-autumn
+    status: set
+    schedule: { kind: nth_weekday, month: 8, constraints: [board_meeting], occurrence: 2 }
+  - id: board-meeting-november
+    status: set
+    schedule: { kind: last_weekday, month: 11, constraints: [board_meeting] }

@@ -8,7 +8,7 @@ const setup = await readFile(setupPath, 'utf8').then(JSON.parse).catch(error => 
   throw error;
 });
 const debug = setup.debug || {};
-const buildSettings = { animationTime: Number(setup.animationTime) || 400, gracePeriod: Number(setup.gracePeriod) || 31, debug: { enabled: Boolean(debug.enabled), years: Boolean(debug.years), currentDisplayDate: Boolean(debug.currentDisplayDate) } };
+const buildSettings = { animationTime: Number(setup.animationTime) || 400, gracePeriod: Number(setup.gracePeriod) || 31, showYearAnnulus: setup.showYearAnnulus !== false, debug: { enabled: Boolean(debug.enabled), years: Boolean(debug.years), currentDisplayDate: Boolean(debug.currentDisplayDate) } };
 const sourceConfig = sourceArg || setup.sourceConfig || 'config/annual-wheel.yaml';
 const sourcePath = new URL(`../${sourceConfig}`, import.meta.url);
 const outputPath = new URL(`../${outputArg}`, import.meta.url);

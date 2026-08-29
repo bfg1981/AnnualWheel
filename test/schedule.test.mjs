@@ -36,3 +36,25 @@ test('uses the actual final day of February in leap years', () => {
   const schedule = resolveSchedule(config, 2028);
   assert.equal(iso(schedule['february-end'].date), '2028-02-29');
 });
+
+test('applies one shared weekday constraint to every board meeting', () => {
+  const schedule = resolveSchedule(config, 2026);
+  assert.equal(iso(schedule['board-meeting-january'].date), '2026-01-14');
+  assert.equal(iso(schedule['board-meeting-before-planning'].date), '2026-03-18');
+  assert.equal(iso(schedule['board-meeting-after-planning'].date), '2026-04-22');
+  assert.equal(iso(schedule['board-meeting-autumn'].date), '2026-08-12');
+  assert.equal(iso(schedule['board-meeting-november'].date), '2026-11-25');
+
+  const thursdayConfig = structuredClone(config);
+  thursdayConfig.constraints.board_meeting.weekday = 4;
+  const thursdaySchedule = resolveSchedule(thursdayConfig, 2026);
+  for (const id of ['board-meeting-january', 'board-meeting-before-planning', 'board-meeting-after-planning', 'board-meeting-autumn', 'board-meeting-november']) {
+    assert.equal(thursdaySchedule[id].date.getDay(), 4);
+  }
+});
+
+test('uses a confirmed item override instead of its suggestion', () => {
+  const schedule = resolveSchedule(config, 2026, {}, { 'board-meeting-before-planning': '2026-03-11' });
+  assert.equal(iso(schedule['board-meeting-before-planning'].date), '2026-03-11');
+  assert.equal(iso(schedule['board-meeting-after-planning'].date), '2026-04-15');
+});

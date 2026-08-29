@@ -7,7 +7,7 @@ const setup = await readFile('setup.json', 'utf8').then(JSON.parse).catch(error 
   throw error;
 });
 const debug = setup.debug || {};
-const buildSettings = { animationTime: Number(setup.animationTime) || 400, gracePeriod: Number(setup.gracePeriod) || 31, debug: { enabled: Boolean(debug.enabled), years: Boolean(debug.years), currentDisplayDate: Boolean(debug.currentDisplayDate) } };
+const buildSettings = { animationTime: Number(setup.animationTime) || 400, gracePeriod: Number(setup.gracePeriod) || 31, showYearAnnulus: setup.showYearAnnulus !== false, debug: { enabled: Boolean(debug.enabled), years: Boolean(debug.years), currentDisplayDate: Boolean(debug.currentDisplayDate) } };
 const sourceConfig = process.argv[2] || setup.sourceConfig || 'config/annual-wheel.yaml';
 const config = YAML.parse(await readFile(sourceConfig, 'utf8'));
 if (!config?.organisation?.name || !Array.isArray(config?.items)) {
