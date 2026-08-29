@@ -30,6 +30,12 @@ msgstr "Filtrer lag"
 msgid "Key dates"
 msgstr "Nøkkeldatoer"
 
+msgid "{count} deadlines"
+msgstr "{count} frister"
+
+msgid "Adjust date"
+msgstr "Endre dato"
+
 msgid "Display date"
 msgstr "Visningsdato"
 

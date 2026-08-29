@@ -30,6 +30,12 @@ msgstr "Filter layers"
 msgid "Key dates"
 msgstr "Key dates"
 
+msgid "{count} deadlines"
+msgstr "{count} deadlines"
+
+msgid "Adjust date"
+msgstr "Adjust date"
+
 msgid "Display date"
 msgstr "Display date"
 
