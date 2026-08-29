@@ -95,8 +95,8 @@ await writeFile(
   JSON.stringify({ fallback: fallbackLocale, locales }, null, 2) + '\n',
 );
 
-await Promise.all([...translatedConfigs].map(([locale, translatedConfig]) => {
-  if (locale === fallbackLocale) return undefined;
+await Promise.all(locales.map(locale => {
+  const translatedConfig = translatedConfigs.get(locale) || config;
   const generated = [
     '// Generated from ' + basename(sourceConfig) + '. Do not edit directly.',
     'window.annualWheelConfig = ' + JSON.stringify(translatedConfig, null, 2) + ';',
