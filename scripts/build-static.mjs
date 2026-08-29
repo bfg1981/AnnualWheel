@@ -1,4 +1,4 @@
-import { cp, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import YAML from 'yaml';
 
@@ -13,13 +13,22 @@ const config = YAML.parse(await readFile(sourceConfig, 'utf8'));
 if (!config?.organisation?.name || !Array.isArray(config?.items)) {
   throw new Error('Invalid configuration: organisation.name and items are required.');
 }
+const fallbackLocale = config.display.locale;
+const locales = [...new Set([fallbackLocale, ...config.display.locales])];
+const indexTemplate = await readFile('index.html', 'utf8');
+const localeIndex = locale => indexTemplate.replace('<html lang="en">', '<html lang="' + locale + '" data-annual-wheel-locale="' + locale + '">');
 
 const output = 'html';
+await rm(output, { recursive: true, force: true });
 await mkdir(join(output, 'config'), { recursive: true });
 await mkdir(join(output, 'lib'), { recursive: true });
 
 await Promise.all([
-  cp('index.html', join(output, 'index.html')),
+  writeFile(join(output, 'index.html'), localeIndex(fallbackLocale)),
+  ...locales.map(async locale => {
+    await mkdir(join(output, locale), { recursive: true });
+    await writeFile(join(output, locale, 'index.html'), localeIndex(locale));
+  }),
   cp('styles.css', join(output, 'styles.css')),
   cp('script.js', join(output, 'script.js')),
   cp('translations', join(output, 'translations'), { recursive: true }),
@@ -37,6 +46,11 @@ if (fontSettings?.provider === 'selfHosted') {
 await writeFile(
   join(output, 'annual-wheel-config.js'),
   `// Generated from ${basename(sourceConfig)}. Do not edit directly.\nwindow.annualWheelConfig = ${JSON.stringify(config, null, 2)};\nwindow.annualWheelBuild = ${JSON.stringify(buildSettings)};\n`,
+);
+
+await writeFile(
+  join(output, 'annual-wheel-locales.json'),
+  JSON.stringify({ fallback: fallbackLocale, locales }, null, 2) + '\n',
 );
 
 await cp('lib/schedule.browser.js', join(output, 'lib', 'schedule.browser.js'));

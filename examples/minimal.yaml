@@ -8,6 +8,8 @@ organisation:
 initialYear: current
 
 display:
+  locale: en-GB
+  locales: [en-GB]
   title: Santa's schedule
   description: Christmas Eve.
 

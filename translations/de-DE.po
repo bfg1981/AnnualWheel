@@ -1,0 +1,112 @@
+msgid ""
+msgstr ""
+"Language: de-DE\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Annual wheel"
+msgstr "Jahresrad"
+
+msgid "Annual wheel, home"
+msgstr "Jahresrad, Startseite"
+
+msgid "Selected year"
+msgstr "Ausgewähltes Jahr"
+
+msgid "Previous year"
+msgstr "Vorheriges Jahr"
+
+msgid "Next year"
+msgstr "Nächstes Jahr"
+
+msgid "Open account"
+msgstr "Konto öffnen"
+
+msgid "Annual plan"
+msgstr "Jahresplan"
+
+msgid "Filter layers"
+msgstr "Ebenen filtern"
+
+msgid "Key dates"
+msgstr "Wichtige Termine"
+
+msgid "{count} deadlines"
+msgstr "{count} Fristen"
+
+msgid "Adjust date"
+msgstr "Datum anpassen"
+
+msgid "Display date"
+msgstr "Anzeigedatum"
+
+msgid "Date at the top of the wheel"
+msgstr "Datum oben im Jahresrad"
+
+msgid "Within {count} days"
+msgstr "Innerhalb von {count} Tagen"
+
+msgid "{organisation} · key dates"
+msgstr "{organisation} · wichtige Termine"
+
+msgid "Assumptions"
+msgstr "Annahmen"
+
+msgid "View all deadlines"
+msgstr "Alle Fristen anzeigen"
+
+msgid "Today"
+msgstr "Heute"
+
+msgid "Zoom annual wheel"
+msgstr "Jahresrad zoomen"
+
+msgid "Zoom out"
+msgstr "Verkleinern"
+
+msgid "Zoom in"
+msgstr "Vergrößern"
+
+msgid "Recurring rhythm"
+msgstr "Wiederkehrender Rhythmus"
+
+msgid "a new cycle every year"
+msgstr "ein neuer Zyklus jedes Jahr"
+
+msgid "Drag the wheel to browse the year · select a marker to see the deadline"
+msgstr "Ziehen Sie das Rad, um durch das Jahr zu blättern · wählen Sie eine Markierung für die Frist"
+
+msgid "More about {title}"
+msgstr "Mehr über {title}"
+
+msgid "Tentative"
+msgstr "Vorläufig"
+
+msgid "Set"
+msgstr "Festgelegt"
+
+msgid "Anchor date"
+msgstr "Ankerdatum"
+
+msgid "Set date"
+msgstr "Festgelegtes Datum"
+
+msgid "Depends on anchor"
+msgstr "Hängt vom Anker ab"
+
+msgid "Depends on set anchor"
+msgstr "Hängt vom festgelegten Anker ab"
+
+msgid "{count} course days"
+msgstr "{count} Kurstage"
+
+msgid "Rendering mode"
+msgstr "Darstellungsmodus"
+
+msgid "Year by year"
+msgstr "Jahr für Jahr"
+
+msgid "Continuous"
+msgstr "Kontinuierlich"
+
+msgid "Continuous mode: dates enter at the top and leave beneath the lower cut."
+msgstr "Im kontinuierlichen Modus erscheinen Daten oben und verlassen das Rad unterhalb des unteren Schnitts."

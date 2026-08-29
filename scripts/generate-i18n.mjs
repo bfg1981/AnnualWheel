@@ -25,5 +25,18 @@ const catalogues = Object.fromEntries(await Promise.all(
   ]),
 ));
 
-const output = `// Generated from translations/*.po. Do not edit directly.\n(() => {\n  const catalogues = ${JSON.stringify(catalogues, null, 2)};\n  const resolveLocale = requested => {\n    if (catalogues[requested]) return requested;\n    const language = requested?.split('-')[0];\n    return Object.keys(catalogues).find(locale => locale.startsWith(\`${'${'}language}-\`)) || 'en-GB';\n  };\n  const translate = (locale, id, values = {}) => (catalogues[locale]?.[id] || catalogues['en-GB']?.[id] || id).replace(/\\{(\\w+)\\}/g, (_, name) => values[name] ?? '{' + name + '}');\n  window.annualWheelI18n = { resolveLocale, translate };\n})();\n`;
+const output = [
+  '// Generated from translations/*.po. Do not edit directly.',
+  '(() => {',
+  `  const catalogues = ${JSON.stringify(catalogues, null, 2)};`,
+  '  const resolveLocale = requested => {',
+  '    if (catalogues[requested]) return requested;',
+  "    const language = requested.split('-')[0];",
+  "    return Object.keys(catalogues).find(locale => locale.startsWith(language + '-'));",
+  '  };',
+  "  const translate = (locale, id, values = {}) => (catalogues[locale][id] || id).replace(/\\{(\\w+)\\}/g, (_, name) => values[name] ?? '{' + name + '}');",
+  '  window.annualWheelI18n = { resolveLocale, translate };',
+  '})();',
+  '',
+].join('\n');
 await writeFile(outputPath, output);
