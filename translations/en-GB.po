@@ -143,3 +143,15 @@ msgstr "Show year band"
 
 msgid "Show rim shading"
 msgstr "Show rim shading"
+
+msgid "Show month wedges"
+msgstr "Show month wedges"
+
+msgid "Show month band"
+msgstr "Show month band"
+
+msgid "Show quarter band"
+msgstr "Show quarter band"
+
+msgid "Show two-month band"
+msgstr "Show two-month band"

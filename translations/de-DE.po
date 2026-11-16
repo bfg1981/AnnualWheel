@@ -143,3 +143,15 @@ msgstr "Jahresband anzeigen"
 
 msgid "Show rim shading"
 msgstr "Randschattierung anzeigen"
+
+msgid "Show month wedges"
+msgstr "Monatssegmente anzeigen"
+
+msgid "Show month band"
+msgstr "Monatsband anzeigen"
+
+msgid "Show quarter band"
+msgstr "Quartalsband anzeigen"
+
+msgid "Show two-month band"
+msgstr "Zweimonatsband anzeigen"

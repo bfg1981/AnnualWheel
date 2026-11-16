@@ -143,3 +143,15 @@ msgstr "Mostrar banda del año"
 
 msgid "Show rim shading"
 msgstr "Mostrar sombreado del borde"
+
+msgid "Show month wedges"
+msgstr "Mostrar sectores mensuales"
+
+msgid "Show month band"
+msgstr "Mostrar banda mensual"
+
+msgid "Show quarter band"
+msgstr "Mostrar banda trimestral"
+
+msgid "Show two-month band"
+msgstr "Mostrar banda bimestral"

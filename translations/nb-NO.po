@@ -143,3 +143,15 @@ msgstr "Vis årsbånd"
 
 msgid "Show rim shading"
 msgstr "Vis skygge på kanten"
+
+msgid "Show month wedges"
+msgstr "Vis månedsinndeling"
+
+msgid "Show month band"
+msgstr "Vis månedsbånd"
+
+msgid "Show quarter band"
+msgstr "Vis kvartalsbånd"
+
+msgid "Show two-month band"
+msgstr "Vis terminbånd"
