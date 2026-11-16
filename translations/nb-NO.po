@@ -150,6 +150,9 @@ msgstr "Vis månedsinndeling"
 msgid "Show month band"
 msgstr "Vis månedsbånd"
 
+msgid "Show labels"
+msgstr "Vis etiketter"
+
 msgid "Show quarter band"
 msgstr "Vis kvartalsbånd"
 

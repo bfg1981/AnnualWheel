@@ -150,6 +150,9 @@ msgstr "Monatssegmente anzeigen"
 msgid "Show month band"
 msgstr "Monatsband anzeigen"
 
+msgid "Show labels"
+msgstr "Beschriftungen anzeigen"
+
 msgid "Show quarter band"
 msgstr "Quartalsband anzeigen"
 

@@ -150,6 +150,9 @@ msgstr "Show month wedges"
 msgid "Show month band"
 msgstr "Show month band"
 
+msgid "Show labels"
+msgstr "Show labels"
+
 msgid "Show quarter band"
 msgstr "Show quarter band"
 

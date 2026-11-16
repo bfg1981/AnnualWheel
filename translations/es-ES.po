@@ -150,6 +150,9 @@ msgstr "Mostrar sectores mensuales"
 msgid "Show month band"
 msgstr "Mostrar banda mensual"
 
+msgid "Show labels"
+msgstr "Mostrar etiquetas"
+
 msgid "Show quarter band"
 msgstr "Mostrar banda trimestral"
 
