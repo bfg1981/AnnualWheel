@@ -11,7 +11,7 @@
       <header class="topbar">
         <a class="brand" href="#" aria-label="Annual wheel, home" data-i18n-aria-label="Annual wheel, home"><span class="brand-mark"><i></i><i></i><i></i></span> Annual wheel</a>
         <div class="year-control" aria-label="Selected year" data-i18n-aria-label="Selected year"><button id="previous-year" aria-label="Previous year" data-i18n-aria-label="Previous year">‹</button><strong id="selected-year"></strong><button id="next-year" aria-label="Next year" data-i18n-aria-label="Next year">›</button></div>
-        <button class="profile" aria-label="Open account" data-i18n-aria-label="Open account">••</button>
+        <div class="settings-menu"><button class="profile" type="button" aria-label="Settings" data-i18n-aria-label="Settings" aria-expanded="false" aria-controls="render-settings">••</button><div id="render-settings" class="render-settings" hidden><label><input type="checkbox" id="show-year-annulus" /> <span data-i18n="Show year band">Show year band</span></label><label><input type="checkbox" id="show-rim-shading" checked /> <span data-i18n="Show rim shading">Show rim shading</span></label></div></div>
       </header>
       <section class="intro">
         <div><p class="eyebrow"><span data-i18n="Annual plan">Annual plan</span> · <span class="year-text"></span></p><h1>Annual wheel</h1><p class="lede"></p></div>
@@ -29,6 +29,15 @@
         </div>
       </section>
     </main>
+    <dialog class="config-editor" aria-labelledby="config-editor-title">
+      <form method="dialog">
+        <header><h2 id="config-editor-title" data-i18n="Session configuration">Session configuration</h2><button class="config-editor-close" aria-label="Close" data-i18n-aria-label="Close">×</button></header>
+        <p data-i18n="Configuration changes apply immediately and are discarded when this page is reloaded.">Configuration changes apply immediately and are discarded when this page is reloaded.</p>
+        <div class="config-editor-tree" role="tree" aria-label="Session configuration" data-i18n-aria-label="Session configuration"></div>
+        <p class="config-editor-error" role="alert"></p>
+        <footer><button value="cancel" data-i18n="Cancel">Cancel</button><button type="button" class="config-editor-apply" data-i18n="Apply changes">Apply changes</button></footer>
+      </form>
+    </dialog>
     <script src="/annual-wheel-config.js"></script>
     <script src="/lib/schedule.browser.js"></script>
     <script src="/lib/i18n.browser.js"></script>

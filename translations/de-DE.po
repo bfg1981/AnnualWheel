@@ -110,3 +110,36 @@ msgstr "Kontinuierlich"
 
 msgid "Continuous mode: dates enter at the top and leave beneath the lower cut."
 msgstr "Im kontinuierlichen Modus erscheinen Daten oben und verlassen das Rad unterhalb des unteren Schnitts."
+
+msgid "Session configuration"
+msgstr "Sitzungskonfiguration"
+
+msgid "Configuration changes apply immediately and are discarded when this page is reloaded."
+msgstr "Konfigurationsänderungen werden sofort übernommen und beim Neuladen der Seite verworfen."
+
+msgid "Apply changes"
+msgstr "Änderungen übernehmen"
+
+msgid "Cancel"
+msgstr "Abbrechen"
+
+msgid "Close"
+msgstr "Schließen"
+
+msgid "Add item"
+msgstr "Element hinzufügen"
+
+msgid "Remove item"
+msgstr "Element entfernen"
+
+msgid "New item"
+msgstr "Neues Element"
+
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgid "Show year band"
+msgstr "Jahresband anzeigen"
+
+msgid "Show rim shading"
+msgstr "Randschattierung anzeigen"

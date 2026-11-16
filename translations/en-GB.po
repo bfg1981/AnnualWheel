@@ -110,3 +110,36 @@ msgstr "Continuous"
 
 msgid "Continuous mode: dates enter at the top and leave beneath the lower cut."
 msgstr "Continuous mode: dates enter at the top and leave beneath the lower cut."
+
+msgid "Session configuration"
+msgstr "Session configuration"
+
+msgid "Configuration changes apply immediately and are discarded when this page is reloaded."
+msgstr "Configuration changes apply immediately and are discarded when this page is reloaded."
+
+msgid "Apply changes"
+msgstr "Apply changes"
+
+msgid "Cancel"
+msgstr "Cancel"
+
+msgid "Close"
+msgstr "Close"
+
+msgid "Add item"
+msgstr "Add item"
+
+msgid "Remove item"
+msgstr "Remove item"
+
+msgid "New item"
+msgstr "New item"
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Show year band"
+msgstr "Show year band"
+
+msgid "Show rim shading"
+msgstr "Show rim shading"

@@ -50,6 +50,7 @@ const server = createServer(async (request, response) => {
     if (!info.isFile()) throw new Error('Not a file');
     response.writeHead(200, {
       'Content-Type': contentTypes[extname(file)] || 'application/octet-stream',
+      'Cache-Control': 'no-store',
       ...(pathname === '/' ? { Vary: 'Accept-Language' } : {}),
     });
     createReadStream(file).pipe(response);

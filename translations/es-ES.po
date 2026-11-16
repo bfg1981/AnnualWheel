@@ -110,3 +110,36 @@ msgstr "Continuo"
 
 msgid "Continuous mode: dates enter at the top and leave beneath the lower cut."
 msgstr "Modo continuo: las fechas entran por la parte superior y salen por debajo del corte inferior."
+
+msgid "Session configuration"
+msgstr "Configuración de la sesión"
+
+msgid "Configuration changes apply immediately and are discarded when this page is reloaded."
+msgstr "Los cambios de configuración se aplican de inmediato y se descartan al recargar esta página."
+
+msgid "Apply changes"
+msgstr "Aplicar cambios"
+
+msgid "Cancel"
+msgstr "Cancelar"
+
+msgid "Close"
+msgstr "Cerrar"
+
+msgid "Add item"
+msgstr "Añadir elemento"
+
+msgid "Remove item"
+msgstr "Eliminar elemento"
+
+msgid "New item"
+msgstr "Elemento nuevo"
+
+msgid "Settings"
+msgstr "Configuración"
+
+msgid "Show year band"
+msgstr "Mostrar banda del año"
+
+msgid "Show rim shading"
+msgstr "Mostrar sombreado del borde"

@@ -110,3 +110,36 @@ msgstr "Kontinuerlig"
 
 msgid "Continuous mode: dates enter at the top and leave beneath the lower cut."
 msgstr "Kontinuerlig modus: datoer kommer inn øverst og forsvinner under snittet nederst."
+
+msgid "Session configuration"
+msgstr "Øktkonfigurasjon"
+
+msgid "Configuration changes apply immediately and are discarded when this page is reloaded."
+msgstr "Konfigurasjonsendringer tas i bruk umiddelbart og forkastes når siden lastes på nytt."
+
+msgid "Apply changes"
+msgstr "Bruk endringer"
+
+msgid "Cancel"
+msgstr "Avbryt"
+
+msgid "Close"
+msgstr "Lukk"
+
+msgid "Add item"
+msgstr "Legg til element"
+
+msgid "Remove item"
+msgstr "Fjern element"
+
+msgid "New item"
+msgstr "Nytt element"
+
+msgid "Settings"
+msgstr "Innstillinger"
+
+msgid "Show year band"
+msgstr "Vis årsbånd"
+
+msgid "Show rim shading"
+msgstr "Vis skygge på kanten"
