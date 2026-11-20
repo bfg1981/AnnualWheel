@@ -4,29 +4,61 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Annual wheel</title>
-    <link rel="stylesheet" href="/styles.css?v=37" />
+    <link rel="stylesheet" href="/styles.css?v=68" />
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
         <a class="brand" href="#" aria-label="Annual wheel, home" data-i18n-aria-label="Annual wheel, home"><span class="brand-mark"><i></i><i></i><i></i></span> Annual wheel</a>
-        <div class="year-control" aria-label="Selected year" data-i18n-aria-label="Selected year"><button id="previous-year" aria-label="Previous year" data-i18n-aria-label="Previous year">‹</button><strong id="selected-year"></strong><button id="next-year" aria-label="Next year" data-i18n-aria-label="Next year">›</button></div>
-        <div class="settings-menu"><button class="profile" type="button" aria-label="Settings" data-i18n-aria-label="Settings" aria-expanded="false" aria-controls="render-settings">••</button><div id="render-settings" class="render-settings" hidden><label><input type="checkbox" id="show-year-annulus" /> <span data-i18n="Show year band">Show year band</span></label><label><input type="checkbox" id="show-quarter-band" /> <span data-i18n="Show quarter band">Show quarter band</span></label><label><input type="checkbox" id="show-termin-band" /> <span data-i18n="Show two-month band">Show two-month band</span></label><label><input type="checkbox" id="show-month-wedges" /> <span data-i18n="Show month wedges">Show month wedges</span></label><label><input type="checkbox" id="show-rim-shading" checked /> <span data-i18n="Show rim shading">Show rim shading</span></label><button type="button" class="open-config" data-i18n="Session configuration">Session configuration</button></div></div>
+        <div class="year-control" aria-label="Selected year" data-i18n-aria-label="Selected year"><button id="previous-year" aria-label="Previous year" data-i18n-aria-label="Previous year" data-icon="previous"></button><strong id="selected-year"></strong><button id="next-year" aria-label="Next year" data-i18n-aria-label="Next year" data-icon="next"></button></div>
+        <div class="settings-menu"><button class="profile" type="button" aria-label="Settings" data-i18n-aria-label="Settings" aria-expanded="false" aria-controls="render-settings" data-icon="settings"></button><div id="render-settings" class="render-settings" hidden><label><input type="checkbox" id="show-year-annulus" /> <span data-i18n="Show year band">Show year band</span></label><label><input type="checkbox" id="show-quarter-band" /> <span data-i18n="Show quarter band">Show quarter band</span></label><label><input type="checkbox" id="show-termin-band" /> <span data-i18n="Show two-month band">Show two-month band</span></label><label><input type="checkbox" id="show-month-wedges" /> <span data-i18n="Show month wedges">Show month wedges</span></label><label><input type="checkbox" id="show-rim-shading" checked /> <span data-i18n="Show rim shading">Show rim shading</span></label></div></div>
       </header>
       <section class="intro">
-        <div><p class="eyebrow"><span data-i18n="Annual plan">Annual plan</span> · <span class="year-text"></span></p><h1>Annual wheel</h1><p class="lede"></p></div>
-        <div class="legend" aria-label="Filter layers" data-i18n-aria-label="Filter layers"></div>
+        <div class="plan-intro">
+          <p class="eyebrow"><span data-i18n="Annual plan">Annual plan</span> · <span class="year-text"></span></p>
+          <div class="plan-summary">
+            <div class="plan-title"><h1>Annual wheel</h1><button type="button" class="edit-plan-header" aria-label="Edit plan details" data-i18n-aria-label="Edit plan details" aria-controls="plan-header-editor" hidden data-icon="edit"></button></div>
+            <p class="organisation-type" hidden></p>
+            <p class="lede"></p>
+          </div>
+          <form id="plan-header-editor" hidden>
+            <label><span data-i18n="Title">Title</span><input name="title" required></label>
+            <label><span data-i18n="Organisation type">Organisation type</span><select name="organisationType"><option value="">—</option><option value="organisation" data-i18n="Organisation">Organisation</option><option value="individual" data-i18n="Individual">Individual</option></select></label>
+            <label><span data-i18n="Description">Description</span><textarea name="description" rows="3"></textarea></label>
+            <div><button type="submit" data-i18n-aria-label="Apply changes" aria-label="Apply changes" title="Apply changes" data-icon="confirm"></button> <button type="button" name="cancel" data-i18n-aria-label="Cancel" aria-label="Cancel" title="Cancel" data-icon="cancel"></button></div>
+          </form>
+        </div>
+        <div class="plan-layers">
+          <div class="layer-summary">
+            <div class="legend" aria-label="Filter layers" data-i18n-aria-label="Filter layers"></div>
+            <button type="button" class="edit-layers" aria-label="Edit layers" data-i18n-aria-label="Edit layers" aria-controls="layer-editor" hidden data-icon="edit"></button>
+          </div>
+          <form id="layer-editor" hidden>
+            <div class="layer-rows"></div>
+            <div class="layer-editor-actions">
+              <button type="submit" data-i18n-aria-label="Apply changes" aria-label="Apply changes" title="Apply changes" data-icon="confirm"></button>
+              <button type="button" name="cancel" data-i18n-aria-label="Cancel" aria-label="Cancel" title="Cancel" data-icon="cancel"></button>
+              <button type="button" name="add" aria-label="Add layer" title="Add layer" data-icon="add"></button>
+            </div>
+          </form>
+        </div>
       </section>
       <section class="wheel-layout">
         <aside class="schedule-panel">
           <div class="panel-heading"><p class="eyebrow">Key dates</p></div>
           <header class="timeline-heading" hidden>
-            <h2 data-i18n="Edit deadlines">Edit deadlines</h2>
+            <div class="graph-title"><h2 data-i18n="Dependency graph">Dependency graph</h2><button type="button" class="edit-graph" data-i18n-aria-label="Edit deadlines" aria-label="Edit deadlines" data-icon="edit"></button><button type="button" class="finish-graph-edit" data-i18n-aria-label="Done" aria-label="Done" title="Done" hidden data-icon="confirm"></button></div>
+            <p class="dependency-draft-warning" role="status" data-i18n="Repair the highlighted dependencies before saving." hidden>Repair the highlighted dependencies before saving.</p>
+            <button type="button" class="undo-dependency" data-i18n="Undo graph change" hidden>Undo graph change</button>
+            <label class="show-all-schedules"><input type="checkbox"> <span data-i18n="Show all schedules">Show all schedules</span></label>
+            <button type="button" class="export-plan" data-i18n="Download configuration">Download configuration</button>
             <button type="button" class="close-timeline" data-i18n="Back to wheel">Back to wheel</button>
           </header>
+          <button type="button" class="graph-plan open-config" aria-haspopup="dialog" aria-controls="advanced-options" data-i18n="Advanced options" hidden>Advanced options</button>
           <div class="schedule-viewport"><div class="schedule-cards">
             <div class="timeline-months"></div>
             <div class="timeline-start" role="img"></div>
+            <div class="timeline-initial"><div><strong></strong><span class="initial-year"></span></div></div>
             <svg class="timeline-arrows" role="group" aria-label="Dependencies" data-i18n-aria-label="Dependencies" focusable="false">
               <defs>
                 <marker id="dependency-arrowhead" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto">
@@ -36,28 +68,65 @@
               <g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" marker-end="url(#dependency-arrowhead)"></g>
             </svg>
           </div></div>
-          <button class="all-deadlines" aria-expanded="false"><span data-i18n="Edit deadlines">Edit deadlines</span> <span>→</span></button>
+          <div class="graph-navigation"><button class="all-deadlines" aria-expanded="false"><span data-i18n="Dependency graph">Dependency graph</span> <span aria-hidden="true" data-icon="arrow"></span></button></div>
           <button class="export-calendar" type="button" data-i18n="Export calendar (.ics)">Export calendar (.ics)</button>
         </aside>
         <div class="wheel-column">
-          <div class="wheel-toolbar"><p><span class="live-dot"></span><span data-i18n="Today">Today</span></p><div class="wheel-actions"><div class="render-mode" aria-label="Rendering mode" data-i18n-aria-label="Rendering mode"><button type="button" data-render-mode="year" data-i18n="Year by year">Year by year</button><button type="button" data-render-mode="continuous" data-i18n="Continuous">Continuous</button></div><button class="today-button" id="today-button" data-i18n="Today">Today</button><div class="zoom-control" aria-label="Zoom annual wheel" data-i18n-aria-label="Zoom annual wheel"><button id="zoom-out" aria-label="Zoom out" data-i18n-aria-label="Zoom out">−</button><span id="zoom-level"></span><button id="zoom-in" aria-label="Zoom in" data-i18n-aria-label="Zoom in">+</button></div></div></div>
+          <div class="wheel-toolbar"><p><span class="live-dot"></span><span data-i18n="Today">Today</span></p><div class="wheel-actions"><div class="render-mode" aria-label="Rendering mode" data-i18n-aria-label="Rendering mode"><button type="button" data-render-mode="year" data-i18n="Year by year">Year by year</button><button type="button" data-render-mode="continuous" data-i18n="Continuous">Continuous</button></div><button class="today-button" id="today-button" data-i18n="Today">Today</button><div class="zoom-control" aria-label="Zoom annual wheel" data-i18n-aria-label="Zoom annual wheel"><button id="zoom-out" aria-label="Zoom out" data-i18n-aria-label="Zoom out" data-icon="zoomOut"></button><span id="zoom-level"></span><button id="zoom-in" aria-label="Zoom in" data-i18n-aria-label="Zoom in" data-icon="zoomIn"></button></div></div></div>
           <div class="wheel-stage"><div class="year-wheel" aria-label="Annual wheel" data-i18n-aria-label="Annual wheel"><svg class="year-band" viewBox="0 0 100 100" aria-hidden="true"><defs><pattern id="year-cycle-0" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="#eaf3fa"/><path d="M0 0h2v2H0zM2 2h2v2H2z" fill="#5d91b7" fill-opacity=".65"/></pattern><pattern id="year-cycle-1" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="#f6eef5"/><path d="M0 0h3.5v3.5H0zM3.5 3.5H7V7H3.5z" fill="#9a638f" fill-opacity=".72"/></pattern><pattern id="year-cycle-2" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#ebf6f2"/><path d="M0 0h2.5v2.5H0zM2.5 2.5H5V5H2.5z" fill="#4f9b89" fill-opacity=".62"/></pattern><pattern id="year-cycle-3" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#faf3e9"/><path d="M0 0h4v4H0zM4 4h4v4H4z" fill="#bd8a50" fill-opacity=".68"/></pattern></defs><g class="year-segment" data-year-segment="0"><circle cx="50" cy="50" r="46" pathLength="100"/><text text-anchor="middle"></text></g><g class="year-segment" data-year-segment="1"><circle cx="50" cy="50" r="46" pathLength="100"/><text text-anchor="middle"></text></g></svg><div class="ring ring-outer"></div><div class="ring ring-middle"></div><div class="ring ring-inner"></div><div class="today-line"><span></span></div><div class="center-disc"><span data-i18n="Recurring rhythm">RECURRING RHYTHM</span><em data-i18n="a new cycle every year">a new cycle every year</em></div><div class="month jan"><b>JAN</b></div><div class="month feb"><b>FEB</b></div><div class="month mar"><b>MAR</b></div><div class="month apr"><b>APR</b></div><div class="month may"><b>MAY</b></div><div class="month jun"><b>JUN</b></div><div class="month jul"><b>JUL</b></div><div class="month aug"><b>AUG</b></div><div class="month sep"><b>SEP</b></div><div class="month oct"><b>OCT</b></div><div class="month nov"><b>NOV</b></div><div class="month dec"><b>DEC</b></div></div><svg class="year-band-cut" viewBox="0 0 100 100" aria-hidden="true"><defs><pattern id="cut-cycle-0" width="4" height="4" patternUnits="userSpaceOnUse"><rect width="4" height="4" fill="#eaf3fa"/><path d="M0 0h2v2H0zM2 2h2v2H2z" fill="#5d91b7" fill-opacity=".65"/></pattern><pattern id="cut-cycle-1" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="#f6eef5"/><path d="M0 0h3.5v3.5H0zM3.5 3.5H7V7H3.5z" fill="#9a638f" fill-opacity=".72"/></pattern><pattern id="cut-cycle-2" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#ebf6f2"/><path d="M0 0h2.5v2.5H0zM2.5 2.5H5V5H2.5z" fill="#4f9b89" fill-opacity=".62"/></pattern><pattern id="cut-cycle-3" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#faf3e9"/><path d="M0 0h4v4H0zM4 4h4v4H4z" fill="#bd8a50" fill-opacity=".68"/></pattern></defs><circle data-year-cut="incoming" cx="50" cy="50" r="46" pathLength="100"/><circle data-year-cut="outgoing" cx="50" cy="50" r="46" pathLength="100"/></svg><div class="helix-cut" aria-hidden="true"></div></div>
           <p class="wheel-hint" data-i18n="Drag the wheel to browse the year · select a marker to see the deadline">Drag the wheel to browse the year · select a marker to see the deadline</p>
         </div>
       </section>
     </main>
-    <dialog class="config-editor" aria-labelledby="config-editor-title">
+    <dialog id="advanced-options" class="config-editor" aria-labelledby="config-editor-title">
       <form method="dialog">
-        <header><h2 id="config-editor-title" data-i18n="Session configuration">Session configuration</h2><button class="config-editor-close" aria-label="Close" data-i18n-aria-label="Close">×</button></header>
-        <p data-i18n="Configuration changes apply immediately and are discarded when this page is reloaded.">Configuration changes apply immediately and are discarded when this page is reloaded.</p>
-        <div class="config-editor-tree" role="tree" aria-label="Session configuration" data-i18n-aria-label="Session configuration"></div>
+        <header><h2 id="config-editor-title" data-i18n="Advanced options">Advanced options</h2><button formnovalidate class="config-editor-close" aria-label="Close" data-i18n-aria-label="Close" data-icon="close"></button></header>
+        <div class="config-editor-tree" role="tree" aria-labelledby="config-editor-title"></div>
         <p class="config-editor-error" role="alert"></p>
-        <footer><button value="cancel" data-i18n="Cancel">Cancel</button><button type="button" class="config-editor-apply" data-i18n="Apply changes">Apply changes</button></footer>
+        <footer><button formnovalidate value="cancel" data-i18n-aria-label="Cancel" aria-label="Cancel" title="Cancel" data-icon="cancel"></button><button type="button" class="config-editor-apply" data-i18n-aria-label="Apply changes" aria-label="Apply changes" title="Apply changes" data-icon="confirm"></button></footer>
       </form>
     </dialog>
+    <aside id="dependency-preview" role="tooltip" hidden>
+      <h2></h2>
+      <fieldset class="card-editor-fields" disabled></fieldset>
+    </aside>
+    <dialog id="card-editor" aria-labelledby="card-editor-title">
+      <form>
+        <h2 id="card-editor-title"></h2>
+        <div class="card-editor-fields"></div>
+        <p class="card-editor-error" role="alert"></p>
+        <div><button type="submit" data-i18n-aria-label="Apply changes" aria-label="Apply changes" title="Apply changes" data-icon="confirm"></button> <button type="button" name="cancel" data-i18n-aria-label="Cancel" aria-label="Cancel" title="Cancel" data-icon="cancel"></button></div>
+      </form>
+    </dialog>
+    <dialog id="discard-changes" aria-labelledby="discard-title">
+      <form method="dialog">
+        <h2 id="discard-title"></h2>
+        <div class="discard-actions">
+          <button value="keep" autofocus><span aria-hidden="true" data-icon="cancel"></span> <span data-i18n="Keep editing">Keep editing</span></button>
+          <button value="discard"><span aria-hidden="true" data-icon="confirm"></span> <span data-i18n="Discard changes">Discard changes</span></button>
+        </div>
+      </form>
+    </dialog>
+    <dialog id="config-dependencies" aria-labelledby="dependency-title" aria-describedby="dependency-message">
+      <form method="dialog">
+        <h2 id="dependency-title"></h2>
+        <p id="dependency-message"></p>
+        <ul></ul>
+        <button autofocus data-i18n="Close">Close</button>
+      </form>
+    </dialog>
+    <dialog id="config-save-notice" aria-labelledby="save-notice-title" aria-describedby="save-notice-message">
+      <form method="dialog">
+        <h2 id="save-notice-title" data-i18n="Configuration not saved">Configuration not saved</h2>
+        <p id="save-notice-message"></p>
+        <button autofocus data-i18n="Close">Close</button>
+      </form>
+    </dialog>
+    <script type="importmap">{"imports":{"yaml":"/node_modules/yaml/browser/index.js"}}</script>
     <script src="/annual-wheel-config.js"></script>
-    <script src="/lib/schedule.browser.js?v=9"></script>
-    <script src="/lib/i18n.browser.js?v=10"></script>
-    <script src="/script.js?v=38"></script>
+    <script src="/lib/schedule.browser.js?v=28"></script>
+    <script src="/lib/i18n.browser.js?v=40"></script>
+    <script src="/lib/control-icons.js"></script>
+    <script src="/script.js?v=101"></script>
   </body>
 </html>

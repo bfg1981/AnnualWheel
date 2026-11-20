@@ -114,9 +114,6 @@ msgstr "Modo continuo: las fechas entran por la parte superior y salen por debaj
 msgid "Session configuration"
 msgstr "Configuración de la sesión"
 
-msgid "Configuration changes apply immediately and are discarded when this page is reloaded."
-msgstr "Los cambios de configuración se aplican de inmediato y se descartan al recargar esta página."
-
 msgid "Apply changes"
 msgstr "Aplicar cambios"
 
@@ -266,3 +263,288 @@ msgstr "Excluir · {schedule}"
 
 msgid "Date conflicts with {schedule}"
 msgstr "La fecha coincide con {schedule}"
+
+msgid "Satisfies"
+msgstr "Cumple"
+
+msgid "Estimated"
+msgstr "Estimación"
+
+msgid "Estimated · {title}"
+msgstr "Estimación · {title}"
+
+msgid "We are missing calendar data for this period"
+msgstr "Nos faltan datos del calendario para este período"
+
+msgid "Choose the valid date closest to the limiting bound."
+msgstr "Elegir la fecha válida más cercana al límite más restrictivo."
+
+msgid "Advanced options"
+msgstr "Opciones avanzadas"
+
+msgid "Download configuration"
+msgstr "Descargar configuración"
+
+msgid "Deadline"
+msgstr "Plazo"
+
+msgid "Initial object"
+msgstr "Objeto inicial"
+
+msgid "Initial year · {year}"
+msgstr "Año inicial · {year}"
+
+msgid "Current year"
+msgstr "Año en curso"
+
+msgid "Show all schedules"
+msgstr "Mostrar todos los calendarios"
+
+msgid "Hidden"
+msgstr "Oculto"
+
+msgid "Hide {schedule}"
+msgstr "Ocultar {schedule}"
+
+msgid "Automatic layer for {kinds}"
+msgstr "Capa automática para {kinds}"
+
+msgid "Organisation"
+msgstr "Organización"
+
+msgid "Individual"
+msgstr "Persona física"
+
+msgid "Source text"
+msgstr "Texto de origen"
+
+msgid "Choose source text"
+msgstr "Elige un texto de origen"
+
+msgid "Add override"
+msgstr "Añadir traducción"
+
+msgid "Remove override"
+msgstr "Quitar traducción"
+
+msgid "Target language"
+msgstr "Idioma de destino"
+
+msgid "Add target language"
+msgstr "Añadir idioma de destino"
+
+msgid "Remove target language"
+msgstr "Eliminar idioma de destino"
+
+msgid "Display locale"
+msgstr "Idioma de visualización"
+
+msgid "Add locale"
+msgstr "Añadir variante de idioma"
+
+msgid "Add locale…"
+msgstr "Añadir variante de idioma…"
+
+msgid "Remove locale"
+msgstr "Eliminar variante de idioma"
+
+msgid "Locale code"
+msgstr "Código de idioma"
+
+msgid "This locale is already listed."
+msgstr "Esta variante de idioma ya está en la lista."
+
+msgid "Enter a valid locale code."
+msgstr "Introduce un código de idioma válido."
+
+msgid "Locale in use"
+msgstr "Variante de idioma en uso"
+
+msgid "Remove or change these references to {name} first."
+msgstr "Primero elimina o cambia estas referencias a {name}."
+
+msgid "Edit plan details"
+msgstr "Editar los detalles del plan"
+
+msgid "Title"
+msgstr "Título"
+
+msgid "Organisation type"
+msgstr "Tipo de organización"
+
+msgid "Description"
+msgstr "Descripción"
+
+msgid "Edit layers"
+msgstr "Editar capas"
+
+msgid "Add layer"
+msgstr "Añadir capa"
+
+msgid "Remove layer"
+msgstr "Eliminar capa"
+
+msgid "Layer label"
+msgstr "Nombre de la capa"
+
+msgid "Layer in use"
+msgstr "Capa en uso"
+
+msgid "Dependency graph"
+msgstr "Grafo de dependencias"
+
+msgid "Done"
+msgstr "Listo"
+
+msgid "Discard changes to the plan details?"
+msgstr "¿Quieres descartar los cambios en los detalles del plan?"
+
+msgid "Discard changes to the layers?"
+msgstr "¿Quieres descartar los cambios en las capas?"
+
+msgid "Discard changes to advanced options?"
+msgstr "¿Quieres descartar los cambios en las opciones avanzadas?"
+
+msgid "Keep editing"
+msgstr "Seguir editando"
+
+msgid "Discard changes"
+msgstr "Descartar cambios"
+
+msgid "Edit {title}"
+msgstr "Editar {title}"
+
+msgid "Discard changes to “{title}”?"
+msgstr "¿Quieres descartar los cambios en «{title}»?"
+
+msgid "Month"
+msgstr "Mes"
+
+msgid "Day"
+msgstr "Día"
+
+msgid "Weekday"
+msgstr "Día de la semana"
+
+msgid "Initial year"
+msgstr "Año inicial"
+
+msgid "Rule"
+msgstr "Regla"
+
+msgid "Used by {titles}"
+msgstr "Se usa en {titles}"
+
+msgid "Constraints"
+msgstr "Restricciones"
+
+msgid "Exclude"
+msgstr "Excluir"
+
+msgid "Add constraint"
+msgstr "Añadir restricción"
+
+msgid "Remove constraint"
+msgstr "Eliminar restricción"
+
+msgid "Must be in"
+msgstr "Debe estar en"
+
+msgid "Calendar membership"
+msgstr "Pertenencia al calendario"
+
+msgid "Calendar"
+msgstr "Calendario"
+
+msgid "Default"
+msgstr "Predeterminado"
+
+msgid "True"
+msgstr "Verdadero"
+
+msgid "False"
+msgstr "Falso"
+
+msgid "Kind"
+msgstr "Tipo"
+
+msgid "Start of month"
+msgstr "Inicio del mes"
+
+msgid "End of month"
+msgstr "Fin del mes"
+
+msgid "Date"
+msgstr "Fecha"
+
+msgid "Month boundary"
+msgstr "Límite del mes"
+
+msgid "Day offset"
+msgstr "Desplazamiento en días"
+
+msgid "Offset"
+msgstr "Desplazamiento"
+
+msgid "Unit"
+msgstr "Unidad"
+
+msgid "Days"
+msgstr "Días"
+
+msgid "Weeks"
+msgstr "Semanas"
+
+msgid "{interval} before"
+msgstr "{interval} antes de"
+
+msgid "{interval} after"
+msgstr "{interval} después de"
+
+msgid "Whole weeks"
+msgstr "Semanas completas"
+
+msgid "First week start on or after"
+msgstr "Primer inicio de semana en o después de"
+
+msgid "Relation"
+msgstr "Relación"
+
+msgid "Months"
+msgstr "Meses"
+
+msgid "Source"
+msgstr "Origen"
+
+msgid "Direction"
+msgstr "Dirección"
+
+msgid "Course days"
+msgstr "Días de curso"
+
+msgid "Occurrence"
+msgstr "Ocurrencia"
+
+msgid "Configuration not saved"
+msgstr "Configuración sin guardar"
+
+msgid "This setup does not support saving. You can still edit the wheel and see your changes immediately in this tab. Your changes will be lost when you close or reload this tab."
+msgstr "Esta instalación no permite guardar los cambios. Puedes seguir editando la rueda anual y ver los cambios de inmediato en esta pestaña. Se perderán al cerrar o recargar esta pestaña."
+
+msgid "Saving requires permission. Your changes are still in this tab."
+msgstr "Necesitas permiso para guardar. Tus cambios siguen en esta pestaña."
+
+msgid "Saving failed. Your changes are still in this tab. Confirm again to retry."
+msgstr "No se han podido guardar los cambios. Siguen en esta pestaña. Vuelve a confirmar para reintentar el guardado."
+
+msgid "Repair the highlighted dependencies before saving."
+msgstr "Corrige las dependencias resaltadas antes de guardar."
+
+msgid "Remove {title}"
+msgstr "Eliminar {title}"
+
+msgid "Undo graph change"
+msgstr "Deshacer el cambio en el grafo"
+
+msgid "The initial object is required. Undo its removal before saving."
+msgstr "El objeto inicial es obligatorio. Deshaz su eliminación antes de guardar."

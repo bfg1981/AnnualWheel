@@ -3,6 +3,6 @@ import { readFile, writeFile } from 'node:fs/promises';
 const sourcePath = new URL('../lib/schedule.mjs', import.meta.url);
 const outputPath = new URL('../lib/schedule.browser.js', import.meta.url);
 const source = await readFile(sourcePath, 'utf8');
-const browserSource = `(() => {\n${source.replaceAll('export function ', 'function ')}\nwindow.scheduleEngine = { calendarBoundary, weekdayDependencies, isRelativeRule, excludedSchedules, calendarOccurrences, scheduledDays, configuredWeekday, resolveAnchorDate, scheduleAnchors, resolveItemStatuses, resolveSchedule, yearBandSegments };\n})();\n`;
+const browserSource = `(() => {\n${source.replaceAll('export function ', 'function ')}\nwindow.scheduleEngine = { effectiveItem, groupDate, normalizeAnchorDependencies, offsetRelation, anchorDateRelation, comparisonBound, calendarBoundary, weekdayDependencies, weekdayDependency, isRelativeRule, calendarConstraints, excludedSchedules, calendarYear, calendarOccurrences, scheduledDays, configuredWeekday, resolveVirtualDate, resolveAnchorDate, scheduleAnchors, resolveItemStatuses, resolveSchedule, yearBandSegments };\n})();\n`;
 
 await writeFile(outputPath, `// Generated from lib/schedule.mjs. Do not edit directly.\n${browserSource}`);

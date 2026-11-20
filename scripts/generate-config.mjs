@@ -1,5 +1,9 @@
 import { readFile, writeFile } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
+import { loadPlanCalendars } from '../lib/calendar-sources.mjs';
+import { configurationTranslationValues } from '../lib/config-translations.mjs';
 import YAML from 'yaml';
+import { normalizeAnchorDependencies } from '../lib/schedule.mjs';
 
 const [sourceArg, outputArg = 'annual-wheel-config.js'] = process.argv.slice(2);
 const setupPath = new URL('../setup.json', import.meta.url);
@@ -13,11 +17,13 @@ const sourceConfig = sourceArg || setup.sourceConfig || 'config/annual-wheel.yam
 const sourcePath = new URL(`../${sourceConfig}`, import.meta.url);
 const outputPath = new URL(`../${outputArg}`, import.meta.url);
 const source = await readFile(sourcePath, 'utf8');
-const config = YAML.parse(source);
+const inputPlan = YAML.parse(source);
 
-if (!config?.organisation?.name || !Array.isArray(config?.items)) {
+if (!inputPlan?.organisation?.name || !Array.isArray(inputPlan?.items)) {
   throw new Error('Invalid configuration: organisation.name and items are required.');
 }
 
-const output = `// Generated from ${sourceConfig}. Do not edit directly.\nwindow.annualWheelConfig = ${JSON.stringify(config, null, 2)};\nwindow.annualWheelBuild = ${JSON.stringify(buildSettings)};\n`;
+const { plan: config, sources } = await loadPlanCalendars(normalizeAnchorDependencies(inputPlan), fileURLToPath(sourcePath), setup.calendarCatalog);
+const strings = new Set([...configurationTranslationValues(config), ...configurationTranslationValues({ display: {}, items: [], schedules: sources })]);
+const output = `// Generated from ${sourceConfig}. Do not edit directly.\nwindow.annualWheelConfig = ${JSON.stringify(config, null, 2)};\nwindow.annualWheelCalendarSources = ${JSON.stringify(sources)};\nwindow.annualWheelTranslationStrings = ${JSON.stringify([...strings])};\nwindow.annualWheelBuild = ${JSON.stringify(buildSettings)};\n`;
 await writeFile(outputPath, output);
