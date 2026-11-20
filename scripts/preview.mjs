@@ -59,6 +59,7 @@ const server = createServer(async (request, response) => {
   }
 });
 
-server.listen(8767, '127.0.0.1', () => {
-  console.log('Annual wheel preview: http://127.0.0.1:8767/');
+const port = Number(process.env.PORT) || 8767;
+server.listen(port, '127.0.0.1', () => {
+  console.log(`Annual wheel preview: http://127.0.0.1:${port}/`);
 });
