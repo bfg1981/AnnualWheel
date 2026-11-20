@@ -4,14 +4,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Annual wheel</title>
-    <link rel="stylesheet" href="/styles.css?v=23" />
+    <link rel="stylesheet" href="/styles.css?v=37" />
   </head>
   <body>
     <main class="app-shell">
       <header class="topbar">
         <a class="brand" href="#" aria-label="Annual wheel, home" data-i18n-aria-label="Annual wheel, home"><span class="brand-mark"><i></i><i></i><i></i></span> Annual wheel</a>
         <div class="year-control" aria-label="Selected year" data-i18n-aria-label="Selected year"><button id="previous-year" aria-label="Previous year" data-i18n-aria-label="Previous year">‹</button><strong id="selected-year"></strong><button id="next-year" aria-label="Next year" data-i18n-aria-label="Next year">›</button></div>
-        <div class="settings-menu"><button class="profile" type="button" aria-label="Settings" data-i18n-aria-label="Settings" aria-expanded="false" aria-controls="render-settings">••</button><div id="render-settings" class="render-settings" hidden><label><input type="checkbox" id="show-year-annulus" /> <span data-i18n="Show year band">Show year band</span></label><label><input type="checkbox" id="show-quarter-band" /> <span data-i18n="Show quarter band">Show quarter band</span></label><label><input type="checkbox" id="show-termin-band" /> <span data-i18n="Show two-month band">Show two-month band</span></label><label><input type="checkbox" id="show-month-wedges" /> <span data-i18n="Show month wedges">Show month wedges</span></label><label><input type="checkbox" id="show-rim-shading" checked /> <span data-i18n="Show rim shading">Show rim shading</span></label></div></div>
+        <div class="settings-menu"><button class="profile" type="button" aria-label="Settings" data-i18n-aria-label="Settings" aria-expanded="false" aria-controls="render-settings">••</button><div id="render-settings" class="render-settings" hidden><label><input type="checkbox" id="show-year-annulus" /> <span data-i18n="Show year band">Show year band</span></label><label><input type="checkbox" id="show-quarter-band" /> <span data-i18n="Show quarter band">Show quarter band</span></label><label><input type="checkbox" id="show-termin-band" /> <span data-i18n="Show two-month band">Show two-month band</span></label><label><input type="checkbox" id="show-month-wedges" /> <span data-i18n="Show month wedges">Show month wedges</span></label><label><input type="checkbox" id="show-rim-shading" checked /> <span data-i18n="Show rim shading">Show rim shading</span></label><button type="button" class="open-config" data-i18n="Session configuration">Session configuration</button></div></div>
       </header>
       <section class="intro">
         <div><p class="eyebrow"><span data-i18n="Annual plan">Annual plan</span> · <span class="year-text"></span></p><h1>Annual wheel</h1><p class="lede"></p></div>
@@ -20,7 +20,24 @@
       <section class="wheel-layout">
         <aside class="schedule-panel">
           <div class="panel-heading"><p class="eyebrow">Key dates</p></div>
-          <button class="all-deadlines"><span data-i18n="View all deadlines">View all deadlines</span> <span>→</span></button>
+          <header class="timeline-heading" hidden>
+            <h2 data-i18n="Edit deadlines">Edit deadlines</h2>
+            <button type="button" class="close-timeline" data-i18n="Back to wheel">Back to wheel</button>
+          </header>
+          <div class="schedule-viewport"><div class="schedule-cards">
+            <div class="timeline-months"></div>
+            <div class="timeline-start" role="img"></div>
+            <svg class="timeline-arrows" role="group" aria-label="Dependencies" data-i18n-aria-label="Dependencies" focusable="false">
+              <defs>
+                <marker id="dependency-arrowhead" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto">
+                  <path d="M0 0 L8 4 L0 8 Z" fill="currentColor"/>
+                </marker>
+              </defs>
+              <g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" marker-end="url(#dependency-arrowhead)"></g>
+            </svg>
+          </div></div>
+          <button class="all-deadlines" aria-expanded="false"><span data-i18n="Edit deadlines">Edit deadlines</span> <span>→</span></button>
+          <button class="export-calendar" type="button" data-i18n="Export calendar (.ics)">Export calendar (.ics)</button>
         </aside>
         <div class="wheel-column">
           <div class="wheel-toolbar"><p><span class="live-dot"></span><span data-i18n="Today">Today</span></p><div class="wheel-actions"><div class="render-mode" aria-label="Rendering mode" data-i18n-aria-label="Rendering mode"><button type="button" data-render-mode="year" data-i18n="Year by year">Year by year</button><button type="button" data-render-mode="continuous" data-i18n="Continuous">Continuous</button></div><button class="today-button" id="today-button" data-i18n="Today">Today</button><div class="zoom-control" aria-label="Zoom annual wheel" data-i18n-aria-label="Zoom annual wheel"><button id="zoom-out" aria-label="Zoom out" data-i18n-aria-label="Zoom out">−</button><span id="zoom-level"></span><button id="zoom-in" aria-label="Zoom in" data-i18n-aria-label="Zoom in">+</button></div></div></div>
@@ -39,8 +56,8 @@
       </form>
     </dialog>
     <script src="/annual-wheel-config.js"></script>
-    <script src="/lib/schedule.browser.js?v=2"></script>
-    <script src="/lib/i18n.browser.js"></script>
-    <script src="/script.js?v=19"></script>
+    <script src="/lib/schedule.browser.js?v=9"></script>
+    <script src="/lib/i18n.browser.js?v=10"></script>
+    <script src="/script.js?v=38"></script>
   </body>
 </html>

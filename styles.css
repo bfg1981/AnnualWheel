@@ -18,6 +18,7 @@ button { font:inherit; cursor:pointer; } .app-shell { max-width:1440px; margin:a
 @media(max-width:780px){.app-shell{padding:0 20px 30px}.intro{padding:38px 0 25px;display:block}.legend{margin-top:22px;gap:13px;flex-wrap:wrap}.wheel-layout{grid-template-columns:1fr;gap:24px}.schedule-panel{order:2}.wheel-column{order:1}.wheel-stage{aspect-ratio:1}.month small{display:none}.center-disc strong{font-size:27px}.topbar{height:65px}.intro h1{font-size:38px}}
 .center-disc span { font-size:8px; letter-spacing:.12em; }
 .rule-line::before { content:"↳ "; color:#8a95a6; }
+.rule-line:empty { display: none; }
 .anchor-control { display:flex; flex-direction:column; align-items:flex-end; gap:4px; color:#748096; font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; }.anchor-control input { border:1px solid #dfe5ec; border-radius:5px; padding:4px 6px; color:#45556b; background:#fff; font:600 11px "DM Sans",sans-serif; letter-spacing:0; text-transform:none; }
 .anchor-control span::before { content:"○ "; color:#d58a34; }
 .event::after { font-family:"DM Sans",sans-serif; }.wheel-stage.is-debug-years .event::before { content:attr(data-year);position:absolute;left:50%;bottom:-15px;transform:translateX(-50%);padding:2px 4px;border-radius:4px;background:#17233a;color:#fff;font:700 8px/1 "DM Sans",sans-serif;letter-spacing:.04em;box-shadow:0 1px 4px rgb(23 35 58/.2); }
@@ -48,4 +49,125 @@ button { font:inherit; cursor:pointer; } .app-shell { max-width:1440px; margin:a
 .wheel-stage.has-month-wedges .year-wheel::before { content:""; position:absolute; inset:var(--month-wedge-inset,0%); border-radius:50%; background:var(--month-wedges); pointer-events:none; }
 .quarter-label { position:absolute; z-index:4; pointer-events:none; color:#53657c; font:700 11px/1 var(--font-sans); transform:translate(-50%,-50%) rotate(calc(-1 * var(--wheel-rotation))); }.quarter-label[hidden] { display:none; }
 .render-settings .render-settings-child { margin:6px 0 0 24px; font-size:12px; color:var(--muted); }.render-settings-child:has(input:disabled) { opacity:.5; }.wheel-stage.hide-year-labels .year-segment text,.wheel-stage.hide-month-labels .month,.wheel-stage.hide-quarter-labels .quarter-period-label,.wheel-stage.hide-termin-labels .termin-period-label { display:none; }
+.export-calendar { display:block; width:100%; padding:12px 8px 3px; border:0; background:transparent; color:#315d9e; text-align:left; font-size:13px; font-weight:700; }
 .wheel-stage:not(.has-year-annulus):not(.hide-year-labels) .year-band { display:block; }.wheel-stage:not(.has-year-annulus) .year-segment circle { display:none; }
+
+.timeline-months, .timeline-start, .timeline-arrows { display: none; }
+.timeline-heading:not([hidden]) { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.timeline-heading h2 { margin: 0; font-size: 1.25rem; }
+.close-timeline, .open-config { border: 1px solid var(--line); border-radius: 6px; background: white; color: #315d9e; padding: 6px 10px; font: inherit; font-size: 13px; }
+.open-config { margin-top: 12px; }
+.editing-timeline { display: block; }
+.editing-timeline :is(.wheel-column, .panel-heading, .display-date-card, .deadline-group, .all-deadlines, .export-calendar) { display: none; }
+.editing-timeline .schedule-viewport { overflow-x: auto; padding-bottom: 12px; }
+.editing-timeline .schedule-cards {
+  position: relative;
+  display: grid;
+  width: max-content;
+  min-height: 60px;
+  grid-auto-columns: 10px;
+  grid-auto-flow: row dense;
+  align-items: start;
+  align-content: start;
+  row-gap: 18px;
+}
+.editing-timeline .timeline-arrows {
+  display: block;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: #315d9e;
+  pointer-events: none;
+  z-index: 1;
+}
+.editing-timeline .timeline-months { display: contents; }
+.timeline-arrows text {
+  pointer-events: visiblePainted;
+  fill: currentColor;
+  stroke: white;
+  stroke-width: 3px;
+  paint-order: stroke;
+  dominant-baseline: central;
+  font: 700 13px var(--font-sans);
+}
+.timeline-months > span {
+  grid-row: 1;
+  padding: 6px 8px;
+  border-inline-start: 1px solid #b8c5d2;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+.editing-timeline .deadline-card { margin-right: 8px; max-height: none; border-radius: 6px; overflow-wrap: anywhere; }
+.editing-timeline .timeline-start {
+  display: block;
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 2px;
+  background: var(--blue);
+  z-index: 1;
+  pointer-events: none;
+}
+.timeline-start::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-top: 8px solid var(--blue);
+  border-right: 10px solid transparent;
+  pointer-events: auto;
+}
+
+.editing-timeline .schedule-cards > article { position: relative; }
+.editing-timeline .schedule-cards > article::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: repeating-conic-gradient(rgb(24 49 83 / 14%) 0 25%, transparent 0 50%) 0 0 / 16px 16px;
+  pointer-events: none;
+}
+.editing-timeline .schedule-cards > [data-date-type]::before {
+  content: attr(data-date-type-label);
+}
+.editing-timeline .schedule-cards > [data-date-type]::after {
+  --line-width: var(--stripe-width, 4px);
+  background: repeating-linear-gradient(var(--stripe-direction, to right), rgb(24 49 83 / 14%) 0 var(--line-width), transparent var(--line-width) calc(2 * var(--line-width)));
+}
+.editing-timeline [data-date-type="fixed"] {
+  --stripe-direction: to bottom;
+}
+.editing-timeline [data-timeline-anchor] {
+  --stripe-width: 10px;
+}
+
+.schedule-constraint { display: none; }
+.editing-timeline .schedule-constraint { display: block; }
+.editing-timeline .deadline-card .schedule-constraint.has-conflict { color: #9a3412; font-weight: 700; }
+.timeline-calendar {
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-template-rows: auto 9px;
+  row-gap: 3px;
+  background: #f0f5fa;
+  color: #365674;
+}
+.timeline-calendar strong {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  position: sticky;
+  left: 0;
+  justify-self: start;
+  padding: 2px 8px;
+  font-size: 12px;
+}
+.timeline-calendar time {
+  grid-row: 2;
+  overflow: hidden;
+  font-size: 0;
+  border-inline: 1px solid #f0f5fa;
+  background: #637f9a;
+}

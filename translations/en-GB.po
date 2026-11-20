@@ -51,8 +51,8 @@ msgstr "{organisation} · key dates"
 msgid "Assumptions"
 msgstr "Assumptions"
 
-msgid "View all deadlines"
-msgstr "View all deadlines"
+msgid "Edit deadlines"
+msgstr "Edit deadlines"
 
 msgid "Today"
 msgstr "Today"
@@ -153,8 +153,116 @@ msgstr "Show month band"
 msgid "Show labels"
 msgstr "Show labels"
 
+msgid "Export calendar (.ics)"
+msgstr "Export calendar (.ics)"
+
+msgid "The display date is {date}, not 1 January. The export may not cover a full calendar year. Continue?"
+msgstr "The display date is {date}, not 1 January. The export may not cover a full calendar year. Continue?"
+
 msgid "Show quarter band"
 msgstr "Show quarter band"
 
 msgid "Show two-month band"
 msgstr "Show two-month band"
+
+msgid "Back to wheel"
+msgstr "Back to wheel"
+
+msgid "Start of year"
+msgstr "Start of year"
+
+msgid "End of {month}"
+msgstr "End of {month}"
+
+msgid "Default date for {titles}"
+msgstr "Default date for {titles}"
+
+msgid "Before or on"
+msgstr "Before or on"
+
+msgid "Dependencies"
+msgstr "Dependencies"
+
+msgid "Before"
+msgstr "Before"
+
+msgid "At least {interval} before"
+msgstr "At least {interval} before"
+
+msgid "More than {interval} before"
+msgstr "More than {interval} before"
+
+msgid "At most {interval} after"
+msgstr "At most {interval} after"
+
+msgid "Less than {interval} after"
+msgstr "Less than {interval} after"
+
+msgid "Weekday · {weekday}"
+msgstr "Weekday · {weekday}"
+
+msgid "On or after"
+msgstr "On or after"
+
+msgid "After"
+msgstr "After"
+
+msgid "At least {interval} after"
+msgstr "At least {interval} after"
+
+msgid "More than {interval} after"
+msgstr "More than {interval} after"
+
+msgid "At most {interval} before"
+msgstr "At most {interval} before"
+
+msgid "Less than {interval} before"
+msgstr "Less than {interval} before"
+
+msgid "Fixed date"
+msgstr "Fixed date"
+
+msgid "Relative date"
+msgstr "Relative date"
+
+msgid "Start of {month}"
+msgstr "Start of {month}"
+
+msgid "Full week {n}"
+msgstr "Full week {n}"
+
+msgid "Occurrence {n}"
+msgstr "Occurrence {n}"
+
+msgid "Last occurrence on or before"
+msgstr "Last occurrence on or before"
+
+msgid "Same day"
+msgstr "Same day"
+
+msgid "Default date"
+msgstr "Default date"
+
+msgid "Start of {title}"
+msgstr "Start of {title}"
+
+msgid "End of {title}"
+msgstr "End of {title}"
+
+msgid "{n} days before"
+msgstr "{n} days before"
+
+msgid "{n} days after"
+msgstr "{n} days after"
+
+msgid "Schedule backwards from"
+msgstr "Schedule backwards from"
+
+msgid "Schedule forwards from"
+msgstr "Schedule forwards from"
+
+msgid "Exclude · {schedule}"
+msgstr "Exclude · {schedule}"
+
+msgid "Date conflicts with {schedule}"
+msgstr "Date conflicts with {schedule}"

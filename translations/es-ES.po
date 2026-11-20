@@ -51,8 +51,8 @@ msgstr "{organisation} · fechas clave"
 msgid "Assumptions"
 msgstr "Supuestos"
 
-msgid "View all deadlines"
-msgstr "Ver todos los plazos"
+msgid "Edit deadlines"
+msgstr "Editar plazos"
 
 msgid "Today"
 msgstr "Hoy"
@@ -153,8 +153,116 @@ msgstr "Mostrar banda mensual"
 msgid "Show labels"
 msgstr "Mostrar etiquetas"
 
+msgid "Export calendar (.ics)"
+msgstr "Exportar calendario (.ics)"
+
+msgid "The display date is {date}, not 1 January. The export may not cover a full calendar year. Continue?"
+msgstr "La fecha mostrada es {date}, no el 1 de enero. Es posible que la exportación no cubra un año natural completo. ¿Continuar?"
+
 msgid "Show quarter band"
 msgstr "Mostrar banda trimestral"
 
 msgid "Show two-month band"
 msgstr "Mostrar banda bimestral"
+
+msgid "Back to wheel"
+msgstr "Volver a la rueda anual"
+
+msgid "Start of year"
+msgstr "Inicio del año"
+
+msgid "End of {month}"
+msgstr "Fin de {month}"
+
+msgid "Default date for {titles}"
+msgstr "Fecha predeterminada para {titles}"
+
+msgid "Before or on"
+msgstr "Antes de o en"
+
+msgid "Dependencies"
+msgstr "Dependencias"
+
+msgid "Before"
+msgstr "Antes de"
+
+msgid "At least {interval} before"
+msgstr "Al menos {interval} antes de"
+
+msgid "More than {interval} before"
+msgstr "Más de {interval} antes de"
+
+msgid "At most {interval} after"
+msgstr "Como máximo {interval} después de"
+
+msgid "Less than {interval} after"
+msgstr "Menos de {interval} después de"
+
+msgid "Weekday · {weekday}"
+msgstr "Día de la semana · {weekday}"
+
+msgid "On or after"
+msgstr "En la fecha o después de"
+
+msgid "After"
+msgstr "Después de"
+
+msgid "At least {interval} after"
+msgstr "Al menos {interval} después de"
+
+msgid "More than {interval} after"
+msgstr "Más de {interval} después de"
+
+msgid "At most {interval} before"
+msgstr "Como máximo {interval} antes de"
+
+msgid "Less than {interval} before"
+msgstr "Menos de {interval} antes de"
+
+msgid "Fixed date"
+msgstr "Fecha fija"
+
+msgid "Relative date"
+msgstr "Fecha relativa"
+
+msgid "Start of {month}"
+msgstr "Inicio de {month}"
+
+msgid "Full week {n}"
+msgstr "Semana completa n.º {n}"
+
+msgid "Occurrence {n}"
+msgstr "Ocurrencia n.º {n}"
+
+msgid "Last occurrence on or before"
+msgstr "Última ocurrencia hasta"
+
+msgid "Same day"
+msgstr "Mismo día"
+
+msgid "Default date"
+msgstr "Fecha predeterminada"
+
+msgid "Start of {title}"
+msgstr "Inicio de {title}"
+
+msgid "End of {title}"
+msgstr "Fin de {title}"
+
+msgid "{n} days before"
+msgstr "{n} días antes de"
+
+msgid "{n} days after"
+msgstr "{n} días después de"
+
+msgid "Schedule backwards from"
+msgstr "Contar hacia atrás desde"
+
+msgid "Schedule forwards from"
+msgstr "Contar hacia delante desde"
+
+msgid "Exclude · {schedule}"
+msgstr "Excluir · {schedule}"
+
+msgid "Date conflicts with {schedule}"
+msgstr "La fecha coincide con {schedule}"

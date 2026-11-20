@@ -51,8 +51,8 @@ msgstr "{organisation} · nøkkeldatoer"
 msgid "Assumptions"
 msgstr "Forutsetninger"
 
-msgid "View all deadlines"
-msgstr "Se alle frister"
+msgid "Edit deadlines"
+msgstr "Rediger frister"
 
 msgid "Today"
 msgstr "I dag"
@@ -153,8 +153,116 @@ msgstr "Vis månedsbånd"
 msgid "Show labels"
 msgstr "Vis etiketter"
 
+msgid "Export calendar (.ics)"
+msgstr "Eksporter kalender (.ics)"
+
+msgid "The display date is {date}, not 1 January. The export may not cover a full calendar year. Continue?"
+msgstr "Visningsdatoen er {date}, ikke 1. januar. Eksporten dekker kanskje ikke et helt kalenderår. Vil du fortsette?"
+
 msgid "Show quarter band"
 msgstr "Vis kvartalsbånd"
 
 msgid "Show two-month band"
 msgstr "Vis terminbånd"
+
+msgid "Back to wheel"
+msgstr "Tilbake til årshjulet"
+
+msgid "Start of year"
+msgstr "Årets start"
+
+msgid "End of {month}"
+msgstr "Utgangen av {month}"
+
+msgid "Default date for {titles}"
+msgstr "Standarddato for {titles}"
+
+msgid "Before or on"
+msgstr "Før eller på"
+
+msgid "Dependencies"
+msgstr "Avhengigheter"
+
+msgid "Before"
+msgstr "Før"
+
+msgid "At least {interval} before"
+msgstr "Minst {interval} før"
+
+msgid "More than {interval} before"
+msgstr "Mer enn {interval} før"
+
+msgid "At most {interval} after"
+msgstr "Senest {interval} etter"
+
+msgid "Less than {interval} after"
+msgstr "Mindre enn {interval} etter"
+
+msgid "Weekday · {weekday}"
+msgstr "Ukedag · {weekday}"
+
+msgid "On or after"
+msgstr "På eller etter"
+
+msgid "After"
+msgstr "Etter"
+
+msgid "At least {interval} after"
+msgstr "Minst {interval} etter"
+
+msgid "More than {interval} after"
+msgstr "Mer enn {interval} etter"
+
+msgid "At most {interval} before"
+msgstr "Høyst {interval} før"
+
+msgid "Less than {interval} before"
+msgstr "Mindre enn {interval} før"
+
+msgid "Fixed date"
+msgstr "Fast dato"
+
+msgid "Relative date"
+msgstr "Relativ dato"
+
+msgid "Start of {month}"
+msgstr "Starten av {month}"
+
+msgid "Full week {n}"
+msgstr "Hel uke nr. {n}"
+
+msgid "Occurrence {n}"
+msgstr "Forekomst nr. {n}"
+
+msgid "Last occurrence on or before"
+msgstr "Siste forekomst på eller før"
+
+msgid "Same day"
+msgstr "Samme dag"
+
+msgid "Default date"
+msgstr "Standarddato"
+
+msgid "Start of {title}"
+msgstr "Starten på {title}"
+
+msgid "End of {title}"
+msgstr "Slutten på {title}"
+
+msgid "{n} days before"
+msgstr "{n} dager før"
+
+msgid "{n} days after"
+msgstr "{n} dager etter"
+
+msgid "Schedule backwards from"
+msgstr "Regn bakover fra"
+
+msgid "Schedule forwards from"
+msgstr "Regn fremover fra"
+
+msgid "Exclude · {schedule}"
+msgstr "Unngå · {schedule}"
+
+msgid "Date conflicts with {schedule}"
+msgstr "Datokonflikt med {schedule}"

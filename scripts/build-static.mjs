@@ -112,3 +112,4 @@ await Promise.all(locales.map(locale => {
 
 await cp('lib/schedule.browser.js', join(output, 'lib', 'schedule.browser.js'));
 await cp('lib/i18n.browser.js', join(output, 'lib', 'i18n.browser.js'));
+await cp('lib/calendar-export.js', join(output, 'lib', 'calendar-export.js'));
