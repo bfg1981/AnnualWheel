@@ -85,22 +85,22 @@ test('advanced options include only residual plan fields and export alongside gr
 test('a reconstructed plan resolves with separate calendar sources and retains confirmed dates', async t => {
   const dir = await mkdtemp(join(tmpdir(), 'wheel-calendar-'));
   t.after(() => rm(dir, { recursive: true, force: true }));
-  await writeFile(join(dir, 'breaks.yaml'), 'fixed: [{ month: 3, day: 31 }]\n');
+  await writeFile(join(dir, 'breaks.yaml'), 'fixed: [{ month: 7, day: 31 }]\n');
   const plan = {
     schedules: { breaks: { source: 'breaks.yaml' }, combined: { includes: ['breaks'] } },
     constraints: { avoid: { no: true, schedule: 'combined' } },
-    anchors: { limit: { defaultDate: { kind: 'month_end', month: 3 }, defaultDateRelation: 'less_or_equal' } },
+    anchors: { limit: { defaultDate: { kind: 'month_end', month: 7 }, defaultDateRelation: 'less_or_equal' } },
     items: [
       { id: 'meeting', schedule: { kind: 'anchor', anchor: 'limit', constraints: ['avoid'] } },
-      { id: 'pinned', date: '2026-03-20', schedule: { kind: 'offset', anchor: 'meeting', days: 1 } },
+      { id: 'pinned', date: '2026-07-20', schedule: { kind: 'offset', anchor: 'meeting', days: 1 } },
     ],
   };
   const restored = configurationFromFields(configurationFields(plan));
-  await writeFile(join(dir, 'calendars.yaml'), 'school.breaks: {title: School breaks, source: breaks.yaml}\n');
+  await writeFile(join(dir, 'calendars.yaml'), 'lab.closures: {title: Lab closures, source: breaks.yaml}\n');
   const { plan: imported, sources } = await loadPlanCalendars(restored, join(dir, 'plan.yaml'));
-  assert.deepEqual(imported.schedules.breaks, { calendar: 'school.breaks' });
-  assert.equal(sources['school.breaks'].title, 'School breaks');
-  assert.equal(sources['school.breaks'].source, undefined);
+  assert.deepEqual(imported.schedules.breaks, { calendar: 'lab.closures' });
+  assert.equal(sources['lab.closures'].title, 'Lab closures');
+  assert.equal(sources['lab.closures'].source, undefined);
   const downloaded = configurationFromFields(configurationFields(imported));
   const rebuilt = await loadPlanCalendars(downloaded, join(dir, 'other-plan.yaml'));
   assert.deepEqual(rebuilt.sources, sources);

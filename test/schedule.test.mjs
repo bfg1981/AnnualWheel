@@ -12,30 +12,30 @@ test('reattached weekday rules follow a named prerequisite or a virtual calendar
     { id: 'source', schedule: { kind: 'fixed', month: 4, day: 10 } },
     { id: 'secondMonday', schedule: { kind: 'nth_weekday', anchor: 'source', weekday: 1, occurrence: 2 } },
     { id: 'lastFriday', schedule: { kind: 'last_weekday', anchor: 'source', weekday: 5 } },
-    { id: 'beforeEnd', schedule: { kind: 'previous_weekday', weekday: 3,
-      before: { baseDate: { kind: 'month_end', month: 3 }, offsetDays: -7, inclusive: true } } },
+    { id: 'beforeEnd', schedule: { kind: 'previous_weekday', weekday: 2,
+      before: { baseDate: { kind: 'month_end', month: 9 }, offsetDays: -4, inclusive: true } } },
   ] };
   const dates = resolveSchedule(plan, 2026);
   assert.equal(iso(dates.secondMonday.date), '2026-04-20');
   assert.equal(iso(dates.lastFriday.date), '2026-04-10');
-  assert.equal(iso(dates.beforeEnd.date), '2026-03-18');
+  assert.equal(iso(dates.beforeEnd.date), '2026-09-22');
 });
 
 test('a group supplies omitted fields and preserves individual overrides and sparse input', () => {
   const plan = {
-    groups: { review: { date: { month: 1, day: 31 }, defaults: { layer: 'reports', rule: 'File reports', configurable: true } } },
+    groups: { review: { date: { month: 9, day: 30 }, defaults: { layer: 'samples', rule: 'Label samples', configurable: true } } },
     items: [
       { id: 'first', group: 'review' },
       { id: 'second', group: 'review', configurable: false, rule: '', schedule: { kind: 'fixed', month: 2, day: 3 } },
     ],
   };
   const original = structuredClone(plan);
-  assert.equal(effectiveItem(plan, plan.items[0]).rule, 'File reports');
+  assert.equal(effectiveItem(plan, plan.items[0]).rule, 'Label samples');
   assert.equal(effectiveItem(plan, plan.items[1]).rule, '');
   assert.equal(effectiveItem(plan, plan.items[1]).configurable, false);
-  assert.equal(effectiveItem(plan, plan.items[1]).layer, 'reports');
+  assert.equal(effectiveItem(plan, plan.items[1]).layer, 'samples');
   const dates = resolveSchedule(plan, 2026);
-  assert.equal(iso(dates.first.date), '2026-01-31');
+  assert.equal(iso(dates.first.date), '2026-09-30');
   assert.equal(iso(dates.second.date), '2026-02-03');
   assert.deepEqual(plan, original);
 });
@@ -44,26 +44,26 @@ test('a dependency on a dated group follows its date independently of its member
   const group = { group: 'review' };
   const plan = {
     anchors: {},
-    groups: { review: { date: { month: 1, day: 31 }, collapsed: true } },
+    groups: { review: { date: { month: 9, day: 30 }, collapsed: true } },
     items: [
       { id: 'review', group: 'review', schedule: { kind: 'fixed', month: 5, day: 1 } },
       { id: 'report', schedule: { kind: 'offset', anchor: group, days: 0 } },
       { id: 'meeting', schedule: { kind: 'previous_weekday', before: { anchor: group }, weekday: 3 } },
     ],
   };
-  assert.equal(iso(resolveSchedule(plan, 2026).report.date), '2026-01-31');
-  plan.groups.review.date = { month: 3, day: 31 };
+  assert.equal(iso(resolveSchedule(plan, 2026).report.date), '2026-09-30');
+  plan.groups.review.date = { month: 6, day: 30 };
   plan.groups.review.collapsed = false;
   const dates = resolveSchedule(plan, 2026);
-  assert.equal(iso(dates.report.date), '2026-03-31');
-  assert.equal(iso(dates.meeting.date), '2026-03-25');
+  assert.equal(iso(dates.report.date), '2026-06-30');
+  assert.equal(iso(dates.meeting.date), '2026-06-24');
   assert.equal(iso(dates.review.date), '2026-05-01');
   assert.equal(resolveItemStatuses(plan).report, 'set');
 });
 
 test('group members and their dependants follow the shared annual date', () => {
   const plan = {
-    groups: { review: { date: { month: 1, day: 31 } } },
+    groups: { review: { date: { month: 9, day: 30 } } },
     items: [
       { id: 'followup', schedule: { kind: 'offset', anchor: 'draft', days: 1 } },
       { id: 'draft', group: 'review', schedule: { kind: 'group' } },
@@ -73,7 +73,7 @@ test('group members and their dependants follow the shared annual date', () => {
   };
   const dates = year => Object.fromEntries(Object.entries(resolveSchedule(plan, year))
     .map(([id, occurrence]) => [id, iso(occurrence.date)]));
-  assert.deepEqual(dates(2026), { draft: '2026-01-31', summary: '2026-01-31', followup: '2026-02-01', other: '2026-02-07' });
+  assert.deepEqual(dates(2026), { draft: '2026-09-30', summary: '2026-09-30', followup: '2026-10-01', other: '2026-02-07' });
   plan.groups.review.date = { month: 2, day: 28 };
   assert.deepEqual(dates(2028), { draft: '2028-02-28', summary: '2028-02-28', followup: '2028-02-29', other: '2028-02-07' });
   delete plan.groups.review.date;
@@ -314,32 +314,32 @@ test('combines a strict prerequisite with an inclusive calendar-month minimum', 
 
 test('directional weekday rules use the first clear weekday while respecting offsets and overrides', () => {
   const plan = {
-    anchors: { opening: { defaultDate: { kind: 'offset_from_month_start', month: 8, days: 7 } } },
-    schedules: { closure: { ranges: [{ start: '2027-08-09', end: '2027-08-22' }] } },
+    anchors: { opening: { defaultDate: { kind: 'offset_from_month_start', month: 11, days: 7 } } },
+    schedules: { closure: { ranges: [{ start: '2026-11-09', end: '2026-11-22' }] } },
     constraints: { workday: { weekday: 3 }, avoidClosure: { no: true, schedule: 'closure' } },
     items: [
       { id: 'forward', schedule: { kind: 'next_weekday', after: ['opening'], inclusive: true, constraints: ['workday', 'avoidClosure'] } },
       { id: 'back', schedule: { kind: 'previous_weekday', before: { anchor: 'forward', offsetDays: -7 }, inclusive: true, constraints: ['workday', 'avoidClosure'] } },
     ],
   };
-  assert.equal(iso(resolveSchedule(plan, 2029).forward.date), '2029-08-08');
-  const shifted = resolveSchedule(plan, 2027);
-  assert.equal(iso(shifted.forward.date), '2027-08-25');
-  assert.equal(iso(shifted.back.date), '2027-08-04');
+  assert.equal(iso(resolveSchedule(plan, 2028).forward.date), '2028-11-08');
+  const shifted = resolveSchedule(plan, 2026);
+  assert.equal(iso(shifted.forward.date), '2026-11-25');
+  assert.equal(iso(shifted.back.date), '2026-11-04');
   assert.equal(shifted.forward.conflicts, undefined);
-  const manual = resolveSchedule(plan, 2027, {}, { forward: '2027-08-11' });
-  assert.equal(iso(manual.forward.date), '2027-08-11');
+  const manual = resolveSchedule(plan, 2026, {}, { forward: '2026-11-11' });
+  assert.equal(iso(manual.forward.date), '2026-11-11');
   assert.deepEqual(manual.forward.conflicts, ['closure']);
   plan.constraints.workday.weekday = 2;
-  assert.equal(iso(resolveSchedule(plan, 2027).forward.date), '2027-08-24');
+  assert.equal(iso(resolveSchedule(plan, 2026).forward.date), '2026-11-24');
   plan.schedules.closure.weekdays = [2];
-  const impossible = resolveSchedule(plan, 2027).forward;
-  assert.equal(iso(impossible.date), '2027-08-10');
+  const impossible = resolveSchedule(plan, 2026).forward;
+  assert.equal(iso(impossible.date), '2026-11-10');
   assert.deepEqual(impossible.conflicts, ['closure']);
 });
 
 test('date comparisons use the dependent as the left operand in both anchor and weekday rules', () => {
-  const anchor = { defaultDate: { kind: 'month_end', month: 3 }, defaultDateRelation: 'less_or_equal' };
+  const anchor = { defaultDate: { kind: 'month_end', month: 10 }, defaultDateRelation: 'less_or_equal' };
   const relation = anchorDateRelation(anchor);
   assert.deepEqual(relation, { type: 'less_or_equal', amount: 0, unit: 'day' });
   assert.deepEqual(anchorDateRelation({ ...anchor, defaultDateRelation: 'on_or_before' }), relation);
@@ -347,35 +347,35 @@ test('date comparisons use the dependent as the left operand in both anchor and 
     ['previous_weekday', true, 'less_or_equal'], ['previous_weekday', false, 'less_than'],
     ['next_weekday', true, 'greater_or_equal'], ['next_weekday', false, 'greater_than'],
   ]) {
-    const [edge] = weekdayDependencies({ kind, inclusive, anchor: 'limit', offsetDays: -7 });
+    const [edge] = weekdayDependencies({ kind, inclusive, anchor: 'limit', offsetDays: -4 });
     assert.equal(edge.type, type);
-    assert.equal(edge.amount, -7);
+    assert.equal(edge.amount, -4);
     assert.equal(edge.anchor, 'limit');
   }
 });
 
 test('resolve a bounded anchor before its dependents regardless of declaration order', () => {
   const plan = {
-    anchors: { cutoff: { defaultDate: { kind: 'month_end', month: 3 }, defaultDateRelation: 'less_or_equal' } },
-    schedules: { closed: { ranges: [{ start: '2026-03-25', end: '2026-04-02' }] } },
+    anchors: { cutoff: { defaultDate: { kind: 'month_end', month: 6 }, defaultDateRelation: 'less_or_equal' } },
+    schedules: { closed: { ranges: [{ start: '2026-06-24', end: '2026-07-02' }] } },
     constraints: { avoid: { no: true, schedule: 'closed' } },
     items: [
       { id: 'follow-up', schedule: { kind: 'next_weekday', weekday: 3, after: ['meeting', 'preparation'] } },
-      { id: 'preparation', schedule: { kind: 'previous_weekday', weekday: 3, before: { anchor: 'cutoff', offsetDays: -7 }, inclusive: true } },
+      { id: 'preparation', schedule: { kind: 'previous_weekday', weekday: 3, before: { anchor: 'cutoff', offsetDays: -4 }, inclusive: true } },
       { id: 'meeting', schedule: { kind: 'anchor', anchor: 'cutoff', constraints: ['avoid'] } },
     ],
   };
   const dates = resolveSchedule(plan, 2026);
-  assert.equal(iso(dates.meeting.date), '2026-03-24');
+  assert.equal(iso(dates.meeting.date), '2026-06-23');
   assert.equal(dates.meeting.conflicts, undefined);
-  assert.equal(iso(dates.preparation.date), '2026-03-11');
-  assert.equal(iso(dates['follow-up'].date), '2026-03-25');
+  assert.equal(iso(dates.preparation.date), '2026-06-17');
+  assert.equal(iso(dates['follow-up'].date), '2026-06-24');
   assert.deepEqual(resolveSchedule({ ...plan, items: [...plan.items].reverse() }, 2026), dates);
-  assert.equal(iso(resolveSchedule(plan, 2027).meeting.date), '2027-03-31');
-  const pinned = resolveSchedule(plan, 2026, { cutoff: '2026-03-31' });
-  assert.equal(iso(pinned.meeting.date), '2026-03-31');
+  assert.equal(iso(resolveSchedule(plan, 2027).meeting.date), '2027-06-30');
+  const pinned = resolveSchedule(plan, 2026, { cutoff: '2026-06-30' });
+  assert.equal(iso(pinned.meeting.date), '2026-06-30');
   assert.deepEqual(pinned.meeting.conflicts, ['closed']);
-  assert.equal(iso(pinned.preparation.date), '2026-03-18');
+  assert.equal(iso(pinned.preparation.date), '2026-06-24');
   delete plan.anchors.cutoff.defaultDateRelation;
   assert.deepEqual(resolveSchedule(plan, 2026).meeting, pinned.meeting);
 });
@@ -409,21 +409,21 @@ test('removes tentative dependency state when every anchor is set', () => {
 
 test('resolves recurring and relative dates', () => {
   const schedule = resolveSchedule(config, 2026);
-  assert.equal(iso(schedule['annual-event'].date), '2026-08-08');
-  assert.equal(iso(schedule['follow-up'].date), '2026-08-10');
-  assert.equal(iso(schedule['week-before-planning'].date), '2026-03-24');
+  assert.equal(iso(schedule['sky-survey'].date), '2026-05-19');
+  assert.equal(iso(schedule['process-images'].date), '2026-05-22');
+  assert.equal(iso(schedule['print-charts'].date), '2026-10-12');
   assert.equal(iso(schedule['february-end'].date), '2026-02-28');
 });
 
 test('moves dependent dates when an anchor changes', () => {
-  const schedule = resolveSchedule(config, 2026, { summer_break: '2026-07-01' });
-  assert.equal(iso(schedule['before-break'].date), '2026-06-29');
+  const schedule = resolveSchedule(config, 2026, { dome_service: '2026-07-01' });
+  assert.equal(iso(schedule['inspect-dome'].date), '2026-06-29');
 });
 
 test('generates the following year from the same template', () => {
   const schedule = resolveSchedule(config, 2027);
-  assert.equal(iso(schedule['annual-event'].date), '2027-08-14');
-  assert.equal(iso(schedule['follow-up'].date), '2027-08-16');
+  assert.equal(iso(schedule['sky-survey'].date), '2027-05-18');
+  assert.equal(iso(schedule['process-images'].date), '2027-05-21');
   assert.equal(iso(schedule['february-end'].date), '2027-02-28');
 });
 
@@ -432,18 +432,18 @@ test('uses the actual final day of February in leap years', () => {
   assert.equal(iso(schedule['february-end'].date), '2028-02-29');
 });
 
-test('applies one shared weekday constraint to every board meeting', () => {
+test('applies one shared weekday constraint across different recurrence rules', () => {
   const schedule = resolveSchedule(config, 2026);
-  assert.equal(iso(schedule['board-meeting-january'].date), '2026-01-14');
-  assert.equal(iso(schedule['board-meeting-before-planning'].date), '2026-03-18');
-  assert.equal(iso(schedule['board-meeting-after-planning'].date), '2026-04-22');
-  assert.equal(iso(schedule['board-meeting-autumn'].date), '2026-08-12');
-  assert.equal(iso(schedule['board-meeting-november'].date), '2026-11-25');
+  assert.equal(iso(schedule['align-mirrors'].date), '2026-06-16');
+  assert.equal(iso(schedule['prepare-lenses'].date), '2026-10-13');
+  assert.equal(iso(schedule['store-lenses'].date), '2026-10-27');
+  assert.equal(iso(schedule['sky-survey'].date), '2026-05-19');
+  assert.equal(iso(schedule['clean-filters'].date), '2026-07-28');
 
   const thursdayConfig = structuredClone(config);
-  thursdayConfig.constraints.board_meeting.weekday = 4;
+  thursdayConfig.constraints.lab_day.weekday = 4;
   const thursdaySchedule = resolveSchedule(thursdayConfig, 2026);
-  for (const id of ['board-meeting-january', 'board-meeting-before-planning', 'board-meeting-after-planning', 'board-meeting-autumn', 'board-meeting-november']) {
+  for (const id of ['align-mirrors', 'prepare-lenses', 'store-lenses', 'sky-survey', 'clean-filters']) {
     assert.equal(thursdaySchedule[id].date.getDay(), 4);
   }
 });
@@ -457,9 +457,9 @@ test('satisfies dependencies identify the referenced weekday rule, even for equa
 });
 
 test('uses a confirmed item override instead of its suggestion', () => {
-  const schedule = resolveSchedule(config, 2026, {}, { 'board-meeting-before-planning': '2026-03-11' });
-  assert.equal(iso(schedule['board-meeting-before-planning'].date), '2026-03-11');
-  assert.equal(iso(schedule['board-meeting-after-planning'].date), '2026-04-15');
+  const schedule = resolveSchedule(config, 2026, {}, { 'prepare-lenses': '2026-10-06' });
+  assert.equal(iso(schedule['prepare-lenses'].date), '2026-10-06');
+  assert.equal(iso(schedule['store-lenses'].date), '2026-10-20');
 });
 
 test('start_of_year is a recurring dependency without a configured year', () => {
