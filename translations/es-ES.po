@@ -548,3 +548,27 @@ msgstr "Deshacer el cambio en el grafo"
 
 msgid "The initial object is required. Undo its removal before saving."
 msgstr "El objeto inicial es obligatorio. Deshaz su eliminación antes de guardar."
+
+msgid "Layer"
+msgstr "Capa"
+
+msgid "Add to graph"
+msgstr "Añadir al grafo"
+
+msgid "Virtual date"
+msgstr "Fecha virtual"
+
+msgid "Group"
+msgstr "Grupo"
+
+msgid "Shared constraint"
+msgstr "Restricción compartida"
+
+msgid "Date unresolved"
+msgstr "Fecha sin determinar"
+
+msgid "Complete or remove the unfinished cards before saving."
+msgstr "Completa o elimina las tarjetas pendientes antes de guardar."
+
+msgid "A date could not be calculated for {titles}. Set a date or add a dependency and try again."
+msgstr "No se pudo calcular la fecha de {titles}. Fija una fecha o añade una dependencia y vuelve a intentarlo."

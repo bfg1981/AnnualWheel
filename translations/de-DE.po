@@ -548,3 +548,27 @@ msgstr "Graphänderung rückgängig machen"
 
 msgid "The initial object is required. Undo its removal before saving."
 msgstr "Das Startobjekt ist erforderlich. Mache das Entfernen vor dem Speichern rückgängig."
+
+msgid "Layer"
+msgstr "Ebene"
+
+msgid "Add to graph"
+msgstr "Zum Graphen hinzufügen"
+
+msgid "Virtual date"
+msgstr "Virtuelles Datum"
+
+msgid "Group"
+msgstr "Gruppe"
+
+msgid "Shared constraint"
+msgstr "Gemeinsame Bedingung"
+
+msgid "Date unresolved"
+msgstr "Datum ungeklärt"
+
+msgid "Complete or remove the unfinished cards before saving."
+msgstr "Vervollständige oder entferne die unfertigen Karten vor dem Speichern."
+
+msgid "A date could not be calculated for {titles}. Set a date or add a dependency and try again."
+msgstr "Für {titles} konnte kein Datum berechnet werden. Lege ein Datum fest oder füge eine Abhängigkeit hinzu und versuche es erneut."

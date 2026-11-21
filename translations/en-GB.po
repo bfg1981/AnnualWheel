@@ -548,3 +548,27 @@ msgstr "Undo graph change"
 
 msgid "The initial object is required. Undo its removal before saving."
 msgstr "The initial object is required. Undo its removal before saving."
+
+msgid "Layer"
+msgstr "Layer"
+
+msgid "Add to graph"
+msgstr "Add to graph"
+
+msgid "Virtual date"
+msgstr "Virtual date"
+
+msgid "Group"
+msgstr "Group"
+
+msgid "Shared constraint"
+msgstr "Shared constraint"
+
+msgid "Date unresolved"
+msgstr "Date unresolved"
+
+msgid "Complete or remove the unfinished cards before saving."
+msgstr "Complete or remove the unfinished cards before saving."
+
+msgid "A date could not be calculated for {titles}. Set a date or add a dependency and try again."
+msgstr "A date could not be calculated for {titles}. Set a date or add a dependency and try again."

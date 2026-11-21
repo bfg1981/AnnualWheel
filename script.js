@@ -101,7 +101,50 @@ function renderPlanHeader() {
   document.querySelector('.lede').textContent = config.display.description;
 }
 
-function render(){document.documentElement.lang=locale;translateShell();document.querySelector('.brand').lastChild.nodeValue=` ${config.organisation.name}`;renderPlanHeader();document.querySelector('.panel-heading .eyebrow').textContent=t('{organisation} · key dates',{organisation:config.organisation.name});document.querySelectorAll('.month b').forEach((label,index)=>label.textContent=new Intl.DateTimeFormat(locale,{month:'short'}).format(new Date(2026,index,1)).replace(/\./g,'').toUpperCase());renderLayers();panel.querySelectorAll('.deadline-card').forEach(x=>x.remove());wheel.querySelectorAll('.event').forEach(x=>x.remove());const displayCard=document.createElement('article');displayCard.className='deadline-card display-date-card';displayCard.dataset.displayDate='true';displayCard.innerHTML=`<span class="card-date"></span><div><p class="card-kind">${t('Display date')}</p><h2>${t('Date at the top of the wheel')}</h2><p class="rule-line"></p></div><span aria-hidden="true"></span>`;scheduleCards.append(displayCard);Object.entries(config.groups||{}).forEach(([id,group])=>{const card=document.createElement('article');card.className='deadline-card deadline-group';card.dataset.group=id;card.hidden=true;card.innerHTML=`<span class="card-date"></span><div><p class="card-kind">${t('Key dates')}</p><h2></h2><p class="rule-line"></p></div><button aria-expanded="${expandedGroups.has(id)}">${controlIcons.arrow}</button>`;card.querySelector('h2').textContent=group.title;card.querySelector('button').dataset.groupToggle=id;scheduleCards.append(card)});config.items.forEach((item,index)=>{const l=layer(item),color=config.layers[l].color,c=document.createElement('article'),e=document.createElement('button');c.className=`deadline-card is-${item.status}`;c.dataset.deadlineId=item.id;c.dataset.itemIndex=index;c.dataset.layer=l;setCardHeading(c,item.title,config.layers[l]);const more=document.createElement('button');more.setAttribute('aria-label',t('More about {title}',{title:item.title}));setControlIcon(more, 'arrow');c.append(more);appendWeekdayConstraint(c, item.schedule);scheduleCards.append(c);e.className='event';e.dataset.deadlineId=item.id;e.dataset.layer=l;e.dataset.label=item.title;e.style.backgroundColor=color;e.innerHTML='<span></span>';wheel.append(e)})}
+function render(){document.documentElement.lang=locale;translateShell();document.querySelector('.brand').lastChild.nodeValue=` ${config.organisation.name}`;renderPlanHeader();document.querySelector('.panel-heading .eyebrow').textContent=t('{organisation} · key dates',{organisation:config.organisation.name});document.querySelectorAll('.month b').forEach((label,index)=>label.textContent=new Intl.DateTimeFormat(locale,{month:'short'}).format(new Date(2026,index,1)).replace(/\./g,'').toUpperCase());renderLayers();panel.querySelectorAll('.deadline-card').forEach(x=>x.remove());wheel.querySelectorAll('.event').forEach(x=>x.remove());const displayCard=document.createElement('article');displayCard.className='deadline-card display-date-card';displayCard.dataset.displayDate='true';displayCard.innerHTML=`<span class="card-date"></span><div><p class="card-kind">${t('Display date')}</p><h2>${t('Date at the top of the wheel')}</h2><p class="rule-line"></p></div><span aria-hidden="true"></span>`;scheduleCards.append(displayCard);Object.entries(config.groups||{}).forEach(([id,group])=>appendWheelGroup(id,group));config.items.forEach(appendItemCard)}
+
+function appendWheelGroup(id, group) {
+  const card = document.createElement('article');
+  card.className = 'deadline-card deadline-group';
+  card.dataset.group = id;
+  card.hidden = true;
+  card.innerHTML = `<span class="card-date"></span><div><p class="card-kind">${t('Key dates')}</p><h2></h2><p class="rule-line"></p></div><button aria-expanded="${expandedGroups.has(id)}">${controlIcons.arrow}</button>`;
+  card.querySelector('h2').textContent = group.title;
+  card.querySelector('button').dataset.groupToggle = id;
+  scheduleCards.append(card);
+}
+
+function appendItemCard(item, index) {
+  const layerId = layer(item);
+  const layerInfo = config.layers[layerId];
+  const card = document.createElement('article');
+  card.className = `deadline-card is-${item.status}`;
+  card.dataset.deadlineId = item.id;
+  card.dataset.itemIndex = index;
+  card.dataset.layer = layerId;
+  setCardHeading(card, item.title, layerInfo);
+  const more = document.createElement('button');
+  more.setAttribute('aria-label', t('More about {title}', { title: item.title }));
+  setControlIcon(more, 'arrow');
+  card.append(more);
+  appendWeekdayConstraint(card, item.schedule);
+  scheduleCards.append(card);
+
+  const marker = document.createElement('button');
+  marker.className = 'event';
+  marker.dataset.deadlineId = item.id;
+  marker.dataset.layer = layerId;
+  marker.dataset.label = item.title;
+  marker.style.backgroundColor = layerInfo.color;
+  marker.append(document.createElement('span'));
+  marker.onclick = () => {
+    scheduleCards.querySelectorAll('.deadline-card.active').forEach(other => other.classList.remove('active'));
+    card.classList.add('active');
+  };
+  wheel.append(marker);
+  return card;
+}
+
 function updateItemDate(id, value) {
   const index = authoredConfig.items.findIndex(item => item.id === id);
   const item = authoredConfig.items[index];
@@ -248,7 +291,6 @@ panel.addEventListener('click', event => {
   }
 });
 let dragAngle;const pointer=e=>{const b=wheel.getBoundingClientRect();return Math.atan2(e.clientY-b.top-b.height/2,e.clientX-b.width/2-b.left)*180/Math.PI};wheel.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;dragAngle=pointer(e);wheel.classList.add('is-dragging');wheel.setPointerCapture(e.pointerId)});wheel.addEventListener('pointermove',e=>{if(!wheel.hasPointerCapture(e.pointerId))return;const angle=pointer(e);let delta=angle-dragAngle;if(delta>180)delta-=360;if(delta<-180)delta+=360;rotation+=delta;dragAngle=angle;updateYearBand(year);apply();updateContinuousYear();updateDisplayDateCard();paint()});wheel.addEventListener('pointerup',e=>{wheel.releasePointerCapture(e.pointerId);wheel.classList.remove('is-dragging')});
-document.querySelectorAll('.event').forEach(e=>e.onclick=()=>{document.querySelectorAll('.deadline-card').forEach(c=>c.classList.remove('active'));document.querySelector(`.deadline-card[data-deadline-id="${e.dataset.deadlineId}"]`)?.classList.add('active')});
 const configEditor=document.querySelector('.config-editor'),configEditorTree=configEditor.querySelector('.config-editor-tree'),configEditorError=configEditor.querySelector('.config-editor-error');let sessionConfigDraft;
 document.querySelector('.export-calendar').addEventListener('click',async()=>{const displayDate=displayDateAtTop();if((displayDate.getMonth()!==0||displayDate.getDate()!==1)&&!window.confirm(t('The display date is {date}, not 1 January. The export may not cover a full calendar year. Continue?',{date:new Intl.DateTimeFormat(locale,{dateStyle:'long'}).format(displayDate)})))return;paintNow();const {createCalendarEvents,toICalendar,calendarExportFilename}=await import('/lib/calendar-export.js');const items=[...panel.querySelectorAll('[data-deadline-id]')].filter(card=>card.dataset.exportEligible==='true'&&!card.classList.contains('is-layer-hidden')).map(card=>({id:card.dataset.deadlineId,date:card.dataset.exportDate,title:card.querySelector('h2').textContent,description:card.querySelector('.rule-line').textContent,tentative:card.classList.contains('is-derived')||card.classList.contains('is-anchor')}));const events=createCalendarEvents(items),content=toICalendar(events,{name:config.display.title}),url=URL.createObjectURL(new Blob([content],{type:'text/calendar;charset=utf-8'})),link=document.createElement('a');link.href=url;link.download=calendarExportFilename(config.display.title,inputValue(displayDate),events);document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)});
 const settingsButton=document.querySelector('.profile'),renderSettings=document.querySelector('#render-settings'),annulusCheckbox=document.querySelector('#show-year-annulus');annulusCheckbox.checked=stage.classList.contains('has-year-annulus');settingsButton.addEventListener('click',()=>{renderSettings.hidden=!renderSettings.hidden;settingsButton.setAttribute('aria-expanded',String(!renderSettings.hidden))});annulusCheckbox.addEventListener('change',()=>stage.classList.toggle('has-year-annulus',annulusCheckbox.checked));document.addEventListener('click',event=>{if(!event.target.closest('.settings-menu')){renderSettings.hidden=true;settingsButton.setAttribute('aria-expanded','false')}});
@@ -850,7 +892,7 @@ function clearVirtualDates() {
   arrowLayoutObserver.disconnect();
   timelineEdges = [];
   arrowPaths.replaceChildren();
-  scheduleCards.querySelectorAll('[data-virtual-date]').forEach(card => card.remove());
+  scheduleCards.querySelectorAll('[data-virtual-date], [data-palette-draft]').forEach(card => card.remove());
   scheduleCards.querySelectorAll('.timeline-calendar, .timeline-weekday').forEach(row => row.remove());
 }
 
@@ -913,6 +955,8 @@ document.addEventListener('scroll', event => {
 const dependencyMoves = new Map();
 const removedNodes = new Map();
 const detachedVirtualDates = new Map();
+const paletteDrafts = new Map();
+let timelineFirstDay;
 const graphHistory = [];
 const invalidDependencyNodes = new Set();
 const graphWarning = document.querySelector('.dependency-draft-warning');
@@ -1171,7 +1215,7 @@ function syncRemovedCards() {
 
 function applyDependencyMoves() {
   invalidDependencyNodes.clear();
-  scheduleCards.querySelectorAll('.invalid-dependency').forEach(node => node.classList.remove('invalid-dependency'));
+  scheduleCards.querySelectorAll('.invalid-dependency:not([data-palette-draft])').forEach(node => node.classList.remove('invalid-dependency'));
   if (!pendingGraphChanges()) {
     graphHistory.length = 0;
     paintTimeline();
@@ -1244,11 +1288,11 @@ function applyDependencyMoves() {
 }
 
 function updateDependencyDraftActions() {
-  const invalid = pendingGraphChanges();
-  graphWarning.textContent = t(removedNodes.has('start') ? 'The initial object is required. Undo its removal before saving.' : 'Repair the highlighted dependencies before saving.');
+  const invalid = pendingGraphChanges() || paletteDrafts.size > 0;
+
+  graphWarning.textContent = t(paletteDrafts.size ? 'Complete or remove the unfinished cards before saving.' : removedNodes.has('start') ? 'The initial object is required. Undo its removal before saving.' : 'Repair the highlighted dependencies before saving.');
   graphWarning.hidden = !invalid;
-  undoDependency.hidden = !invalid || !editingDeadlines;
-  panel.querySelector('.finish-graph-edit').disabled = invalid;
+  undoDependency.hidden = !pendingGraphChanges() || !editingDeadlines;
   panel.querySelector('.export-plan').disabled = invalid;
   for (const [key, node] of graphNodes()) node.classList.toggle('invalid-dependency', invalidDependencyNodes.has(key));
   const nodes = scheduleCards.querySelectorAll('[data-item-index], [data-item-group], [data-virtual-date], .timeline-calendar, .timeline-weekday, .timeline-start, .timeline-initial');
@@ -1609,6 +1653,9 @@ function timelineDependencies(cards, startMarker, startDate, startTitle) {
       }
     }
   }
+  for (const id of Object.keys(config.anchors)) {
+    if (id !== 'start_of_year' && !anchorItems.has(id)) referenceSource(id);
+  }
   // Detached dates remain drop targets in the draft. They own no plan field.
   for (const key of virtuals.keys()) detachedVirtualDates.delete(key);
   for (const { anchor, definition } of detachedVirtualDates.values()) {
@@ -1756,34 +1803,42 @@ function paintCalendarRows(directlyUsed, first, last) {
 
 function paintWeekdayDependencies(cards, row, span) {
   const nodes = new Map();
+  function weekdayNode(id, weekday) {
+    if (nodes.has(id)) return nodes.get(id);
+    const node = document.createElement('div');
+    node.className = 'timeline-weekday';
+    node.dataset.constraintId = id;
+    node.style.gridColumn = `1 / span ${span}`;
+    node.style.gridRow = String(row++);
+    const select = document.createElement('select');
+    select.disabled = !editingDeadlines;
+    select.setAttribute('aria-label', t('Weekday · {weekday}', { weekday: weekdayName(weekday) }));
+    for (let day = 0; day < 7; day++) select.add(new Option(weekdayName(day), String(day)));
+    select.value = String(weekday);
+    select.onchange = () => {
+      config.constraints[id].weekday = Number(select.value);
+      paintTimeline();
+      scheduleCards.querySelector(`[data-constraint-id="${CSS.escape(id)}"] select`)?.focus({ preventScroll: true });
+    };
+    node.append(select);
+    scheduleCards.append(node);
+    nodes.set(id, node);
+    return node;
+  }
+  const used = new Set();
   for (const item of config.items) {
     const target = cards.get(item.id);
-    if (target.classList.contains('is-layer-hidden')) continue;
     const dependency = window.scheduleEngine.weekdayDependency(config, item.schedule);
     if (!dependency) continue;
     const { source: id, weekday } = dependency;
-    if (!nodes.has(id)) {
-      const node = document.createElement('div');
-      node.className = 'timeline-weekday';
-      node.dataset.constraintId = id;
-      node.style.gridColumn = `1 / span ${span}`;
-      node.style.gridRow = String(row++);
-      const select = document.createElement('select');
-      select.disabled = !editingDeadlines;
-      select.setAttribute('aria-label', t('Weekday · {weekday}', { weekday: weekdayName(weekday) }));
-      for (let day = 0; day < 7; day++) select.add(new Option(weekdayName(day), String(day)));
-      select.value = String(weekday);
-      select.onchange = () => {
-        config.constraints[id].weekday = Number(select.value);
-        paintTimeline();
-        scheduleCards.querySelector(`[data-constraint-id="${CSS.escape(id)}"] select`)?.focus({ preventScroll: true });
-      };
-      node.append(select);
-      scheduleCards.append(node);
-      nodes.set(id, node);
-    }
+    used.add(id);
+    if (target.classList.contains('is-layer-hidden')) continue;
+    weekdayNode(id, weekday);
     timelineEdges.push({ source: nodes.get(id), target, relation: dependency, edit: { path: ['items', Number(target.dataset.itemIndex), 'schedule'], kind: 'satisfies' },
       description: t('Weekday · {weekday}', { weekday: weekdayName(weekday) }) });
+  }
+  for (const [id, constraint] of Object.entries(config.constraints ?? {})) {
+    if (!used.has(id) && Number.isInteger(constraint.weekday)) weekdayNode(id, constraint.weekday);
   }
   return row;
 }
@@ -1813,54 +1868,53 @@ function placeTimelineGroups(cards) {
   const groups = new Map([...scheduleCards.querySelectorAll('.timeline-item-group')]
     .map(node => [node.dataset.itemGroup, node]));
   const datedEntries = new Map();
+  for (const [id, group] of Object.entries(config.groups ?? {})) {
+    const date = group.date && window.scheduleEngine.groupDate(config, id, year);
+    if (!groups.has(id)) {
+      const node = document.createElement('div');
+      node.className = 'timeline-item-group';
+      node.dataset.itemGroup = id;
+      node.setAttribute('role', 'group');
+      scheduleCards.append(node);
+      groups.set(id, node);
+    }
+    const parent = groups.get(id);
+    parent.setAttribute('aria-label', group.title);
+    parent.classList.toggle('timeline-dated-group', Boolean(date));
+    parent.classList.toggle('deadline-card', Boolean(date));
+    if (date) {
+      const defaults = group.defaults ?? {};
+      setCardHeading(parent, group.title, config.layers[layer(defaults)], defaults.rule?.trim() ? defaults.rule : generatedGroupRule(id));
+      let toggle = parent.querySelector(':scope > [data-group-toggle]');
+      if (!toggle) {
+        toggle = document.createElement('button');
+        toggle.type = 'button';
+        toggle.dataset.groupToggle = id;
+        setControlIcon(toggle, 'arrow');
+        parent.querySelector(':scope > .card-content').after(toggle);
+      }
+      toggle.setAttribute('aria-label', group.title);
+      toggle.setAttribute('aria-expanded', String(graphGroupExpansion.get(id) ?? !group.collapsed));
+      toggle.dataset.configuredCollapsed = String(Boolean(group.collapsed));
+      const time = parent.querySelector(':scope > .card-date');
+      time.dateTime = inputValue(date);
+      time.textContent = fmt(date);
+      parent.dataset.dateType = 'fixed';
+      parent.dataset.dateTypeLabel = t('Fixed date');
+      for (const status of ['set', 'derived', 'anchor']) {
+        parent.classList.toggle('is-' + status, defaults.status === status);
+      }
+      datedEntries.set(parent, { card: parent, date });
+    }
+  }
   for (const item of config.items) {
     const card = cards.get(item.id);
-    const group = config.groups?.[item.group];
-    const date = group?.date && window.scheduleEngine.groupDate(config, item.group, year);
-    let parent = scheduleCards;
-    if (group) {
-      if (!groups.has(item.group)) {
-        const node = document.createElement('div');
-        node.className = 'timeline-item-group';
-        node.dataset.itemGroup = item.group;
-        node.setAttribute('role', 'group');
-        scheduleCards.append(node);
-        groups.set(item.group, node);
-      }
-      parent = groups.get(item.group);
-      parent.setAttribute('aria-label', group.title);
-      parent.classList.toggle('timeline-dated-group', Boolean(date));
-      parent.classList.toggle('deadline-card', Boolean(date));
-      if (date && !datedEntries.has(parent)) {
-        const defaults = group.defaults ?? {};
-        setCardHeading(parent, group.title, config.layers[layer(defaults)], defaults.rule?.trim() ? defaults.rule : generatedGroupRule(item.group));
-        let toggle = parent.querySelector(':scope > [data-group-toggle]');
-        if (!toggle) {
-          toggle = document.createElement('button');
-          toggle.type = 'button';
-          toggle.dataset.groupToggle = item.group;
-          setControlIcon(toggle, 'arrow');
-          parent.querySelector(':scope > .card-content').after(toggle);
-        }
-        toggle.setAttribute('aria-label', group.title);
-        toggle.setAttribute('aria-expanded', String(graphGroupExpansion.get(item.group) ?? !group.collapsed));
-        toggle.dataset.configuredCollapsed = String(Boolean(group.collapsed));
-        const time = parent.querySelector(':scope > .card-date');
-        time.dateTime = inputValue(date);
-        time.textContent = fmt(date);
-        parent.dataset.dateType = 'fixed';
-        parent.dataset.dateTypeLabel = t('Fixed date');
-        for (const status of ['set', 'derived', 'anchor']) {
-          parent.classList.toggle('is-' + status, defaults.status === status);
-        }
-        datedEntries.set(parent, { card: parent, date });
-      }
-    }
+    const parent = groups.get(item.group) ?? scheduleCards;
     if (card.parentElement !== parent) parent.append(card);
   }
   for (const group of groups.values()) {
-    if (!group.querySelector('[data-item-index]')) group.remove();
-    group.hidden = !group.querySelector('[data-item-index]:not(.is-layer-hidden)');
+    if (!Object.hasOwn(config.groups ?? {}, group.dataset.itemGroup)) group.remove();
+    group.hidden = Boolean(group.querySelector('[data-item-index]')) && !group.querySelector('[data-item-index]:not(.is-layer-hidden)');
   }
   return [...datedEntries.values()];
 }
@@ -1891,7 +1945,8 @@ function paintTimeline() {
   clearVirtualDates();
   const groups = placeTimelineGroups(cards);
   const { entries, edges, virtuals } = timelineDependencies(cards, startMarker, startDate, startTitle);
-  entries.push(...groups);
+  scheduleCards.querySelectorAll('.edit-card, .remove-card').forEach(button => button.remove());
+  entries.push(...groups, ...renderPaletteDrafts());
   timelineEdges = edges;
   const prerequisiteCards = new Set(timelineEdges.map(edge => edge.source));
   const rulesOnArrows = new Set(edges.filter(edge => edge.description).map(edge => edge.target));
@@ -1937,6 +1992,7 @@ function paintTimeline() {
   // Relative rules can put a deadline outside the selected calendar year.
   const first = new Date(Math.min(+new Date(year, 0, 1), +(entries[0]?.date ?? startDate)));
   first.setDate(1);
+  timelineFirstDay = first;
   const last = new Date(Math.max(+new Date(year, 11, 31), +(entries.at(-1)?.date ?? startDate)));
   startMarker.style.gridColumnStart = calendarDay(startDate) - calendarDay(first) + 1;
   initial.style.gridColumn = `1 / span ${calendarDay(last) - calendarDay(first) + timelineCardColumns}`;
@@ -1958,7 +2014,6 @@ function paintTimeline() {
   });
   const weekdayRow = paintCalendarRows(visibleCalendars, first, last);
   const firstCardRow = paintWeekdayDependencies(cards, weekdayRow, calendarDay(last) - calendarDay(first) + 1);
-  scheduleCards.querySelectorAll('.edit-card, .remove-card').forEach(button => button.remove());
   if (editingDeadlines && graphView) paintCardEditButtons(cards, virtuals, resolved);
   compactDependencyRows(entries, timelineEdges, firstCardRow);
   updateStatusStyles();
@@ -2044,7 +2099,6 @@ function paintCardEditButtons(cards, virtuals, resolved) {
     pencil(card.querySelector('h2').parentElement, title, fields, rulePaths, relative ? t('Relative date') : virtualDateLabel(date));
   }
   const initial = scheduleCards.querySelector('.timeline-initial > div');
-  removeButton(initial, initial, initial.querySelector('strong').textContent);
   pencil(initial, initial.querySelector('strong').textContent, [
     { key: 'initialYear', label: 'Initial year', paths: [['initialYear']], value: config.initialYear ?? 'current' },
   ], [['initialRule']], anchorRuleLabel(window.scheduleEngine.scheduleAnchors(config).start_of_year, year));
@@ -2401,6 +2455,205 @@ function setDependency(plan, edge, value) {
   }
 }
 
+const palette = panel.querySelector('.graph-palette');
+const paletteLabels = { deadline: 'Deadline', virtualDate: 'Virtual date', group: 'Group', constraint: 'Shared constraint' };
+let draggedKind;
+for (const [kind, label] of Object.entries(paletteLabels)) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.draggable = true;
+  button.title = t(label);
+  button.setAttribute('aria-label', button.title);
+  setControlIcon(button, kind);
+  button.ondragstart = event => {
+    draggedKind = kind;
+    event.dataTransfer.setData('text/plain', button.title);
+    event.dataTransfer.effectAllowed = 'copy';
+  };
+  button.ondragend = () => { draggedKind = undefined; };
+  button.onclick = () => openAfterCancelling(() => addPaletteCard(kind, displayDateAtTop()));
+  palette.append(button);
+}
+scheduleViewport.addEventListener('dragover', event => {
+  if (!editingDeadlines || !draggedKind || pendingGraphChanges()) return;
+  event.preventDefault();
+  event.dataTransfer.dropEffect = 'copy';
+});
+scheduleViewport.addEventListener('drop', event => {
+  if (!editingDeadlines || !draggedKind || pendingGraphChanges()) return;
+  event.preventDefault();
+  const kind = draggedKind;
+  draggedKind = undefined;
+  const columnWidth = parseFloat(getComputedStyle(scheduleCards).gridAutoColumns);
+  const column = Math.max(0, Math.floor((event.clientX - scheduleCards.getBoundingClientRect().left) / columnWidth));
+  const position = new Date(timelineFirstDay);
+  position.setDate(position.getDate() + column);
+  openAfterCancelling(() => addPaletteCard(kind, position));
+});
+
+function addPaletteCard(kind, position) {
+  if (!editingDeadlines || pendingGraphChanges()) return;
+  const ids = new Set([...paletteDrafts.keys(), ...config.items.map(item => item.id),
+    ...Object.keys(config.anchors), ...Object.keys(config.constraints ?? {}), ...Object.keys(config.groups ?? {})]);
+  let n = 1;
+  while (ids.has(kind + '-' + n)) n++;
+  const id = kind + '-' + n;
+  const title = t(paletteLabels[kind]);
+  const month = position.getMonth() + 1, day = position.getDate();
+  if (kind === 'deadline') {
+    // Position is editor state. It never enters the authored schedule or the wheel.
+    paletteDrafts.set(id, { title, month, day, layer: config.autoLayers?.deadline ?? Object.keys(config.layers)[0] });
+  } else if (kind === 'virtualDate') {
+    authoredConfig.anchors[id] = { title, defaultDate: { month, day } };
+  } else if (kind === 'group') {
+    (authoredConfig.groups ??= {})[id] = { title, date: { month, day }, collapsed: false };
+    expandedGroups.add(id);
+    appendWheelGroup(id, authoredConfig.groups[id]);
+  } else {
+    (authoredConfig.constraints ??= {})[id] = { weekday: position.getDay() };
+  }
+  config = effectiveConfiguration(authoredConfig);
+  paintTimeline();
+  const card = scheduleCards.querySelector(`[data-palette-draft="${id}"], [data-anchor-key="${id}"], [data-item-group="${id}"], [data-constraint-id="${id}"]`);
+  card?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  card?.querySelector('.edit-card')?.click();
+}
+
+function renderPaletteDrafts() {
+  const entries = [];
+  for (const [id, draft] of paletteDrafts) {
+    const card = document.createElement('article');
+    card.className = 'deadline-card invalid-dependency';
+    card.dataset.paletteDraft = id;
+    setCardHeading(card, draft.title, config.layers[draft.layer], t('Date unresolved'));
+    if (editingDeadlines) {
+      const host = card.querySelector('.card-content');
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'edit-card';
+      setControlIcon(edit, 'edit');
+      edit.title = t('Edit {title}', { title: draft.title });
+      edit.setAttribute('aria-label', edit.title);
+      edit.onclick = () => openAfterCancelling(() => editDraftDeadline(id));
+      const remove = graphRemoveButton(draft.title, () => {
+        paletteDrafts.delete(id);
+        paintTimeline();
+        palette.querySelector('[data-icon="deadline"]').focus();
+      });
+      remove.classList.add('remove-card');
+      host.prepend(edit, remove);
+    }
+    scheduleCards.append(card);
+    entries.push({ card, date: new Date(year, draft.month - 1, draft.day) });
+  }
+  return entries;
+}
+
+function editDraftDeadline(id) {
+  const draft = paletteDrafts.get(id);
+  const container = cardForm.querySelector('.card-editor-fields');
+  container.replaceChildren();
+  const error = cardForm.querySelector('.card-editor-error');
+  error.textContent = '';
+  cardForm.querySelector('h2').textContent = t('Edit {title}', { title: draft.title });
+  const addField = (name, label, tag = 'input') => cardEditorField(container, name, label, document.createElement(tag));
+  const title = addField('title', 'Title');
+  title.required = true;
+  title.value = draft.title;
+  const layer = addField('layer', 'Layer', 'select');
+  for (const [key, value] of Object.entries(config.layers)) layer.add(new Option(value.label, key));
+  layer.value = draft.layer;
+  layer.required = true;
+  const mode = addField('dateRule', 'Date', 'select');
+  for (const [value, label] of [['', 'Date unresolved'], ['fixed', 'Fixed date'], ['relative', 'Relative date']]) {
+    mode.add(new Option(t(label), value));
+  }
+  const month = addField('month', 'Month'), day = addField('day', 'Day');
+  Object.assign(month, { type: 'number', min: 1, max: 12, required: true });
+  Object.assign(day, { type: 'number', min: 1, max: 31, required: true });
+  const source = addField('source', 'Source', 'select');
+  source.required = true;
+  source.add(new Option('—', ''));
+  const addSource = (ref, label) => source.add(new Option(label, JSON.stringify(ref)));
+  const anchors = window.scheduleEngine.scheduleAnchors(config);
+  for (const [key, anchor] of Object.entries(anchors)) addSource({ anchor: key }, key === 'start_of_year' ? t('Initial object') : anchor.title);
+  for (const item of config.items) addSource({ anchor: item.id }, item.title);
+  for (const [key, group] of Object.entries(config.groups ?? {})) {
+    if (group.date) addSource({ group: key }, group.title);
+  }
+  for (const node of scheduleCards.querySelectorAll('[data-virtual-definition]')) {
+    addSource({ baseDate: JSON.parse(node.dataset.virtualDefinition) }, node.querySelector('h2').textContent);
+  }
+  const days = addField('days', 'Day offset');
+  Object.assign(days, { type: 'number', step: 1, value: 0, required: true });
+  const weekday = addField('weekday', 'Shared constraint', 'select');
+  weekday.add(new Option('—', ''));
+  for (const [key, constraint] of Object.entries(config.constraints ?? {})) {
+    if (Number.isInteger(constraint.weekday)) weekday.add(new Option(weekdayName(constraint.weekday), key));
+  }
+  function refresh() {
+    for (const field of [month, day]) field.closest('label').hidden = field.disabled = mode.value !== 'fixed';
+    for (const field of [source, days, weekday]) field.closest('label').hidden = field.disabled = mode.value !== 'relative';
+    day.max = month.value ? new Date(2000, month.valueAsNumber, 0).getDate() : 31;
+  }
+  mode.onchange = month.oninput = refresh;
+  refresh();
+  const values = () => Object.fromEntries(new FormData(cardForm));
+  const cancel = guardDiscard(cardEditor, 'Discard changes to “{title}”?', values, () => {
+    cardEditor.close();
+    scheduleCards.querySelector(`[data-palette-draft="${id}"] .edit-card`)?.focus();
+  }, { title: draft.title });
+  cardForm.elements.cancel.onclick = cancel;
+  cardEditor.onkeydown = event => { if (event.key === 'Escape') cancel(event); };
+  cardForm.onsubmit = event => {
+    event.preventDefault();
+    if (!cardForm.reportValidity()) return;
+    const item = { id, title: title.value, layer: layer.value, kind: 'deadline' };
+    if (mode.value === 'fixed') {
+      item.status = 'set';
+      item.schedule = { kind: 'fixed', month: month.valueAsNumber, day: day.valueAsNumber };
+    } else if (mode.value === 'relative') {
+      const ref = JSON.parse(source.value);
+      const amount = days.valueAsNumber;
+      item.status = 'derived';
+      if (ref.group && !amount && !weekday.value) {
+        item.group = ref.group;
+        item.schedule = { kind: 'group' };
+      } else {
+        const base = ref.group ? { anchor: ref } : ref;
+        item.schedule = weekday.value
+          ? { kind: 'next_weekday', after: [{ ...base, offsetDays: amount, inclusive: true }], constraints: [weekday.value] }
+          : { kind: 'offset', ...base, days: amount };
+      }
+    }
+    if (item.schedule) {
+      const next = { ...authoredConfig, items: [...authoredConfig.items, item] };
+      try {
+        validateSessionConfiguration(effectiveConfiguration(next));
+      } catch (problem) {
+        error.textContent = problem.message;
+        return;
+      }
+      authoredConfig = next;
+      config = effectiveConfiguration(next);
+      appendItemCard(item, next.items.length - 1);
+      paletteDrafts.delete(id);
+      const layerButton = document.querySelector(`.legend [data-layer="${CSS.escape(item.layer)}"]`);
+      if (layerButton?.getAttribute('aria-pressed') === 'false') layerButton.click();
+    } else {
+      Object.assign(draft, { title: item.title, layer: item.layer });
+    }
+    cardEditor.close();
+    paintTimeline();
+    const card = scheduleCards.querySelector(`[data-palette-draft="${id}"], [data-deadline-id="${id}"]`);
+    card.querySelector('.edit-card')?.focus({ preventScroll: true });
+    card.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    saveConfirmedConfiguration();
+  };
+  cardEditor.show();
+  title.focus({ preventScroll: true });
+}
+
 function openCardEditor(key, title, fields) {
   const container = cardForm.querySelector('.card-editor-fields');
   const error = cardForm.querySelector('.card-editor-error');
@@ -2568,14 +2821,34 @@ function configurationForExport() {
   return graphView.readDisplayedConfiguration(panel);
 }
 
+function showSaveError(message) {
+  const dialog = document.querySelector('#config-save-notice');
+  dialog.querySelector('p').textContent = message;
+  if (!dialog.open) dialog.showModal();
+}
+
 let configurationSaver;
 async function saveConfirmedConfiguration() {
-  if (pendingGraphChanges()) return;
-  const dialog = document.querySelector('#config-save-notice');
-  let message;
+  if (paletteDrafts.size) {
+    const deadlines = Array.from(paletteDrafts.values(), draft => draft.title);
+    const titles = new Intl.ListFormat(locale).format(deadlines);
+    showSaveError(t('A date could not be calculated for {titles}. Set a date or add a dependency and try again.', { titles }));
+    return false;
+  }
+  if (pendingGraphChanges()) {
+    showSaveError(graphWarning.textContent);
+    return false;
+  }
+  let plan;
   try {
     if (!graphView) await graphReady;
-    const plan = configurationForExport();
+    plan = configurationForExport();
+    validateSessionConfiguration(effectiveConfiguration(plan));
+  } catch (problem) {
+    showSaveError(problem.message);
+    return false;
+  }
+  try {
     const detachedAtConfirmation = new Map(detachedVirtualDates);
     configurationSaver ??= import('/lib/config-save.js?v=2').then(module =>
       module.createConfigurationSaver(graphView.sourceConfiguration(initialConfiguration, sourceTexts)));
@@ -2591,20 +2864,18 @@ async function saveConfirmedConfiguration() {
       }
       if (removed && editingTimeline) paintTimeline();
     }
-    if (result === 'unsupported') message = 'This setup does not support saving. You can still edit the wheel and see your changes immediately in this tab. Your changes will be lost when you close or reload this tab.';
-    if (result === 'unauthorized') message = 'Saving requires permission. Your changes are still in this tab.';
-    if (result === 'failed') message = 'Saving failed. Your changes are still in this tab. Confirm again to retry.';
+    if (result === 'unsupported') showSaveError(t('This setup does not support saving. You can still edit the wheel and see your changes immediately in this tab. Your changes will be lost when you close or reload this tab.'));
+    if (result === 'unauthorized') showSaveError(t('Saving requires permission. Your changes are still in this tab.'));
+    if (result === 'failed') showSaveError(t('Saving failed. Your changes are still in this tab. Confirm again to retry.'));
+    return result !== 'unauthorized' && result !== 'failed';
   } catch {
-    message = 'Saving failed. Your changes are still in this tab. Confirm again to retry.';
-  }
-  if (message) {
-    dialog.querySelector('p').textContent = t(message);
-    if (!dialog.open) dialog.showModal();
+    showSaveError(t('Saving failed. Your changes are still in this tab. Confirm again to retry.'));
+    return false;
   }
 }
 
 panel.querySelector('.export-plan').onclick = async () => {
-  if (pendingGraphChanges()) return;
+  if (pendingGraphChanges() || paletteDrafts.size) return;
   await graphReady;
   const plan = configurationForExport();
   const { stringify } = await import('yaml');
@@ -2763,6 +3034,7 @@ function setTimelineEditor(open, editable) {
   const entering = open && !editingTimeline;
   editingTimeline = open;
   editingDeadlines = editable;
+  palette.hidden = !editable;
   graphGroupExpansion.clear();
   if (configEditor.open) configEditor.close();
   const heading = timelineHeading.querySelector('h2');
@@ -2821,9 +3093,8 @@ function leaveCardEditor(hash) {
     openAfterCancelling(() => navigateTimeline(hash));
   } else navigateTimeline(hash);
 }
-timelineHeading.querySelector('.finish-graph-edit').onclick = () => openAfterCancelling(() => {
-  saveConfirmedConfiguration();
-  navigateTimeline('edit');
+timelineHeading.querySelector('.finish-graph-edit').onclick = () => openAfterCancelling(async () => {
+  if (await saveConfirmedConfiguration() && editingDeadlines && !paletteDrafts.size && !pendingGraphChanges()) navigateTimeline('edit');
 });
 closeTimeline.onclick = () => leaveCardEditor('');
 window.addEventListener('hashchange', syncTimelineWithUrl);

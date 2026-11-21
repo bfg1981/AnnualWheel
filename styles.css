@@ -86,7 +86,7 @@ button { font:inherit; cursor:pointer; } .app-shell { max-width:1440px; margin:a
 .editing-timeline .graph-removed { display: none !important; }
 .editing-timeline .timeline-item-group.graph-removed { display: contents !important; }
 .editing-timeline .timeline-item-group.graph-removed > :not([data-item-index]) { display: none; }
-.editing-timeline :is(.deadline-card, .timeline-initial > div):has(.remove-card) {
+.editing-timeline .deadline-card:has(.remove-card) {
   position: relative;
   padding-right: 1.75rem;
 }
@@ -95,7 +95,7 @@ button { font:inherit; cursor:pointer; } .app-shell { max-width:1440px; margin:a
   top: 2px;
   right: .875rem;
 }
-.editing-timeline :is(.deadline-card, .timeline-initial) .remove-card {
+.editing-timeline .deadline-card .remove-card {
   position: absolute;
   top: 0;
   right: 0;
@@ -130,6 +130,11 @@ button { font:inherit; cursor:pointer; } .app-shell { max-width:1440px; margin:a
 .open-config { margin-top: 12px; }
 .editing-timeline { display: block; }
 .editing-timeline :is(.wheel-column, .panel-heading, .display-date-card, .deadline-group, .graph-navigation, .export-calendar) { display: none; }
+.graph-workspace:has(.graph-palette:not([hidden])) { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .5rem; }
+.graph-palette:not([hidden]) { display: flex; flex-direction: column; gap: .3rem; padding-top: .875rem; }
+.graph-palette button { width: 2.25rem; height: 2.25rem; border: 1px solid var(--line); border-radius: .4rem; background: white; color: #365674; font-size: 1.2rem; cursor: grab; }
+.graph-palette button:active { cursor: grabbing; }
+.graph-workspace .schedule-viewport { min-width: 0; }
 .editing-timeline .schedule-viewport { overflow-x: auto; padding-bottom: 12px; }
 .editing-timeline .schedule-viewport:has(.remove-card) { padding-top: .875rem; }
 .editing-timeline .schedule-cards {

@@ -548,3 +548,27 @@ msgstr "Angre grafendring"
 
 msgid "The initial object is required. Undo its removal before saving."
 msgstr "Startobjektet er påkrevd. Angre fjerningen før du lagrer."
+
+msgid "Layer"
+msgstr "Lag"
+
+msgid "Add to graph"
+msgstr "Legg til i grafen"
+
+msgid "Virtual date"
+msgstr "Virtuell dato"
+
+msgid "Group"
+msgstr "Gruppe"
+
+msgid "Shared constraint"
+msgstr "Felles begrensning"
+
+msgid "Date unresolved"
+msgstr "Datoen er uavklart"
+
+msgid "Complete or remove the unfinished cards before saving."
+msgstr "Fullfør eller fjern de uferdige kortene før du lagrer."
+
+msgid "A date could not be calculated for {titles}. Set a date or add a dependency and try again."
+msgstr "Kunne ikke beregne dato for {titles}. Angi en dato eller legg til en avhengighet, og prøv igjen."

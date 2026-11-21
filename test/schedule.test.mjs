@@ -7,6 +7,14 @@ import { normalizeAnchorDependencies, anchorDateRelation, effectiveItem, weekday
 const config = YAML.parse(await readFile(new URL('./fixtures/schedule-template.yaml', import.meta.url), 'utf8'));
 const iso = value => `${value.getFullYear()}-${String(value.getMonth() + 1).padStart(2, '0')}-${String(value.getDate()).padStart(2, '0')}`;
 
+test('a deadline needs a calculable date, including when its only rule is a dependency', () => {
+  const item = { id: 'review', schedule: {} };
+  const plan = { items: [item] };
+  assert.throws(() => resolveSchedule(plan, 2026), /Cannot calculate date for review/);
+  item.schedule = { kind: 'offset', anchor: 'start_of_year', days: 3 };
+  assert.equal(iso(resolveSchedule(plan, 2026).review.date), '2026-01-04');
+});
+
 test('reattached weekday rules follow a named prerequisite or a virtual calendar boundary', () => {
   const plan = { items: [
     { id: 'source', schedule: { kind: 'fixed', month: 4, day: 10 } },

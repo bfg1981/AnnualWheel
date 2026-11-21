@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Annual wheel</title>
-    <link rel="stylesheet" href="/styles.css?v=68" />
+    <link rel="stylesheet" href="/styles.css?v=69" />
   </head>
   <body>
     <main class="app-shell">
@@ -55,19 +55,22 @@
             <button type="button" class="close-timeline" data-i18n="Back to wheel">Back to wheel</button>
           </header>
           <button type="button" class="graph-plan open-config" aria-haspopup="dialog" aria-controls="advanced-options" data-i18n="Advanced options" hidden>Advanced options</button>
-          <div class="schedule-viewport"><div class="schedule-cards">
-            <div class="timeline-months"></div>
-            <div class="timeline-start" role="img"></div>
-            <div class="timeline-initial"><div><strong></strong><span class="initial-year"></span></div></div>
-            <svg class="timeline-arrows" role="group" aria-label="Dependencies" data-i18n-aria-label="Dependencies" focusable="false">
-              <defs>
-                <marker id="dependency-arrowhead" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto">
-                  <path d="M0 0 L8 4 L0 8 Z" fill="currentColor"/>
-                </marker>
-              </defs>
-              <g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" marker-end="url(#dependency-arrowhead)"></g>
-            </svg>
-          </div></div>
+          <div class="graph-workspace">
+            <div class="graph-palette" role="group" data-i18n-aria-label="Add to graph" hidden></div>
+            <div class="schedule-viewport"><div class="schedule-cards">
+              <div class="timeline-months"></div>
+              <div class="timeline-start" role="img"></div>
+              <div class="timeline-initial"><div><strong></strong><span class="initial-year"></span></div></div>
+              <svg class="timeline-arrows" role="group" aria-label="Dependencies" data-i18n-aria-label="Dependencies" focusable="false">
+                <defs>
+                  <marker id="dependency-arrowhead" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="8" markerHeight="8" markerUnits="userSpaceOnUse" orient="auto">
+                    <path d="M0 0 L8 4 L0 8 Z" fill="currentColor"/>
+                  </marker>
+                </defs>
+                <g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" marker-end="url(#dependency-arrowhead)"></g>
+              </svg>
+            </div></div>
+          </div>
           <div class="graph-navigation"><button class="all-deadlines" aria-expanded="false"><span data-i18n="Dependency graph">Dependency graph</span> <span aria-hidden="true" data-icon="arrow"></span></button></div>
           <button class="export-calendar" type="button" data-i18n="Export calendar (.ics)">Export calendar (.ics)</button>
         </aside>
@@ -124,9 +127,9 @@
     </dialog>
     <script type="importmap">{"imports":{"yaml":"/node_modules/yaml/browser/index.js"}}</script>
     <script src="/annual-wheel-config.js"></script>
-    <script src="/lib/schedule.browser.js?v=28"></script>
-    <script src="/lib/i18n.browser.js?v=40"></script>
-    <script src="/lib/control-icons.js"></script>
-    <script src="/script.js?v=101"></script>
+    <script src="/lib/schedule.browser.js?v=29"></script>
+    <script src="/lib/i18n.browser.js?v=42"></script>
+    <script src="/lib/control-icons.js?v=2"></script>
+    <script src="/script.js?v=104"></script>
   </body>
 </html>
