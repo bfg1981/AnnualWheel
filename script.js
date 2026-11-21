@@ -953,13 +953,12 @@ function removeGraphNode(node) {
 }
 
 function graphRemoveButton(title, remove, svg = false) {
-  const button = svg ? document.createElementNS(arrowPaths.namespaceURI, 'tspan') : document.createElement('button');
+  const button = svg ? document.createElementNS(arrowPaths.namespaceURI, 'image') : document.createElement('button');
   const label = t('Remove {title}', { title });
   setControlIcon(button, 'remove');
   button.setAttribute('aria-label', label);
   button.classList.add(svg ? 'remove-dependency' : 'graph-remove');
   if (svg) {
-    button.setAttribute('dx', '0.3em');
     button.setAttribute('tabindex', '0');
     button.setAttribute('role', 'button');
     button.onkeydown = event => {
@@ -1271,6 +1270,7 @@ function drawDependencyArrows() {
   const origin = scheduleCards.getBoundingClientRect();
   const paths = document.createDocumentFragment();
   const draggablePaths = [];
+  const removeControls = [];
   const focused = arrowPaths.contains(document.activeElement) && document.activeElement.dataset.cardEditKey;
   for (const edge of (pendingGraphChanges() ? projectedEdges().filter(edge => !edge.removed) : timelineEdges)) {
     const { source, target, relation, sourceTitle, description } = edge;
@@ -1378,16 +1378,33 @@ function drawDependencyArrows() {
           pencil.onclick();
         };
       }
-      if (editingDeadlines && edge.edit) label.append(graphRemoveButton(title, () => {
-        const id = dependencyKey(edge.original ?? edge);
-        rememberGraphChange();
-        dependencyMoves.set(id, { ...dependencyMoves.get(id), removed: true });
-        applyDependencyMoves();
-      }, true));
       group.append(label);
+      if (editingDeadlines && edge.edit) {
+        const button = graphRemoveButton(title, () => {
+          const id = dependencyKey(edge.original ?? edge);
+          rememberGraphChange();
+          dependencyMoves.set(id, { ...dependencyMoves.get(id), removed: true });
+          applyDependencyMoves();
+        }, true);
+        // Reserve space within the anchored text so the icon follows its final glyph.
+        const space = document.createElementNS(path.namespaceURI, 'tspan');
+        space.classList.add('dependency-remove-space');
+        space.textContent = '\u2003';
+        space.setAttribute('dx', '0.3em');
+        label.append(space);
+        group.append(button);
+        removeControls.push({ space, button, labelY });
+      }
     }
   }
   arrowPaths.replaceChildren(paths);
+  for (const { space, button, labelY } of removeControls) {
+    const { x, width } = space.getBBox();
+    button.setAttribute('x', x);
+    button.setAttribute('y', labelY - width / 2);
+    button.setAttribute('width', width);
+    button.setAttribute('height', width);
+  }
   for (const [path, edge] of draggablePaths) {
     graphView.addDependencyHandles(path, (event, side, fixed) => startDependencyDrag(event, edge, side, fixed));
   }
@@ -1472,7 +1489,7 @@ function timelineDependencies(cards, startMarker, startDate, startTitle) {
     card.className = 'deadline-card';
     card.dataset.virtualKey = key;
     card.dataset.virtualDate = inputValue(date);
-    card.innerHTML = '<span class="card-date"></span><div><h2></h2></div>';
+    card.innerHTML = '<span class="card-date"></span><div class="card-content"><h2></h2></div>';
     card.querySelector('.card-date').textContent = fmt(date);
     card.querySelector('h2').textContent = title;
     scheduleCards.append(card);

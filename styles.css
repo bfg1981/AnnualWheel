@@ -81,11 +81,28 @@ button { font:inherit; cursor:pointer; } .app-shell { max-width:1440px; margin:a
 .graph-title, .graph-navigation { display: flex; align-items: center; gap: .5rem; }
 .editing-timeline :is(.edit-card, .graph-remove) { position: relative; z-index: 2; float: right; border: 0; background: transparent; color: #425b78; font: 1rem/1.25 var(--font-sans); cursor: pointer; padding: .1rem .3rem; }
 .graph-remove { display: none; }
+[data-icon] > img { width: 1em; height: 1em; vertical-align: -.12em; }
 .editing-timeline .graph-remove { display: inline-block; }
 .editing-timeline .graph-removed { display: none !important; }
 .editing-timeline .timeline-item-group.graph-removed { display: contents !important; }
 .editing-timeline .timeline-item-group.graph-removed > :not([data-item-index]) { display: none; }
-.timeline-initial .remove-card { grid-column: 3; grid-row: 1; justify-self: start; }
+.editing-timeline :is(.deadline-card, .timeline-initial > div):has(.remove-card) {
+  position: relative;
+  padding-right: 1.75rem;
+}
+.editing-timeline .deadline-card > .card-content > .edit-card {
+  position: absolute;
+  top: 2px;
+  right: .875rem;
+}
+.editing-timeline :is(.deadline-card, .timeline-initial) .remove-card {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+  display: grid;
+  place-items: center;
+}
 .editing-timeline .timeline-weekday .remove-card { position: sticky; left: 2.5rem; float: none; }
 .timeline-initial .edit-card { grid-column: 2; grid-row: 1; justify-self: start; }
 .timeline-weekday:has(.edit-card) select { left: 5rem; }
@@ -114,6 +131,7 @@ button { font:inherit; cursor:pointer; } .app-shell { max-width:1440px; margin:a
 .editing-timeline { display: block; }
 .editing-timeline :is(.wheel-column, .panel-heading, .display-date-card, .deadline-group, .graph-navigation, .export-calendar) { display: none; }
 .editing-timeline .schedule-viewport { overflow-x: auto; padding-bottom: 12px; }
+.editing-timeline .schedule-viewport:has(.remove-card) { padding-top: .875rem; }
 .editing-timeline .schedule-cards {
   position: relative;
   display: grid;
@@ -146,6 +164,7 @@ button { font:inherit; cursor:pointer; } .app-shell { max-width:1440px; margin:a
   font: 700 13px var(--font-sans);
 }
 .timeline-arrows .dependency-caption { cursor: help; pointer-events: all; }
+.timeline-arrows .dependency-remove-space { font-size: 24px; pointer-events: none; }
 .timeline-arrows .draggable-dependency { pointer-events: stroke; cursor: grab; touch-action: none; }
 .timeline-arrows g .dependency-hit-area { stroke: transparent; stroke-width: 12px; stroke-dasharray: none; marker-end: none; pointer-events: stroke; cursor: grab; touch-action: none; }
 .timeline-arrows [data-drag-end] { fill: white; stroke: currentColor; stroke-width: 1.5; cursor: grab; pointer-events: all; touch-action: none; }
