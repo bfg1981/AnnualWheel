@@ -48,20 +48,20 @@ button { font:inherit; cursor:pointer; } .app-shell { max-width:1440px; margin:a
 .override-picker button { white-space: nowrap; }
 .plan-title { display: flex; align-items: center; gap: .65rem; }
 .layer-summary:not([hidden]) { display: flex; align-items: center; gap: .5rem; }
-#layer-editor:not([hidden]), .layer-rows { display: grid; gap: .5rem; }
+#layer-editor form, .layer-rows { display: grid; gap: .5rem; }
 .layer-editor-actions { display: flex; align-items: center; gap: .5rem; }
 .layer-editor-actions [name="add"] { margin-inline-start: auto; }
 .layer-editor-row { display: flex; align-items: center; gap: .5rem; }
 .layer-editor-row input { width: min(24rem, 60vw); padding: .4rem; color: inherit; font: inherit; border: 1px solid var(--line); border-radius: 5px; }
 .edit-plan-header, .edit-layers, .edit-graph { border: 0; background: transparent; color: #52677e; padding: .3em; font-size: 1.25rem; cursor: pointer; }
 .plan-intro { min-width: 0; }
-#plan-header-editor:not([hidden]) { display: grid; gap: .65rem; width: min(34rem, 100%); }
-.plan-intro:has(#plan-header-editor:not([hidden])) { flex: 1; }
+#plan-header-editor { width: min(30rem, 90vw); }
+#plan-header-editor form { display: grid; gap: .65rem; }
 #plan-header-editor label { display: grid; gap: .2rem; font-size: .85rem; }
 #plan-header-editor :is(input, select, textarea) { min-width: 0; padding: .4rem; border: 1px solid var(--line); border-radius: 5px; font: inherit; color: inherit; }
 #plan-header-editor textarea { resize: vertical; }
-:is(#config-dependencies, #discard-changes, #config-save-notice) { max-width: min(30rem, 90vw); padding: 1.5rem; border: 0; border-radius: 12px; color: var(--ink); }
-:is(#config-dependencies, #discard-changes, #config-save-notice)::backdrop { background: rgb(20 32 52 / .42); }
+:is(#config-dependencies, #discard-changes, #config-save-notice, #layer-editor, #plan-header-editor) { max-width: min(30rem, 90vw); padding: 1.5rem; border: 0; border-radius: 12px; color: var(--ink); }
+dialog::backdrop { background: rgb(20 32 52 / .42); }
 :is(#config-dependencies, #discard-changes, #config-save-notice) h2 { margin: 0; font: 600 1.4rem var(--font-serif); }
 .discard-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: 1rem; }
 #config-dependencies li { font-family: ui-monospace, monospace; overflow-wrap: anywhere; }

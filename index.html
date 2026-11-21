@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Annual wheel</title>
-    <link rel="stylesheet" href="/styles.css?v=69" />
+    <link rel="stylesheet" href="/styles.css?v=70" />
   </head>
   <body>
     <main class="app-shell">
@@ -17,30 +17,34 @@
         <div class="plan-intro">
           <p class="eyebrow"><span data-i18n="Annual plan">Annual plan</span> · <span class="year-text"></span></p>
           <div class="plan-summary">
-            <div class="plan-title"><h1>Annual wheel</h1><button type="button" class="edit-plan-header" aria-label="Edit plan details" data-i18n-aria-label="Edit plan details" aria-controls="plan-header-editor" hidden data-icon="edit"></button></div>
+            <div class="plan-title"><h1>Annual wheel</h1><button type="button" class="edit-plan-header" aria-haspopup="dialog" aria-label="Edit plan details" data-i18n-aria-label="Edit plan details" aria-controls="plan-header-editor" hidden data-icon="edit"></button></div>
             <p class="organisation-type" hidden></p>
             <p class="lede"></p>
           </div>
-          <form id="plan-header-editor" hidden>
-            <label><span data-i18n="Title">Title</span><input name="title" required></label>
-            <label><span data-i18n="Organisation type">Organisation type</span><select name="organisationType"><option value="">—</option><option value="organisation" data-i18n="Organisation">Organisation</option><option value="individual" data-i18n="Individual">Individual</option></select></label>
-            <label><span data-i18n="Description">Description</span><textarea name="description" rows="3"></textarea></label>
-            <div><button type="submit" data-i18n-aria-label="Apply changes" aria-label="Apply changes" title="Apply changes" data-icon="confirm"></button> <button type="button" name="cancel" data-i18n-aria-label="Cancel" aria-label="Cancel" title="Cancel" data-icon="cancel"></button></div>
-          </form>
+          <dialog id="plan-header-editor" aria-label="Edit plan details" data-i18n-aria-label="Edit plan details">
+            <form>
+              <label><span data-i18n="Title">Title</span><input name="title" required></label>
+              <label><span data-i18n="Organisation type">Organisation type</span><select name="organisationType"><option value="">—</option><option value="organisation" data-i18n="Organisation">Organisation</option><option value="individual" data-i18n="Individual">Individual</option></select></label>
+              <label><span data-i18n="Description">Description</span><textarea name="description" rows="3"></textarea></label>
+              <div><button type="submit" data-i18n-aria-label="Apply changes" aria-label="Apply changes" title="Apply changes" data-icon="confirm"></button> <button type="button" name="cancel" data-i18n-aria-label="Cancel" aria-label="Cancel" title="Cancel" data-icon="cancel"></button></div>
+            </form>
+          </dialog>
         </div>
         <div class="plan-layers">
           <div class="layer-summary">
             <div class="legend" aria-label="Filter layers" data-i18n-aria-label="Filter layers"></div>
-            <button type="button" class="edit-layers" aria-label="Edit layers" data-i18n-aria-label="Edit layers" aria-controls="layer-editor" hidden data-icon="edit"></button>
+            <button type="button" class="edit-layers" aria-haspopup="dialog" aria-label="Edit layers" data-i18n-aria-label="Edit layers" aria-controls="layer-editor" hidden data-icon="edit"></button>
           </div>
-          <form id="layer-editor" hidden>
-            <div class="layer-rows"></div>
-            <div class="layer-editor-actions">
-              <button type="submit" data-i18n-aria-label="Apply changes" aria-label="Apply changes" title="Apply changes" data-icon="confirm"></button>
-              <button type="button" name="cancel" data-i18n-aria-label="Cancel" aria-label="Cancel" title="Cancel" data-icon="cancel"></button>
-              <button type="button" name="add" aria-label="Add layer" title="Add layer" data-icon="add"></button>
-            </div>
-          </form>
+          <dialog id="layer-editor" aria-label="Edit layers" data-i18n-aria-label="Edit layers">
+            <form>
+              <div class="layer-rows"></div>
+              <div class="layer-editor-actions">
+                <button type="submit" data-i18n-aria-label="Apply changes" aria-label="Apply changes" title="Apply changes" data-icon="confirm"></button>
+                <button type="button" name="cancel" data-i18n-aria-label="Cancel" aria-label="Cancel" title="Cancel" data-icon="cancel"></button>
+                <button type="button" name="add" aria-label="Add layer" title="Add layer" data-icon="add"></button>
+              </div>
+            </form>
+          </dialog>
         </div>
       </section>
       <section class="wheel-layout">
@@ -130,6 +134,6 @@
     <script src="/lib/schedule.browser.js?v=29"></script>
     <script src="/lib/i18n.browser.js?v=42"></script>
     <script src="/lib/control-icons.js?v=2"></script>
-    <script src="/script.js?v=104"></script>
+    <script src="/script.js?v=105"></script>
   </body>
 </html>

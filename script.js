@@ -320,17 +320,8 @@ function labelAddButton(button, action) {
   button.setAttribute('aria-label', button.title);
 }
 
-const editorCancellations = new Map();
-
-async function openAfterCancelling(openEditor) {
-  for (const [editor, cancel] of editorCancellations) {
-    if (editor.matches('[hidden], dialog:not([open])')) continue;
-    if (!await cancel()) {
-      editor.querySelector('[name="cancel"], [value="cancel"]').focus();
-      return;
-    }
-  }
-  openEditor();
+function whenEditorClosed(action) {
+  if (!document.querySelector('dialog:modal')) action();
 }
 
 function guardDiscard(editor, discardQuestion, readDraft, closeEditor, questionValues) {
@@ -357,11 +348,12 @@ function guardDiscard(editor, discardQuestion, readDraft, closeEditor, questionV
       discardDialog.showModal();
     });
   }
-  editorCancellations.set(editor, cancel);
-  return event => {
+  const requestCancel = event => {
     event.preventDefault();
     cancel();
   };
+  editor.oncancel = requestCancel;
+  return requestCancel;
 }
 
 function renderOverrideLocale(parent, language, canAdd) {
@@ -773,13 +765,9 @@ function openAdvancedOptions() {
       .filter(input => !input.value || input.validity.badInput).map(input => input.dataset.sessionPath),
   }), () => configEditor.close());
   configEditor.querySelector('form').onsubmit = cancel;
-  configEditor.oncancel = cancel;
-  configEditor.onkeydown = event => {
-    if (event.key === 'Escape') cancel(event);
-  };
   configEditor.showModal();
 }
-advancedButton.onclick = () => editingDeadlines ? openAfterCancelling(openAdvancedOptions) : openAdvancedOptions();
+advancedButton.onclick = () => editingDeadlines ? whenEditorClosed(openAdvancedOptions) : openAdvancedOptions();
 configEditor.querySelector('.config-editor-apply').onclick = async event => {
   if (!editingDeadlines) return;
   if (!configEditor.querySelector('form').reportValidity()) return;
@@ -1018,7 +1006,7 @@ function graphRemoveButton(title, remove, svg = false) {
   button.onclick = event => {
     event.stopPropagation();
     closeDependencyPreview();
-    openAfterCancelling(remove);
+    whenEditorClosed(remove);
   };
   return button;
 }
@@ -1061,7 +1049,7 @@ function startDependencyDrag(event, edge, side, fixed) {
   }
   const original = edge.original ?? edge;
   cancelDependencyDrag = graphView.dragDependency(event, fixed, arrowPaths.ownerSVGElement, scheduleViewport, candidates, key => {
-    openAfterCancelling(() => {
+    whenEditorClosed(() => {
       const id = dependencyKey(original);
       rememberGraphChange();
       const change = { ...dependencyMoves.get(id), [side]: key };
@@ -1414,7 +1402,7 @@ function drawDependencyArrows() {
         pencil.setAttribute('aria-controls', cardEditor.id);
         pencil.onclick = () => {
           closeDependencyPreview();
-          openAfterCancelling(() => openCardEditor(key, title, [{ key: 'dependency', paths: [edge.edit.path], edge }]));
+          whenEditorClosed(() => openCardEditor(key, title, [{ key: 'dependency', paths: [edge.edit.path], edge }]));
         };
         pencil.onkeydown = event => {
           if (event.key !== 'Enter' && event.key !== ' ') return;
@@ -2056,7 +2044,7 @@ function paintCardEditButtons(cards, virtuals, resolved) {
     button.setAttribute('aria-label', button.title);
     button.setAttribute('aria-controls', cardEditor.id);
     button.dataset.cardEditKey = JSON.stringify(fields[0].paths[0]);
-    button.onclick = () => openAfterCancelling(() => openCardEditor(button.dataset.cardEditKey, title, fields));
+    button.onclick = () => whenEditorClosed(() => openCardEditor(button.dataset.cardEditKey, title, fields));
     host.prepend(button);
   }
   const titleField = (path, value) => ({ key: 'title', label: 'Title', paths: [[...path, 'title']], value });
@@ -2471,7 +2459,7 @@ for (const [kind, label] of Object.entries(paletteLabels)) {
     event.dataTransfer.effectAllowed = 'copy';
   };
   button.ondragend = () => { draggedKind = undefined; };
-  button.onclick = () => openAfterCancelling(() => addPaletteCard(kind, displayDateAtTop()));
+  button.onclick = () => whenEditorClosed(() => addPaletteCard(kind, displayDateAtTop()));
   palette.append(button);
 }
 scheduleViewport.addEventListener('dragover', event => {
@@ -2488,7 +2476,7 @@ scheduleViewport.addEventListener('drop', event => {
   const column = Math.max(0, Math.floor((event.clientX - scheduleCards.getBoundingClientRect().left) / columnWidth));
   const position = new Date(timelineFirstDay);
   position.setDate(position.getDate() + column);
-  openAfterCancelling(() => addPaletteCard(kind, position));
+  whenEditorClosed(() => addPaletteCard(kind, position));
 });
 
 function addPaletteCard(kind, position) {
@@ -2534,7 +2522,7 @@ function renderPaletteDrafts() {
       setControlIcon(edit, 'edit');
       edit.title = t('Edit {title}', { title: draft.title });
       edit.setAttribute('aria-label', edit.title);
-      edit.onclick = () => openAfterCancelling(() => editDraftDeadline(id));
+      edit.onclick = () => whenEditorClosed(() => editDraftDeadline(id));
       const remove = graphRemoveButton(draft.title, () => {
         paletteDrafts.delete(id);
         paintTimeline();
@@ -2604,7 +2592,6 @@ function editDraftDeadline(id) {
     scheduleCards.querySelector(`[data-palette-draft="${id}"] .edit-card`)?.focus();
   }, { title: draft.title });
   cardForm.elements.cancel.onclick = cancel;
-  cardEditor.onkeydown = event => { if (event.key === 'Escape') cancel(event); };
   cardForm.onsubmit = event => {
     event.preventDefault();
     if (!cardForm.reportValidity()) return;
@@ -2650,7 +2637,7 @@ function editDraftDeadline(id) {
     card.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     saveConfirmedConfiguration();
   };
-  cardEditor.show();
+  cardEditor.showModal();
   title.focus({ preventScroll: true });
 }
 
@@ -2716,7 +2703,6 @@ function openCardEditor(key, title, fields) {
     returnFocus();
   }, { title });
   cardForm.elements.cancel.onclick = cancel;
-  cardEditor.onkeydown = event => { if (event.key === 'Escape') cancel(event); };
   cardForm.onsubmit = event => {
     event.preventDefault();
     let next = structuredClone(authoredConfig);
@@ -2773,7 +2759,7 @@ function openCardEditor(key, title, fields) {
     returnFocus();
     saveConfirmedConfiguration();
   };
-  cardEditor.show();
+  cardEditor.showModal();
   container.querySelector('input,select').focus({ preventScroll: true });
 }
 
@@ -2890,13 +2876,13 @@ panel.querySelector('.export-plan').onclick = async () => {
 panel.querySelector('.show-all-schedules input').onchange = paintTimeline;
 const editDeadlines = panel.querySelector('.all-deadlines');
 const closeTimeline = panel.querySelector('.close-timeline');
-const headerSummary = document.querySelector('.plan-summary');
-const editHeader = headerSummary.querySelector('.edit-plan-header');
-const headerEditor = document.querySelector('#plan-header-editor');
+const editHeader = document.querySelector('.edit-plan-header');
+const headerDialog = document.querySelector('#plan-header-editor');
+const headerEditor = headerDialog.querySelector('form');
 const headerFields = headerEditor.elements;
-const layerSummary = document.querySelector('.layer-summary');
-const editLayers = layerSummary.querySelector('.edit-layers');
-const layerEditor = document.querySelector('#layer-editor');
+const editLayers = document.querySelector('.edit-layers');
+const layerDialog = document.querySelector('#layer-editor');
+const layerEditor = layerDialog.querySelector('form');
 const layerRows = layerEditor.querySelector('.layer-rows');
 
 function layerReferences(id) {
@@ -2946,17 +2932,15 @@ function appendLayerRow(id, label) {
 }
 
 function closeLayerEditor() {
-  layerEditor.hidden = true;
-  layerSummary.hidden = false;
+  layerDialog.close();
   layerRows.replaceChildren();
 }
 
-editLayers.onclick = () => openAfterCancelling(() => {
+editLayers.onclick = () => whenEditorClosed(() => {
   layerRows.replaceChildren();
   for (const [id, layer] of Object.entries(authoredConfig.layers)) appendLayerRow(id, layer.label);
-  layerSummary.hidden = true;
-  layerEditor.hidden = false;
-  layerEditor.elements.cancel.onclick = guardDiscard(layerEditor, 'Discard changes to the layers?',
+  layerDialog.showModal();
+  layerEditor.elements.cancel.onclick = guardDiscard(layerDialog, 'Discard changes to the layers?',
     () => Array.from(layerRows.children, row => [row.dataset.layerId, row.querySelector('input').value]),
     () => { closeLayerEditor(); editLayers.focus(); }
   );
@@ -2995,20 +2979,18 @@ layerEditor.onsubmit = event => {
 };
 
 function closeHeaderEditor() {
-  headerEditor.hidden = true;
-  headerSummary.hidden = false;
+  headerDialog.close();
 }
 
-editHeader.onclick = () => openAfterCancelling(() => {
+editHeader.onclick = () => whenEditorClosed(() => {
   headerFields.title.value = authoredConfig.display.title;
   headerFields.description.value = authoredConfig.display.description;
   const type = authoredConfig.organisation.type ?? '';
   const select = headerFields.organisationType;
   if (!Array.from(select.options).some(option => option.value === type)) select.add(new Option(type, type));
   select.value = type;
-  headerSummary.hidden = true;
-  headerEditor.hidden = false;
-  headerFields.cancel.onclick = guardDiscard(headerEditor, 'Discard changes to the plan details?',
+  headerDialog.showModal();
+  headerFields.cancel.onclick = guardDiscard(headerDialog, 'Discard changes to the plan details?',
     () => Array.from(new FormData(headerEditor)),
     () => { closeHeaderEditor(); editHeader.focus(); }
   );
@@ -3087,13 +3069,13 @@ function navigateTimeline(hash) {
 }
 
 editDeadlines.onclick = () => navigateTimeline('edit');
-timelineHeading.querySelector('.edit-graph').onclick = () => openAfterCancelling(() => navigateTimeline('edit/deadlines'));
+timelineHeading.querySelector('.edit-graph').onclick = () => whenEditorClosed(() => navigateTimeline('edit/deadlines'));
 function leaveCardEditor(hash) {
   if (cardEditor.open) {
-    openAfterCancelling(() => navigateTimeline(hash));
+    whenEditorClosed(() => navigateTimeline(hash));
   } else navigateTimeline(hash);
 }
-timelineHeading.querySelector('.finish-graph-edit').onclick = () => openAfterCancelling(async () => {
+timelineHeading.querySelector('.finish-graph-edit').onclick = () => whenEditorClosed(async () => {
   if (await saveConfirmedConfiguration() && editingDeadlines && !paletteDrafts.size && !pendingGraphChanges()) navigateTimeline('edit');
 });
 closeTimeline.onclick = () => leaveCardEditor('');
