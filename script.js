@@ -1151,8 +1151,6 @@ function writeIncomingEdges(plan, node, edges, originalEdges) {
     delete rule.weekday;
   } else if (original.weekday !== undefined && rule.kind !== 'course') rule.weekday = original.weekday;
   if (constraints.length) rule.constraints = constraints;
-  if (['nth_weekday', 'nth_full_weekday', 'last_weekday', 'next_weekday', 'previous_weekday'].includes(rule.kind)
-      && !Number.isInteger(window.scheduleEngine.configuredWeekday(plan, rule))) return false;
   plan.items[index].schedule = rule;
   return true;
 }

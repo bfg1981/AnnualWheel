@@ -38,6 +38,35 @@ test('removing a calendar cleans up references and preserves independent weekday
   assert.deepEqual(plan.items[0].schedule.constraints, ['shared']);
 });
 
+test('removing a shared weekday keeps the date dependencies and remaining calendar constraints usable', () => {
+  const plan = {
+    display: { locale: 'en-GB' },
+    constraints: { shared: { weekday: 3 }, avoid: { schedule: 'closed', no: true } },
+    schedules: { closed: { fixed: [8, 11, 31].map(day => ({ month: 5, day })) } },
+    items: [
+      { id: 'start', schedule: { kind: 'fixed', month: 5, day: 8 } },
+      { id: 'after', schedule: { kind: 'next_weekday', anchor: 'start' } },
+      { id: 'before', schedule: { kind: 'previous_weekday', anchor: 'start', inclusive: true } },
+      { id: 'second', schedule: { kind: 'nth_weekday', month: 5, occurrence: 2 } },
+      { id: 'full', schedule: { kind: 'nth_full_weekday', month: 5, occurrence: 2 } },
+      { id: 'last', schedule: { kind: 'last_weekday', month: 5 } },
+    ],
+  };
+  for (const item of plan.items.slice(1)) item.schedule.constraints = ['shared', 'avoid'];
+  applyRemovedNodes(plan, new Map([['constraint:shared', { constraintId: 'shared' }]]), effectiveItem);
+  const dates = resolveSchedule(plan, 2026);
+  for (const [id, day] of Object.entries({ after: 9, before: 7, second: 9, full: 12, last: 30 })) {
+    assert.equal(dates[id].date.getMonth(), 4);
+    assert.equal(dates[id].date.getDate(), day);
+    assert.equal(dates[id].conflicts, undefined);
+    assert.deepEqual(plan.items.find(item => item.id === id).schedule.constraints, ['avoid']);
+  }
+  plan.schedules.closed.weekdays = [0, 1, 2, 3, 4, 5, 6];
+  assert.deepEqual(resolveSchedule(plan, 2026).full.conflicts, ['closed']);
+  delete plan.items[1].schedule.anchor;
+  assert.throws(() => resolveSchedule(plan, 2026));
+});
+
 test('graph fields preserve types, empty collections, item order and literal mapping keys', () => {
   const plan = JSON.parse('{"items":[{"id":"later"},{"id":"earlier","extra":null}],"anchors":{},"flags":[false,2,"2"],"overrides":{"a.b":[],"__proto__":{"value":0}}}');
   assert.deepEqual(configurationFromFields([...configurationFields(plan)].reverse()), plan);
