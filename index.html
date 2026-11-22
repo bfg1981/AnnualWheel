@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Annual wheel</title>
-    <link rel="stylesheet" href="/styles.css?v=72" />
+    <link rel="stylesheet" href="/styles.css?v=73" />
   </head>
   <body>
     <main class="app-shell">
@@ -26,6 +26,11 @@
               <label><span data-i18n="Title">Title</span><input name="title" required></label>
               <label><span data-i18n="Organisation type">Organisation type</span><select name="organisationType"><option value="">—</option><option value="organisation" data-i18n="Organisation">Organisation</option><option value="individual" data-i18n="Individual">Individual</option></select></label>
               <label><span data-i18n="Description">Description</span><textarea name="description" rows="3"></textarea></label>
+              <details id="advanced-options">
+                <summary id="config-editor-title" data-i18n="Advanced options">Advanced options</summary>
+                <div class="config-editor-tree" role="tree" aria-labelledby="config-editor-title"></div>
+              </details>
+              <p class="config-editor-error" role="alert"></p>
               <div><button type="submit" data-i18n-aria-label="Apply changes" aria-label="Apply changes" title="Apply changes" data-icon="confirm"></button> <button type="button" name="cancel" data-i18n-aria-label="Cancel" aria-label="Cancel" title="Cancel" data-icon="cancel"></button></div>
             </form>
           </dialog>
@@ -58,7 +63,6 @@
             <button type="button" class="export-plan" data-i18n="Download configuration">Download configuration</button>
             <button type="button" class="close-timeline" data-i18n="Back to wheel">Back to wheel</button>
           </header>
-          <button type="button" class="graph-plan open-config" aria-haspopup="dialog" aria-controls="advanced-options" data-i18n="Advanced options" hidden>Advanced options</button>
           <div class="graph-workspace">
             <div class="graph-palette" role="group" data-i18n-aria-label="Add to graph" hidden></div>
             <div class="schedule-viewport"><div class="schedule-cards">
@@ -85,14 +89,6 @@
         </div>
       </section>
     </main>
-    <dialog id="advanced-options" class="config-editor" aria-labelledby="config-editor-title">
-      <form method="dialog">
-        <header><h2 id="config-editor-title" data-i18n="Advanced options">Advanced options</h2><button formnovalidate class="config-editor-close" aria-label="Close" data-i18n-aria-label="Close" data-icon="close"></button></header>
-        <div class="config-editor-tree" role="tree" aria-labelledby="config-editor-title"></div>
-        <p class="config-editor-error" role="alert"></p>
-        <footer><button formnovalidate value="cancel" data-i18n-aria-label="Cancel" aria-label="Cancel" title="Cancel" data-icon="cancel"></button><button type="button" class="config-editor-apply" data-i18n-aria-label="Apply changes" aria-label="Apply changes" title="Apply changes" data-icon="confirm"></button></footer>
-      </form>
-    </dialog>
     <aside id="dependency-preview" role="tooltip" hidden>
       <h2></h2>
       <fieldset class="card-editor-fields" disabled></fieldset>
@@ -130,11 +126,10 @@
         <button autofocus data-i18n="Close">Close</button>
       </form>
     </dialog>
-    <script type="importmap">{"imports":{"yaml":"/node_modules/yaml/browser/index.js"}}</script>
     <script src="/annual-wheel-config.js"></script>
     <script src="/lib/schedule.browser.js?v=31"></script>
     <script src="/lib/i18n.browser.js?v=45"></script>
     <script src="/lib/control-icons.js?v=3"></script>
-    <script src="/script.js?v=110"></script>
+    <script type="module" src="/script.js?v=115"></script>
   </body>
 </html>

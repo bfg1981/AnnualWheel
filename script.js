@@ -1,9 +1,11 @@
+import { planSettings, readPlan, toPlanDocument } from './lib/plan-graph.js?v=4';
+
 const calendarSources = window.annualWheelCalendarSources ?? {};
 const scheduleResolver = (plan, year, anchors, overrides) =>
   window.scheduleEngine.resolveSchedule(plan, year, anchors, overrides, calendarSources);
 const resolveAnchorDate = (anchor, year, override) => window.scheduleEngine.resolveAnchorDate(anchor, year, override, config.display.locale);
 const statusResolver = window.scheduleEngine.resolveItemStatuses;
-let authoredConfig=window.annualWheelConfig;if(!authoredConfig)throw new Error('Configuration file is missing');if(!window.annualWheelI18n)throw new Error('Translation catalogue is missing');
+let authoredConfig=readPlan(window.annualWheelConfig);if(!authoredConfig)throw new Error('Configuration file is missing');if(!window.annualWheelI18n)throw new Error('Translation catalogue is missing');
 authoredConfig = window.scheduleEngine.normalizeAnchorDependencies(authoredConfig);
 const initialConfiguration = structuredClone(authoredConfig);
 function effectiveConfiguration(plan) {
@@ -295,7 +297,10 @@ panel.addEventListener('click', event => {
   }
 });
 let dragAngle;const pointer=e=>{const b=wheel.getBoundingClientRect();return Math.atan2(e.clientY-b.top-b.height/2,e.clientX-b.width/2-b.left)*180/Math.PI};wheel.addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;dragAngle=pointer(e);wheel.classList.add('is-dragging');wheel.setPointerCapture(e.pointerId)});wheel.addEventListener('pointermove',e=>{if(!wheel.hasPointerCapture(e.pointerId))return;const angle=pointer(e);let delta=angle-dragAngle;if(delta>180)delta-=360;if(delta<-180)delta+=360;rotation+=delta;dragAngle=angle;updateYearBand(year);apply();updateContinuousYear();updateDisplayDateCard();paint()});wheel.addEventListener('pointerup',e=>{wheel.releasePointerCapture(e.pointerId);wheel.classList.remove('is-dragging')});
-const configEditor=document.querySelector('.config-editor'),configEditorTree=configEditor.querySelector('.config-editor-tree'),configEditorError=configEditor.querySelector('.config-editor-error');let sessionConfigDraft;
+const advancedOptions = document.querySelector('#advanced-options');
+const configEditorTree = advancedOptions.querySelector('.config-editor-tree');
+const configEditorError = document.querySelector('#plan-header-editor .config-editor-error');
+let sessionConfigDraft;
 document.querySelector('.export-calendar').addEventListener('click',async()=>{const displayDate=displayDateAtTop();if((displayDate.getMonth()!==0||displayDate.getDate()!==1)&&!window.confirm(t('The display date is {date}, not 1 January. The export may not cover a full calendar year. Continue?',{date:new Intl.DateTimeFormat(locale,{dateStyle:'long'}).format(displayDate)})))return;paintNow();const {createCalendarEvents,toICalendar,calendarExportFilename}=await import('/lib/calendar-export.js');const items=[...panel.querySelectorAll('[data-deadline-id]')].filter(card=>card.dataset.exportEligible==='true'&&!card.classList.contains('is-layer-hidden')).map(card=>({id:card.dataset.deadlineId,date:card.dataset.exportDate,title:card.querySelector('h2').textContent,description:card.querySelector('.rule-line').textContent,tentative:card.classList.contains('is-derived')||card.classList.contains('is-anchor')}));const events=createCalendarEvents(items),content=toICalendar(events,{name:config.display.title}),url=URL.createObjectURL(new Blob([content],{type:'text/calendar;charset=utf-8'})),link=document.createElement('a');link.href=url;link.download=calendarExportFilename(config.display.title,inputValue(displayDate),events);document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)});
 const settingsButton=document.querySelector('.profile'),renderSettings=document.querySelector('#render-settings'),annulusCheckbox=document.querySelector('#show-year-annulus');annulusCheckbox.checked=stage.classList.contains('has-year-annulus');settingsButton.addEventListener('click',()=>{renderSettings.hidden=!renderSettings.hidden;settingsButton.setAttribute('aria-expanded',String(!renderSettings.hidden))});annulusCheckbox.addEventListener('change',()=>stage.classList.toggle('has-year-annulus',annulusCheckbox.checked));document.addEventListener('click',event=>{if(!event.target.closest('.settings-menu')){renderSettings.hidden=true;settingsButton.setAttribute('aria-expanded','false')}});
 const rimShadingCheckbox=document.querySelector('#show-rim-shading');stage.classList.toggle('has-rim-shading',rimShadingCheckbox.checked);rimShadingCheckbox.addEventListener('change',()=>stage.classList.toggle('has-rim-shading',rimShadingCheckbox.checked));
@@ -306,8 +311,21 @@ const quarterLabels=Array.from({length:4},(_,index)=>{const label=document.creat
 const terminLabels=Array.from({length:6},(_,index)=>{const label=document.createElement('span');label.className='quarter-label';label.textContent=`T${index+1}`;wheel.append(label);return label});function updateTerminLabels(){const start=Date.UTC(year,0,1),total=Date.UTC(year+1,0,1)-start,radius=47-(parseFloat(bandElements[1].style.inset)||0);terminLabels.forEach((label,index)=>{label.hidden=!bandControls[1][1].checked;const middle=(Date.UTC(year,index*2,1)+Date.UTC(year,(index+1)*2,1))/2,angle=(middle-start)/total*2*Math.PI-Math.PI/2;label.style.left=`${50+radius*Math.cos(angle)}%`;label.style.top=`${50+radius*Math.sin(angle)}%`})}bandControls.forEach(([,control])=>control.addEventListener('change',updateTerminLabels));annulusCheckbox.addEventListener('change',updateTerminLabels);rimShadingCheckbox.addEventListener('change',updateTerminLabels);new MutationObserver(updateTerminLabels).observe(yearLabel,{childList:true,characterData:true,subtree:true});updateTerminLabels();
 quarterLabels.forEach(label=>label.classList.add('quarter-period-label'));terminLabels.forEach(label=>label.classList.add('termin-period-label'));const labelSettings=[[annulusCheckbox,'year-labels'],[bandControls[0][1],'quarter-labels'],[bandControls[1][1],'termin-labels'],[monthWedgesCheckbox,'month-labels']];labelSettings.forEach(([parent,name],index)=>{const row=document.createElement('label'),checkbox=document.createElement('input'),text=document.createElement('span');row.className='render-settings-child';checkbox.type='checkbox';checkbox.checked=true;text.textContent=t('Show labels');row.append(checkbox,text);parent.closest('label').after(row);const update=()=>{const enabled=index===0||index===3||parent.checked;checkbox.disabled=!enabled;stage.classList.toggle(`hide-${name}`,!enabled||!checkbox.checked)};parent.addEventListener('change',update);checkbox.addEventListener('change',update);update()});
 const sessionPathName=path=>path.map(part=>String(part)).join('.'),sessionPathValue=(object,path)=>path.reduce((value,key)=>value[key],object),setSessionPathValue=(object,path,value)=>{const key=path.at(-1),parent=sessionPathValue(object,path.slice(0,-1));parent[key]=value},parseSessionValue=(value,original)=>typeof original==='number'?Number(value):typeof original==='boolean'?value==='true':value;
-const sessionEnumOptions=path=>{const name=sessionPathName(path),itemField=path[0]==='items'&&path.length===3?path[2]:undefined,scheduleField=path[0]==='items'&&path[2]==='schedule'?path[3]:undefined,unique=values=>[...new Set(values)].map(value=>({value,label:String(value)})),weekdays=values=>values.map(value=>({value,label:weekdayName(value)}));if(name==='organisation.timezone')return unique([...Intl.supportedValuesOf('timeZone'),'UTC',sessionConfigDraft.organisation.timezone].sort());if(name==='display.locale'||name==='translations.autoTranslate.sourceLocale')return unique(sessionConfigDraft.display.locales);if(name==='display.renderMode')return unique(['year','continuous']);if(name==='display.fonts.provider')return unique(['google','selfHosted']);if(name==='translations.autoTranslate.provider')return unique(['deepl']);if(itemField==='kind')return unique(['deadline','anchor','event','course',...Object.keys(sessionConfigDraft.autoLayers || {}),...sessionConfigDraft.items.map(item=>window.scheduleEngine.effectiveItem(sessionConfigDraft,item).kind).filter(Boolean)]);if(itemField==='layer')return unique(['auto',...Object.keys(sessionConfigDraft.layers)]);if(itemField==='status')return unique(['set','derived','anchor']);if(scheduleField==='kind')return unique(['anchor','fixed','group','offset_from_date','offset_from_month_start','offset_from_month_end','nth_weekday','nth_full_weekday','last_weekday','month_start','month_end','next_weekday','previous_weekday','offset','course']);if(scheduleField==='anchor')return unique(Object.keys(window.scheduleEngine.scheduleAnchors(sessionConfigDraft)));if(scheduleField==='weekday'||path.at(-1)==='weekday')return weekdays([0,1,2,3,4,5,6]);if(scheduleField==='direction')return unique(['forward','backward']);if(path[0]==='schedules'&&path.length===3&&path[2]==='calendar')return unique(Object.keys(calendarSources));if(path[0]==='schedules'&&path.at(-1)==='estimateBy')return unique(['isoWeek','easter','monthDay']);if(path[0]==='schedules'&&path[2]==='includes')return unique(Object.keys(sessionConfigDraft.schedules).filter(id=>id!==path[1]));if(path[0]==='constraints'&&path.at(-1)==='schedule')return unique(Object.keys(sessionConfigDraft.schedules||{}));if(path[0]==='items'&&path.includes('constraints'))return unique(Object.keys(sessionConfigDraft.constraints||{}));if(path[0]==='items'&&path.includes('skip'))return unique(['easter','autumn_holiday']);return undefined};
-const sessionSpinboxBounds=path=>{const field=path.at(-1),parent=sessionPathValue(sessionConfigDraft,path.slice(0,-1));if(field==='month')return{min:1,max:12};if(field==='day'){const month=Number(parent.month);return{min:1,max:month>=1&&month<=12?new Date(2024,month,0).getDate():31}}return undefined},syncSessionDaySpinbox=path=>{if(path.at(-1)!=='month')return;const dayPath=JSON.stringify([...path.slice(0,-1),'day']),bounds=sessionSpinboxBounds([...path.slice(0,-1),'day']);document.querySelectorAll('input[data-session-path]').forEach(control=>{if(control.dataset.sessionPath!==dayPath)return;control.max=String(bounds.max);if(Number(control.value)>bounds.max){control.value=String(bounds.max);setSessionPathValue(sessionConfigDraft,JSON.parse(dayPath),bounds.max)}})};
+function sessionEnumOptions(path) {
+  let values;
+  switch (sessionPathName(path)) {
+    case 'organisation.timezone':
+      values = [...Intl.supportedValuesOf('timeZone'), 'UTC', sessionConfigDraft.organisation.timezone].sort();
+      break;
+    case 'display.locale':
+    case 'translations.autoTranslate.sourceLocale': values = sessionConfigDraft.display.locales; break;
+    case 'display.renderMode': values = ['year', 'continuous']; break;
+    case 'display.fonts.provider': values = ['google', 'selfHosted']; break;
+    case 'translations.autoTranslate.provider': values = ['deepl']; break;
+    default: return;
+  }
+  return [...new Set(values)].map(value => ({ value, label: value }));
+}
 const validateSessionField=async(input,path)=>{if(!sessionPathName(path).startsWith('display.fonts.'))return;const revision=String(Number(input.dataset.validationRevision||0)+1);input.dataset.validationRevision=revision;try{await validateFontSettings(sessionConfigDraft.display.fonts);if(input.dataset.validationRevision!==revision)return;input.classList.remove('is-invalid');input.removeAttribute('title')}catch(error){if(input.dataset.validationRevision!==revision)return;input.classList.add('is-invalid');input.title=error.message}};
 const translationStrings = new Set(window.annualWheelTranslationStrings ?? []);
 const discardDialog = document.querySelector('#discard-changes');
@@ -665,7 +683,7 @@ function refreshTranslationLanguages() {
   }
 }
 
-function renderSessionConfigNode(value, path, parent, label, readOnly = false) {
+function renderSessionConfigNode(value, path, parent, label) {
   if (value !== null && typeof value === 'object') {
     const details = document.createElement('details');
     const summary = document.createElement('summary');
@@ -673,12 +691,12 @@ function renderSessionConfigNode(value, path, parent, label, readOnly = false) {
     summary.textContent = label;
     details.append(summary);
     const name = sessionPathName(path);
-    if (!readOnly && name === 'display.locales') {
+    if (name === 'display.locales') {
       renderDisplayLocales(details);
       parent.append(details);
       return;
     }
-    if (!readOnly && (name === 'translations.overrides' || name === 'translations.autoTranslate.targets')) {
+    if (name === 'translations.overrides' || name === 'translations.autoTranslate.targets') {
       const content = document.createElement('div');
       if (name === 'translations.overrides') content.dataset.translationOverrides = '';
       else content.dataset.translationTargets = '';
@@ -688,23 +706,16 @@ function renderSessionConfigNode(value, path, parent, label, readOnly = false) {
     }
     for (const [key, child] of Object.entries(value)) {
       const part = Array.isArray(value) ? Number(key) : key;
-      renderSessionConfigNode(child, [...path, part], details, Array.isArray(value) ? `[${key}]` : key, readOnly);
+      renderSessionConfigNode(child, [...path, part], details, Array.isArray(value) ? `[${key}]` : key);
     }
     parent.append(details);
     return;
   }
 
-  const field = document.createElement(readOnly ? 'div' : 'label');
+  const field = document.createElement('label');
   const caption = document.createElement('span');
   field.className = 'config-editor-field';
   caption.textContent = label;
-  if (readOnly) {
-    const text = document.createElement('span');
-    text.textContent = String(value);
-    field.append(caption, text);
-    parent.append(field);
-    return;
-  }
   const options = sessionEnumOptions(path);
   const control = document.createElement(options ? 'select' : 'input');
   if (options) {
@@ -713,8 +724,7 @@ function renderSessionConfigNode(value, path, parent, label, readOnly = false) {
     control.type = 'checkbox';
   } else if (typeof value === 'number') {
     control.type = 'number';
-    const bounds = sessionSpinboxBounds(path);
-    if (bounds) Object.assign(control, { min: bounds.min, max: bounds.max, step: 1 });
+    control.step = 'any';
   }
   if (control.type === 'checkbox') control.checked = value;
   else control.value = value ?? '';
@@ -729,7 +739,6 @@ function renderSessionConfigNode(value, path, parent, label, readOnly = false) {
     const next = control.type === 'checkbox' ? control.checked : parseSessionValue(control.value, value);
     setSessionPathValue(sessionConfigDraft, path, next);
     if (isTranslationSource) refreshTranslationLanguages();
-    syncSessionDaySpinbox(path);
     validateSessionField(control, path);
   });
   field.append(caption, control);
@@ -737,82 +746,27 @@ function renderSessionConfigNode(value, path, parent, label, readOnly = false) {
   validateSessionField(control, path);
 }
 const validateSessionConfiguration=next=>{if(!next||typeof next!=='object'||!next.organisation?.name||typeof next.organisation.name!=='string'||!next.display||typeof next.display.title!=='string'||typeof next.display.description!=='string'||!next.layers||typeof next.layers!=='object'||!next.anchors||typeof next.anchors!=='object'||!Array.isArray(next.items))throw new Error('Configuration must contain organisation.name, display.title, display.description, layers, anchors, and items.');if(next.initialYear!=='current'&&!Number.isInteger(next.initialYear))throw new Error('initialYear must be current or a whole year number.');Object.entries(next.layers).forEach(([id,layer])=>{if(typeof layer?.label!=='string'||typeof layer?.color!=='string'||!CSS.supports('color',layer.color))throw new Error(`Layer ${id} must have a label and valid color.`)});Object.entries(next.anchors).forEach(([id,anchor])=>{if(typeof anchor?.title!=='string'||!anchor.defaultDate)throw new Error(`Anchor ${id} must have a title and valid default date.`);resolveAnchorDate(anchor,year)});const ids=new Set;next.items.forEach(item=>{if(typeof item?.id!=='string'||!item.id||ids.has(item.id))throw new Error('Every item must have a unique id.');ids.add(item.id);if(typeof item.title!=='string'||!item.schedule||typeof item.schedule!=='object')throw new Error(`Item ${item.id} must have a title and schedule.`);const itemLayer=item.layer==='auto'?next.autoLayers?.[item.kind]:item.layer;if(!next.layers[itemLayer])throw new Error(`Item ${item.id} refers to an unknown layer.`);if(item.group&&!next.groups?.[item.group])throw new Error(`Item ${item.id} refers to an unknown group.`)});scheduleResolver(next,year)};
-let advancedFields = [];
-const advancedButton = panel.querySelector('.open-config');
-function openAdvancedOptions() {
-  sessionConfigDraft = structuredClone(authoredConfig);
-  const tree = graphView.configurationFromFields(advancedFields.map(({ path }) => ({
-    path, value: sessionPathValue(sessionConfigDraft, path),
-  })));
-  if (editingDeadlines && sessionConfigDraft.translations?.autoTranslate) {
-    tree.translations ??= {};
-    tree.translations.autoTranslate ??= {};
-    tree.translations.autoTranslate.sourceLocale ??= sessionConfigDraft.translations.autoTranslate.sourceLocale ?? '';
+function prepareAdvancedOptions() {
+  sessionConfigDraft = structuredClone(planSettings(authoredConfig));
+  const tree = structuredClone(sessionConfigDraft);
+  delete tree.display.title;
+  delete tree.display.description;
+  delete tree.organisation.type;
+  delete tree.organisation.name;
+  if (tree.translations?.autoTranslate) {
+    tree.translations.autoTranslate.sourceLocale ??= '';
     tree.translations.autoTranslate.targets ??= [];
     tree.translations.overrides ??= {};
   }
-  configEditorTree.replaceChildren();
-  for (const [key, value] of Object.entries(tree)) renderSessionConfigNode(value, [key], configEditorTree, key, !editingDeadlines);
-  if (editingDeadlines) refreshTranslationLanguages();
-  configEditor.querySelector('.config-editor-apply').hidden = !editingDeadlines;
-  const dismiss = configEditor.querySelector('[value=cancel]');
-  dismiss.dataset.i18nAriaLabel = editingDeadlines ? 'Cancel' : 'Close';
-  dismiss.title = t(dismiss.dataset.i18nAriaLabel);
-  dismiss.setAttribute('aria-label', dismiss.title);
-  if (editingDeadlines) setControlIcon(dismiss, 'cancel');
-  else { delete dismiss.dataset.icon; dismiss.textContent = dismiss.title; }
+  advancedOptions.open = false;
   configEditorError.textContent = '';
-  const cancel = guardDiscard(configEditor, 'Discard changes to advanced options?', () => ({
-    plan: sessionConfigDraft,
-    pendingLocales: Array.from(configEditorTree.querySelectorAll('[data-custom-locale]:enabled'), input => input.value).filter(Boolean),
-    incompleteNumbers: Array.from(configEditorTree.querySelectorAll('input[type="number"]'))
-      .filter(input => !input.value || input.validity.badInput).map(input => input.dataset.sessionPath),
-  }), () => configEditor.close());
-  configEditor.querySelector('form').onsubmit = cancel;
-  configEditor.showModal();
-}
-advancedButton.onclick = () => editingDeadlines ? whenEditorClosed(openAdvancedOptions) : openAdvancedOptions();
-configEditor.querySelector('.config-editor-apply').onclick = async event => {
-  if (!editingDeadlines) return;
-  if (!configEditor.querySelector('form').reportValidity()) return;
-  const button = event.currentTarget;
-  button.disabled = true;
-  try {
-    let next = structuredClone(authoredConfig);
-    for (const { path } of advancedFields) {
-      if (path[0] === 'display' && path[1] === 'locales') continue;
-      if (path[0] === 'translations' && path[1] === 'overrides') continue;
-      if (path[0] === 'translations' && path[1] === 'autoTranslate') continue;
-      setSessionPathValue(next, path, sessionPathValue(sessionConfigDraft, path));
-    }
-    if (sessionConfigDraft.display.locales) next.display.locales = [...sessionConfigDraft.display.locales];
-    if (sessionConfigDraft.translations?.autoTranslate) {
-      next.translations.autoTranslate = structuredClone(sessionConfigDraft.translations.autoTranslate);
-    }
-    if (sessionConfigDraft.translations?.overrides) {
-      next.translations.overrides = structuredClone(sessionConfigDraft.translations.overrides);
-    } else if (next.translations) {
-      delete next.translations.overrides;
-    }
-    next = window.scheduleEngine.normalizeAnchorDependencies(next);
-    const effective = effectiveConfiguration(next);
-    validateSessionConfiguration(effective);
-    if (JSON.stringify(next.display.fonts) !== JSON.stringify(authoredConfig.display.fonts)) {
-      await applyFontSettings(next.display.fonts);
-    }
-    const modeChanged = next.display.renderMode !== authoredConfig.display.renderMode;
-    authoredConfig = next;
-    config = effective;
-    if (modeChanged) setRenderMode(next.display.renderMode);
-    paintNow();
-    configEditor.close();
-    saveConfirmedConfiguration();
-  } catch (error) {
-    configEditorError.textContent = error.message;
-  } finally {
-    button.disabled = false;
+  configEditorTree.replaceChildren();
+  for (const [key, value] of Object.entries(tree)) {
+    if (value && typeof value === 'object' && !Object.keys(value).length) continue;
+    renderSessionConfigNode(value, [key], configEditorTree, key);
   }
-};
+  refreshTranslationLanguages();
+}
 
 // The editor uses the live cards, so expanded controls, overrides and anchor
 // dependencies are shared with the wheel. Each grid column is one civil day.
@@ -2999,9 +2953,8 @@ function paintConfigurationNodes(cards, expanded) {
     if (section === 'schedules') return calendarRow(key);
     return null;
   }
-  advancedFields = graphView.renderConfigurationNodes(panel, authoredConfig, sourceTexts, owner, expanded,
+  graphView.renderConfigurationNodes(panel, authoredConfig, sourceTexts, owner, expanded,
     metadata => graphView.recoverGraphFields(panel, timelineEdges, metadata));
-  advancedButton.hidden = advancedFields.length === 0;
 }
 
 function configurationForExport() {
@@ -3012,7 +2965,7 @@ function configurationForExport() {
     paintTimeline();
     lastPanelCalculation = performance.now();
   }
-  return graphView.readDisplayedConfiguration(panel);
+  return toPlanDocument(graphView.readDisplayedConfiguration(panel), window.annualWheelConfig);
 }
 
 function showSaveNotice(message, heading = 'Configuration not saved') {
@@ -3025,7 +2978,7 @@ function showSaveNotice(message, heading = 'Configuration not saved') {
 let configurationSaver;
 function getConfigurationSaver() {
   configurationSaver ??= Promise.all([graphReady, import('/lib/config-save.js?v=3')]).then(([graph, module]) =>
-    module.createConfigurationSaver(graph.sourceConfiguration(initialConfiguration, sourceTexts)));
+    module.createConfigurationSaver(toPlanDocument(graph.sourceConfiguration(initialConfiguration, sourceTexts), window.annualWheelConfig)));
   return configurationSaver;
 }
 
@@ -3065,7 +3018,7 @@ async function saveConfirmedConfiguration() {
   try {
     if (!graphView) await graphReady;
     plan = configurationForExport();
-    validateSessionConfiguration(effectiveConfiguration(plan));
+    validateSessionConfiguration(effectiveConfiguration(readPlan(plan)));
   } catch (problem) {
     showSaveNotice(problem.message);
     return false;
@@ -3098,11 +3051,10 @@ panel.querySelector('.export-plan').onclick = async () => {
   if (pendingGraphChanges() || paletteDrafts.size) return;
   await graphReady;
   const plan = configurationForExport();
-  const { stringify } = await import('yaml');
-  const url = URL.createObjectURL(new Blob([stringify(plan)], { type: 'application/yaml' }));
+  const url = URL.createObjectURL(new Blob([JSON.stringify(plan, null, 2) + '\n'], { type: 'application/json' }));
   const link = document.createElement('a');
   link.href = url;
-  link.download = 'annual-wheel.yaml';
+  link.download = 'annual-wheel.json';
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
@@ -3218,6 +3170,7 @@ function closeHeaderEditor() {
 }
 
 editHeader.onclick = () => whenEditorClosed(() => {
+  prepareAdvancedOptions();
   headerFields.title.value = authoredConfig.display.title;
   headerFields.description.value = authoredConfig.display.description;
   const type = authoredConfig.organisation.type ?? '';
@@ -3227,24 +3180,49 @@ editHeader.onclick = () => whenEditorClosed(() => {
   headerDialog.showModal();
   if (!editingDeadlines) checkSavingOnEdit();
   headerFields.cancel.onclick = guardDiscard(headerDialog, 'Discard changes to the plan details?',
-    () => Array.from(new FormData(headerEditor)),
+    () => ({
+      header: Array.from(new FormData(headerEditor)),
+      settings: sessionConfigDraft,
+      pendingLocales: Array.from(configEditorTree.querySelectorAll('[data-custom-locale]:enabled'), input => input.value).filter(Boolean),
+      incompleteNumbers: Array.from(configEditorTree.querySelectorAll('input[type="number"]'))
+        .filter(input => !input.value || input.validity.badInput).map(input => input.dataset.sessionPath),
+    }),
     () => { closeHeaderEditor(); editHeader.focus(); }
   );
   headerFields.title.focus();
 });
-headerEditor.onsubmit = event => {
+headerEditor.onsubmit = async event => {
   event.preventDefault();
-  authoredConfig.display.title = headerFields.title.value;
-  authoredConfig.display.description = headerFields.description.value;
-  const type = headerFields.organisationType.value;
-  if (type) authoredConfig.organisation.type = type;
-  else if (authoredConfig.organisation.type) delete authoredConfig.organisation.type;
-  config = effectiveConfiguration(authoredConfig);
-  renderPlanHeader();
-  closeHeaderEditor();
-  paintTimeline();
-  editHeader.focus();
-  saveConfirmedConfiguration();
+  const submit = headerEditor.querySelector('[type="submit"]');
+  if (submit.disabled) return;
+  submit.disabled = true;
+  configEditorError.textContent = '';
+  try {
+    const next = { ...authoredConfig, ...structuredClone(sessionConfigDraft) };
+    next.display.title = headerFields.title.value;
+    next.display.description = headerFields.description.value;
+    const type = headerFields.organisationType.value;
+    if (type) next.organisation.type = type;
+    else delete next.organisation.type;
+    const effective = effectiveConfiguration(next);
+    validateSessionConfiguration(effective);
+    if (JSON.stringify(next.display.fonts) !== JSON.stringify(authoredConfig.display.fonts)) {
+      await applyFontSettings(next.display.fonts);
+    }
+    const modeChanged = next.display.renderMode !== authoredConfig.display.renderMode;
+    authoredConfig = next;
+    config = effective;
+    renderPlanHeader();
+    if (modeChanged) setRenderMode(next.display.renderMode);
+    closeHeaderEditor();
+    paintTimeline();
+    editHeader.focus();
+    await saveConfirmedConfiguration();
+  } catch (error) {
+    configEditorError.textContent = error.message;
+  } finally {
+    submit.disabled = false;
+  }
 };
 function setTimelineEditor(open, editable) {
   if (!editable && cardEditor.open) cardEditor.close();
@@ -3254,7 +3232,6 @@ function setTimelineEditor(open, editable) {
   editingDeadlines = editable;
   palette.hidden = !editable;
   graphGroupExpansion.clear();
-  if (configEditor.open) configEditor.close();
   const heading = timelineHeading.querySelector('h2');
   heading.dataset.i18n = editable ? 'Edit deadlines' : 'Dependency graph';
   heading.textContent = t(heading.dataset.i18n);

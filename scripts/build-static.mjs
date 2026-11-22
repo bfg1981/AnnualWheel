@@ -2,7 +2,8 @@ import { cp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { loadPlanCalendars } from '../lib/calendar-sources.mjs';
 import { sourceTextChanges } from '../lib/config-graph.js';
-import YAML from 'yaml';
+import { readPlanFile } from './read-plan.mjs';
+import { readPlan, toPlanDocument } from '../lib/plan-graph.js';
 import { normalizeAnchorDependencies } from '../lib/schedule.mjs';
 import { applyConfigurationTranslationOverrides, applyConfigurationTranslations, configurationTranslationValues, translateStrings } from '../lib/config-translations.mjs';
 
@@ -12,8 +13,8 @@ const setup = await readFile('setup.json', 'utf8').then(JSON.parse).catch(error 
 });
 const debug = setup.debug || {};
 const buildSettings = { animationTime: Number(setup.animationTime) || 400, gracePeriod: Number(setup.gracePeriod) || 31, showYearAnnulus: setup.showYearAnnulus !== false, debug: { enabled: Boolean(debug.enabled), years: Boolean(debug.years), currentDisplayDate: Boolean(debug.currentDisplayDate) } };
-const sourceConfig = process.argv[2] || setup.sourceConfig || 'config/annual-wheel.yaml';
-const inputPlan = YAML.parse(await readFile(sourceConfig, 'utf8'));
+const { path: sourceConfig, document } = await readPlanFile(process.argv[2] || setup.sourceConfig);
+const inputPlan = readPlan(document);
 if (!inputPlan?.organisation?.name || !Array.isArray(inputPlan?.items)) {
   throw new Error('Invalid configuration: organisation.name and items are required.');
 }
@@ -22,7 +23,7 @@ const { plan: config, sources } = await loadPlanCalendars(normalizeAnchorDepende
 const sourceDocument = { display: {}, items: [], schedules: sources };
 const fallbackLocale = config.display.locale;
 const locales = [...new Set([fallbackLocale, ...config.display.locales])];
-const indexTemplate = (await readFile('index.html', 'utf8')).replace('/node_modules/yaml/browser/index.js', '/lib/yaml/index.js');
+const indexTemplate = await readFile('index.html', 'utf8');
 const localeIndex = (locale, configPath) => indexTemplate
   .replace('<html lang="en">', '<html lang="' + locale + '" data-annual-wheel-locale="' + locale + '">')
   .replace('src="/annual-wheel-config.js"', 'src="' + configPath + '"');
@@ -105,14 +106,18 @@ if (fontSettings?.provider === 'selfHosted') {
   await cp(directory, join(output, directory), { recursive: true });
 }
 
+const sourcePlanDocument = toPlanDocument(config, document);
+const sourceProjection = readPlan(sourcePlanDocument);
+
 function browserConfig(locale) {
   const build = builds.get(locale) ?? { plan: config, sources };
+  const planDocument = build.plan === config ? sourcePlanDocument : toPlanDocument(build.plan, document);
   return [
     '// Generated from ' + basename(sourceConfig) + '. Do not edit directly.',
-    'window.annualWheelConfig = ' + JSON.stringify(build.plan, null, 2) + ';',
+    'window.annualWheelConfig = ' + JSON.stringify(planDocument, null, 2) + ';',
     'window.annualWheelCalendarSources = ' + JSON.stringify(build.sources) + ';',
     'window.annualWheelTranslationStrings = ' + JSON.stringify([...new Set(values)]) + ';',
-    'window.annualWheelSourceTexts = ' + JSON.stringify(sourceTextChanges(config, build.plan)) + ';',
+    'window.annualWheelSourceTexts = ' + JSON.stringify(sourceTextChanges(sourceProjection, readPlan(planDocument))) + ';',
     'window.annualWheelBuild = ' + JSON.stringify(buildSettings) + ';',
     '',
   ].join('\n');
@@ -127,12 +132,11 @@ await writeFile(
 await Promise.all(locales.map(locale =>
   writeFile(join(output, locale, 'annual-wheel-config.js'), browserConfig(locale))));
 
+await cp('lib/plan-graph.js', join(output, 'lib', 'plan-graph.js'));
 await cp('lib/config-graph.js', join(output, 'lib', 'config-graph.js'));
 await cp('lib/dependency-drag.js', join(output, 'lib', 'dependency-drag.js'));
 await cp('lib/control-icons.js', join(output, 'lib', 'control-icons.js'));
 await cp('lib/config-save.js', join(output, 'lib', 'config-save.js'));
-await cp('node_modules/yaml/browser', join(output, 'lib', 'yaml'), { recursive: true });
-await cp('node_modules/yaml/LICENSE', join(output, 'lib', 'yaml', 'LICENSE'));
 await cp('lib/schedule.browser.js', join(output, 'lib', 'schedule.browser.js'));
 await cp('lib/i18n.browser.js', join(output, 'lib', 'i18n.browser.js'));
 await cp('lib/calendar-export.js', join(output, 'lib', 'calendar-export.js'));

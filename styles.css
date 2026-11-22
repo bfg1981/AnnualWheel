@@ -41,7 +41,12 @@ button { font:inherit; cursor:pointer; } .app-shell { max-width:1440px; margin:a
 .deadline-card .anchor-status { padding:4px 7px; font:700 12px/1 "DM Sans",sans-serif; align-self:center; }
 .wheel-stage:not(.has-year-annulus) .year-band,.wheel-stage:not(.has-year-annulus) .year-band-cut,.wheel-stage:not(.has-year-annulus) .ring-outer { display:none; }
 .helix-cut { position:absolute;width:min(100%,670px);aspect-ratio:1;border-radius:50%;pointer-events:none;z-index:8;opacity:0;transition:opacity .28s; }.helix-cut::before { content:"";position:absolute;left:50%;top:50%;width:23%;height:47%;transform:translateX(-50%);clip-path:polygon(43% 0,57% 0,100% 100%,0 100%);background:linear-gradient(to right,transparent 0,rgb(20 31 49 / .04) 24%,rgb(16 26 43 / .34) 48%,rgb(255 255 255 / .62) 55%,rgb(255 255 255 / .10) 72%,transparent 100%);filter:blur(1.5px); }.helix-cut::after { content:"";position:absolute;left:50%;top:50%;width:4px;height:46%;transform:translateX(-50%);background:linear-gradient(to bottom,rgb(255 255 255 / .78),rgb(17 27 44 / .32) 72%,transparent);box-shadow:7px 0 12px rgb(16 26 43 / .22); }.wheel-stage.is-continuous .helix-cut { opacity:1; }.wheel-stage.is-continuous .year-wheel { box-shadow:0 20px 60px rgb(32 55 84/.08),inset 0 0 0 1px rgb(255 255 255/.75); }
-.config-editor { width:min(900px,calc(100vw - 32px)); max-height:calc(100vh - 32px); padding:0; border:0; border-radius:16px; box-shadow:0 24px 90px rgb(20 35 55 / .28); color:var(--ink); }.config-editor::backdrop { background:rgb(20 32 52 / .42); }.config-editor form { display:grid; grid-template-rows:auto auto minmax(260px,1fr) auto; gap:14px; padding:24px; max-height:calc(100vh - 32px); }.config-editor header,.config-editor footer { display:flex; align-items:center; justify-content:space-between; gap:12px; }.config-editor h2,.config-editor p { margin:0; }.config-editor h2 { font:600 26px/1 var(--font-serif); }.config-editor p { color:#69778a; font-size:13px; line-height:1.45; }.config-editor-close { border:0; background:transparent; color:#637187; font-size:28px; line-height:1; }.config-editor-tree { min-height:0; overflow:auto; border:1px solid #d7dee7; border-radius:8px; padding:10px; background:#f8fafc; color:#27384e; font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; }.config-editor-tree details { margin-left:12px; border-left:1px solid #e0e6ed; padding-left:10px; }.config-editor-tree summary { cursor:pointer; color:#56708f; font-weight:700; }.config-editor-field { display:grid; grid-template-columns:minmax(110px,36%) 1fr; align-items:center; gap:10px; padding:3px 0; }.config-editor-field > span { color:#5c6d81; overflow-wrap:anywhere; }.config-editor-field :is(input,select) { width:100%; border:1px solid #d7dee7; border-radius:5px; padding:4px 6px; background:#fff; color:#27384e; font:inherit; }.config-editor-field :is(input,select).is-invalid { border-color:#c94646; background:#fff1f1; color:#9e2929; box-shadow:0 0 0 2px rgb(201 70 70 / .12); }.config-editor-error { min-height:1.3em; color:#b43c3c!important; }.config-editor footer { justify-content:flex-end; }.config-editor footer button { border:1px solid #d5dce6; border-radius:7px; padding:8px 12px; background:#fff; color:#44546a; font-size:13px; font-weight:700; }.config-editor-apply { border-color:#315d9e!important; background:#315d9e!important; color:#fff!important; }
+.config-editor-tree { min-height:0; overflow:auto; border:1px solid #d7dee7; border-radius:8px; padding:10px; background:#f8fafc; color:#27384e; font:12px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace; }.config-editor-tree details { margin-left:12px; border-left:1px solid #e0e6ed; padding-left:10px; }.config-editor-tree summary { cursor:pointer; color:#56708f; font-weight:700; }.config-editor-field { display:grid; grid-template-columns:minmax(110px,36%) 1fr; align-items:center; gap:10px; padding:3px 0; }.config-editor-field > span { color:#5c6d81; overflow-wrap:anywhere; }.config-editor-field :is(input,select) { width:100%; border:1px solid #d7dee7; border-radius:5px; padding:4px 6px; background:#fff; color:#27384e; font:inherit; }.config-editor-field :is(input,select).is-invalid { border-color:#c94646; background:#fff1f1; color:#9e2929; box-shadow:0 0 0 2px rgb(201 70 70 / .12); }.config-editor-error { color: #b43c3c; margin: 0; }
+.config-editor-error:empty { display: none; }
+#advanced-options > summary { cursor: pointer; }
+#advanced-options[open] > summary { margin-bottom: .5rem; }
+#plan-header-editor:has(#advanced-options[open]) { width: min(48rem, 90vw); max-width: 90vw; }
+
 .override-field { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; }
 .override-picker { display: flex; gap: 8px; margin: 6px 0; }
 .override-picker select { min-width: 0; max-width: 75%; }
@@ -57,8 +62,8 @@ button { font:inherit; cursor:pointer; } .app-shell { max-width:1440px; margin:a
 .plan-intro { min-width: 0; }
 #plan-header-editor { width: min(30rem, 90vw); }
 #plan-header-editor form { display: grid; gap: .65rem; }
-#plan-header-editor label { display: grid; gap: .2rem; font-size: .85rem; }
-#plan-header-editor :is(input, select, textarea) { min-width: 0; padding: .4rem; border: 1px solid var(--line); border-radius: 5px; font: inherit; color: inherit; }
+#plan-header-editor form > label { display: grid; gap: .2rem; font-size: .85rem; }
+#plan-header-editor form > label > :is(input, select, textarea) { min-width: 0; padding: .4rem; border: 1px solid var(--line); border-radius: 5px; font: inherit; color: inherit; }
 #plan-header-editor textarea { resize: vertical; }
 :is(#config-dependencies, #discard-changes, #config-save-notice, #layer-editor, #plan-header-editor) { max-width: min(30rem, 90vw); padding: 1.5rem; border: 0; border-radius: 12px; color: var(--ink); }
 dialog::backdrop { background: rgb(20 32 52 / .42); }
@@ -124,10 +129,8 @@ dialog::backdrop { background: rgb(20 32 52 / .42); }
 .graph-navigation { border-top: 1px solid #edf0f2; padding-top: .5rem; }
 .graph-navigation .all-deadlines { display: flex; align-items: center; gap: .5rem; width: auto; padding: .4rem .5rem; border: 0; }
 .graph-navigation .all-deadlines span { float: none; font-size: inherit; }
-.config-editor form:has(.config-editor-apply[hidden]) { grid-template-rows: auto minmax(0, 1fr) auto auto; }
 .timeline-heading h2 { margin: 0; font-size: 1.25rem; }
-.close-timeline, .finish-graph-edit, .open-config { border: 1px solid var(--line); border-radius: 6px; background: white; color: #315d9e; padding: 6px 10px; font: inherit; font-size: 13px; }
-.open-config { margin-top: 12px; }
+.close-timeline, .finish-graph-edit { border: 1px solid var(--line); border-radius: 6px; background: white; color: #315d9e; padding: 6px 10px; font: inherit; font-size: 13px; }
 .editing-timeline { display: block; }
 .editing-timeline :is(.wheel-column, .panel-heading, .display-date-card, .deadline-group, .graph-navigation, .export-calendar) { display: none; }
 .graph-workspace:has(.graph-palette:not([hidden])) { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .5rem; }
@@ -332,10 +335,8 @@ dialog::backdrop { background: rgb(20 32 52 / .42); }
   stroke-dasharray: 3 4;
 }
 
-.graph-plan, .graph-config-node { display: none; }
-.editing-timeline .graph-plan, .editing-timeline .graph-config-node { display: block; }
-.editing-timeline .graph-plan[hidden] { display: none; }
-.graph-plan { margin: 0 0 .8rem; color: var(--ink); }
+.graph-config-node { display: none; }
+.editing-timeline .graph-config-node { display: block; }
 .graph-config-node { grid-column: 1 / -1; min-width: 0; color: #374961; font: 12px/1.45 var(--font-sans); text-align: left; }
 .graph-config-node summary { cursor: pointer; }
 .graph-config-node summary { color: #385c83; overflow-wrap: anywhere; }
