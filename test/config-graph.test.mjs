@@ -3,9 +3,53 @@ import test from 'node:test';
 import { mkdtemp, writeFile, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
-import { applyRemovedNodes, configurationFields, configurationFromFields, readDisplayedConfiguration, renderConfigurationNodes, sourceTextChanges } from '../lib/config-graph.js';
+import { missingDateDependencies, withDatePrerequisite, applyRemovedNodes, configurationFields, configurationFromFields, readDisplayedConfiguration, renderConfigurationNodes, sourceTextChanges } from '../lib/config-graph.js';
 import { loadPlanCalendars } from '../lib/calendar-sources.mjs';
 import { calendarYear, effectiveItem, resolveSchedule } from '../lib/schedule.mjs';
+
+test('a disconnected deadline accepts a replacement even with a remaining weekday constraint', () => {
+  const due = { original: { target: 'deadline' }, target: 'deadline', edit: { kind: 'schedule' }, removed: true };
+  const weekday = { ...due, removed: false, edit: { kind: 'satisfies' } };
+  assert.equal(missingDateDependencies([due, weekday]).get('deadline'), due);
+  const transferred = { ...due, target: 'other deadline', removed: false };
+  assert.equal(missingDateDependencies([transferred, weekday]).get('deadline'), transferred);
+  assert.equal(missingDateDependencies([transferred, { ...due, removed: false }]).size, 0);
+});
+
+test('adding prerequisites resolves a draft and preserves earlier bounds across years', () => {
+  const initial = withDatePrerequisite(undefined, { anchor: 'start_of_year' });
+  const withBoundary = withDatePrerequisite(initial, { baseDate: { kind: 'month_end', month: 2 } });
+  const plan = { items: [{ id: 'review', schedule: withBoundary }] };
+  const date = year => resolveSchedule(plan, year).review.date;
+  assert.equal(initial.after.length, 1);
+  assert.deepEqual(withBoundary.after[0], initial.after[0]);
+  assert.equal(date(2027).getDate(), 28);
+  assert.equal(date(2028).getDate(), 29);
+});
+
+test('adding a bound preserves the original shorthand offsets, comparison and weekday', () => {
+  const original = { kind: 'next_weekday', anchor: 'start_of_year', offsetDays: 7, weekday: 1 };
+  const schedule = withDatePrerequisite(original, { anchor: { group: 'milestone' } });
+  const plan = { groups: { milestone: { date: { month: 1, day: 2 } } }, items: [{ id: 'review', schedule }] };
+  assert.deepEqual(schedule.after, [
+    { anchor: 'start_of_year', offsetDays: 7 }, { anchor: { group: 'milestone' }, inclusive: true },
+  ]);
+  assert.equal(resolveSchedule(plan, 2026).review.date.getDate(), 12);
+});
+
+test('a dated group adds a lower bound alongside an exact month-end rule', () => {
+  const primary = { kind: 'month_end', month: 2 };
+  const schedule = withDatePrerequisite(primary, { anchor: { group: 'milestone' } });
+  const plan = { groups: { milestone: { date: { month: 1, day: 31 } } }, items: [{ id: 'review', schedule }] };
+  assert.deepEqual(schedule, { ...primary, after: [{ anchor: { group: 'milestone' }, inclusive: true }] });
+  assert.equal(resolveSchedule(plan, 2028).review.date.getDate(), 29);
+  assert.equal(resolveSchedule(plan, 2027).review.conflictingDateBounds, undefined);
+  plan.groups.milestone.date = { month: 3, day: 1 };
+  const occurrence = resolveSchedule(plan, 2027).review;
+  assert.deepEqual(occurrence.conflictingDateBounds, [0]);
+  assert.equal(occurrence.date.getMonth(), 1);
+  assert.equal(occurrence.date.getDate(), 28);
+});
 
 test('removing a group keeps member dates and overrides, omitting individually removed cards', () => {
   const plan = {

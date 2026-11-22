@@ -572,3 +572,12 @@ msgstr "Complete or remove the unfinished cards before saving."
 
 msgid "A date could not be calculated for {titles}. Set a date or add a dependency and try again."
 msgstr "A date could not be calculated for {titles}. Set a date or add a dependency and try again."
+
+msgid "Drag to the prerequisite"
+msgstr "Drag to the prerequisite"
+
+msgid "Drag to the dependent deadline"
+msgstr "Drag to the dependent deadline"
+
+msgid "The month offset from {source} uses {boundary} because the target month has only {days} days."
+msgstr "The month offset from {source} uses {boundary} because the target month has only {days} days."

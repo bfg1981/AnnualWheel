@@ -165,6 +165,7 @@ function setupAdjustableDateCards(){panel.querySelectorAll('.card-anchor-fields'
 const buildAdjustableDateControls=renderAnchorControls;renderAnchorControls=()=>{buildAdjustableDateControls();setupAdjustableDateCards()};
 const panelCardPositions=()=>new Map([...panel.querySelectorAll('.deadline-card:not([hidden])')].map(card=>[card,{rect:card.getBoundingClientRect(),styles:[card,...card.querySelectorAll('.card-date,.card-kind,h2,.rule-line')].map(element=>({element,backgroundColor:getComputedStyle(element).backgroundColor,borderLeftColor:getComputedStyle(element).borderLeftColor,color:getComputedStyle(element).color}))}]));function animatePanelReflow(before){requestAnimationFrame(()=>{panel.querySelectorAll('.deadline-card:not([hidden])').forEach(card=>{const first=before.get(card),last=card.getBoundingClientRect();if(!first)return;const distance=first.rect.top-last.top;card.animate([{transform:`translateY(${distance}px)`},{transform:'translateY(0)'}],{duration:PANEL_RECALCULATION_MIN_MS,easing:'cubic-bezier(.2,.8,.2,1)'});first.styles.forEach(previous=>{const current=getComputedStyle(previous.element);previous.element.animate([{backgroundColor:previous.backgroundColor,borderLeftColor:previous.borderLeftColor,color:previous.color},{backgroundColor:current.backgroundColor,borderLeftColor:current.borderLeftColor,color:current.color}],{duration:PANEL_RECALCULATION_MIN_MS,easing:'ease'})})})})}
 function updateDebugCardYears(){if(editingTimeline)return;panel.querySelectorAll('.deadline-card[data-deadline-id]').forEach(card=>{const event=wheel.querySelector(`.event[data-deadline-id="${card.dataset.deadlineId}"]`),dateLabel=card.querySelector('.card-date');if(debugYears){card.dataset.debugYear=event.dataset.year;dateLabel.textContent=`${dateLabel.textContent.replace(/\s+\d{4}$/,'')} ${event.dataset.year}`}else delete card.dataset.debugYear})}
+const tooltipDate = new Intl.DateTimeFormat(locale, { dateStyle: 'long' });
 const ruleMonth = new Intl.DateTimeFormat(locale, { month: 'long' });
 const ruleDate = new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long' });
 
@@ -235,6 +236,9 @@ function generatedScheduleRule(item, targetYear, occurrence) {
     for (const relation of engine.weekdayDependencies(rule)) {
       parts.push(dependencyLabel(relation, relation.baseDate ? virtualDateLabel(relation.baseDate) : referenceTitle(relation.anchor)));
     }
+  }
+  for (const dep of engine.additionalDateBounds(rule)) {
+    parts.push(dependencyLabel(dep, dep.baseDate ? virtualDateLabel(dep.baseDate) : referenceTitle(dep.anchor)));
   }
   const weekday = engine.configuredWeekday(config, rule);
   if (Number.isInteger(weekday)) parts.push(t('Weekday · {weekday}', { weekday: weekdayName(weekday) }));
@@ -917,6 +921,9 @@ function showDependencyPreview(caption, edge, title) {
   fields.replaceChildren();
   dependencyFields(fields, edge);
   dependencyPreview.querySelector('h2').textContent = title;
+  const note = dependencyPreview.querySelector('.month-adjustment');
+  note.textContent = edge.monthNote ?? '';
+  note.hidden = !edge.monthNote;
   caption.setAttribute('aria-describedby', dependencyPreview.id);
   dependencyPreview.hidden = false;
   positionDependencyPreview(caption);
@@ -961,7 +968,7 @@ function nodeKey(node) {
 }
 
 function dependencyKey(edge) {
-  return JSON.stringify([nodeKey(edge.target), edge.edit.path, edge.edit.kind, edge.edit.index]);
+  return edge.copyKey ?? JSON.stringify([nodeKey(edge.target), edge.edit.path, edge.edit.kind, edge.edit.index]);
 }
 
 function graphNodes() {
@@ -1013,7 +1020,13 @@ function graphRemoveButton(title, remove, svg = false) {
 
 function projectedEdges() {
   const nodes = graphNodes();
-  return timelineEdges.map(original => {
+  const originals = [...timelineEdges];
+  for (const [copyKey, move] of dependencyMoves) {
+    if (!move.copyOf) continue;
+    const template = timelineEdges.find(edge => dependencyKey(edge) === move.copyOf);
+    if (template) originals.push({ ...template, copyKey });
+  }
+  return originals.map(original => {
     const move = dependencyMoves.get(dependencyKey(original));
     const source = nodes.get(move?.source) ?? original.source;
     const target = nodes.get(move?.target) ?? original.target;
@@ -1028,7 +1041,7 @@ function acceptsEndpoint(edge, side, node) {
   const { kind } = edge.edit;
   if (side === 'target') {
     if (kind === 'relative' || kind === 'anchor') return Boolean(node.dataset.anchorKey);
-    if (!node.dataset.deadlineId || node.dataset.anchorKey) return false;
+    if (!node.dataset.deadlineId || (node.dataset.anchorKey && kind !== 'prerequisite')) return false;
     if (kind !== 'satisfies') return true;
     return ['nth_weekday', 'nth_full_weekday', 'last_weekday', 'next_weekday', 'previous_weekday']
       .includes(config.items[Number(node.dataset.itemIndex)].schedule.kind);
@@ -1059,6 +1072,161 @@ function startDependencyDrag(event, edge, side, fixed) {
       applyDependencyMoves();
     });
   });
+}
+
+function paintDependencyConnectors() {
+  const initial = scheduleCards.querySelector('.timeline-initial > div');
+  const start = scheduleCards.querySelector('.timeline-start');
+  const pending = pendingGraphChanges();
+  const edges = pending ? projectedEdges() : timelineEdges;
+  const active = edges.filter(edge => !edge.removed);
+  const missing = pending ? graphView.missingDateDependencies(edges) : new Map();
+  const unresolved = node => missing.has(node) || Boolean(node.dataset.paletteDraft);
+  const nodes = [...graphNodes().values()].filter(node => !node.dataset.constraintId && !removedNodes.has(nodeKey(node)))
+    .map(node => node === start ? initial : node);
+  if (!pending) nodes.push(...scheduleCards.querySelectorAll('[data-palette-draft]'));
+  const visible = nodes.filter(node => !node.closest('[hidden], .is-layer-hidden'));
+  const targets = visible.filter(node => unresolved(node) || (!pending && node.dataset.itemIndex !== undefined));
+  if (!targets.length) return;
+  const prerequisites = new Map();
+  const dependents = new Map();
+  for (const { source, target } of active) {
+    if (!dependents.has(source)) dependents.set(source, new Set());
+    dependents.get(source).add(target);
+    if (!prerequisites.has(target)) prerequisites.set(target, new Set());
+    prerequisites.get(target).add(source);
+  }
+
+  function candidatesFor(card) {
+    const reverse = unresolved(card);
+    const candidates = new Map();
+    // A prerequisite cannot already depend on the proposed recipient, even transitively.
+    const origin = card === initial ? start : card;
+    const excluded = new Set([origin]);
+    const adjacency = reverse ? dependents : prerequisites;
+    function visit(node) {
+      for (const next of adjacency.get(node) ?? []) {
+        if (excluded.has(next)) continue;
+        excluded.add(next);
+        visit(next);
+      }
+    }
+    visit(origin);
+    for (const node of (reverse ? visible : targets)) {
+      const source = reverse ? node : card;
+      const target = reverse ? card : node;
+      const sourceNode = source === initial ? start : source;
+      if (excluded.has(node === initial ? start : node) || unresolved(source)) continue;
+      if (missing.has(target) && !acceptsEndpoint(missing.get(target), 'source', sourceNode)) continue;
+      if (prerequisites.get(target)?.has(sourceNode)) continue;
+      candidates.set(node, node);
+    }
+    return candidates;
+  }
+
+  function connect(source, target) {
+    const lost = missing.get(target);
+    if (lost) {
+      const original = lost.original;
+      const originalKey = dependencyKey(original);
+      const sourceKey = nodeKey(source === initial ? start : source);
+      rememberGraphChange();
+      if (!lost.removed && lost.target !== target) {
+        // Preserve the transferred arrow and use its date relation for the replacement.
+        const copyOf = dependencyMoves.get(originalKey)?.copyOf ?? originalKey;
+        let index = 0;
+        let copyKey;
+        do { copyKey = JSON.stringify(['copy', copyOf, index++]); } while (dependencyMoves.has(copyKey));
+        dependencyMoves.set(copyKey, { copyOf, source: sourceKey });
+      } else {
+        const move = { ...dependencyMoves.get(originalKey) };
+        delete move.removed;
+        delete move.target;
+        if (sourceKey === nodeKey(original.source)) delete move.source;
+        else move.source = sourceKey;
+        if (Object.keys(move).length) dependencyMoves.set(originalKey, move);
+        else dependencyMoves.delete(originalKey);
+      }
+      applyDependencyMoves();
+      return;
+    }
+    const d = source.dataset;
+    let reference;
+    if (d.virtualDefinition) reference = { baseDate: JSON.parse(d.virtualDefinition) };
+    else if (d.itemGroup) reference = { anchor: { group: d.itemGroup } };
+    else reference = { anchor: d.deadlineId ?? d.anchorKey ?? 'start_of_year' };
+    const id = target.dataset.paletteDraft ?? target.dataset.deadlineId;
+    try {
+      const draft = paletteDrafts.get(id);
+      if (draft) {
+        resolveDraftDeadline({ id, kind: 'deadline', status: 'derived', title: draft.title, layer: draft.layer,
+          schedule: graphView.withDatePrerequisite(undefined, reference) });
+      } else {
+        const index = Number(target.dataset.itemIndex);
+        const next = structuredClone(authoredConfig);
+        next.items[index].schedule = graphView.withDatePrerequisite(config.items[index].schedule, reference);
+        const effective = effectiveConfiguration(next);
+        validateSessionConfiguration(effective);
+        authoredConfig = next;
+        config = effective;
+      }
+    } catch (error) {
+      showSaveError(error.message);
+      return;
+    }
+    paintTimeline();
+    const card = scheduleCards.querySelector(`[data-deadline-id="${CSS.escape(id)}"]`);
+    card.querySelector('.edit-card')?.focus({ preventScroll: true });
+    card.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+  }
+
+  for (const card of visible) {
+    const host = card === initial ? initial : card.querySelector(':scope > .card-content');
+    if (!host) continue;
+    const candidates = candidatesFor(card);
+    if (!candidates.size) continue;
+    const reverse = unresolved(card);
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'add-dependency';
+    button.title = t(reverse ? 'Drag to the prerequisite' : 'Drag to the dependent deadline');
+    button.setAttribute('aria-label', button.title);
+    setControlIcon(button, 'dependency');
+    host.append(button);
+    const commit = other => reverse ? connect(other, card) : connect(card, other);
+    const pick = () => {
+      if (document.querySelector('dialog:modal')) return;
+      const container = cardForm.querySelector('.card-editor-fields');
+      container.replaceChildren();
+      cardForm.querySelector('h2').textContent = button.title;
+      cardForm.querySelector('.card-editor-error').textContent = '';
+      const select = cardEditorField(container, 'endpoint', reverse ? 'Source' : 'Deadline', document.createElement('select'));
+      const options = [...candidates.keys()];
+      select.add(new Option('—', ''));
+      select.required = true;
+      options.forEach((node, i) => select.add(new Option(node.querySelector('h2, strong').textContent, String(i))));
+      cardForm.elements.cancel.onclick = guardDiscard(cardEditor, 'Discard changes to “{title}”?', () => select.value,
+        () => { cardEditor.close(); button.focus(); }, { title: button.title });
+      cardForm.onsubmit = event => {
+        event.preventDefault();
+        if (!cardForm.reportValidity()) return;
+        cardEditor.close();
+        commit(options[select.value]);
+      };
+      cardEditor.showModal();
+      select.focus();
+    };
+    button.onclick = event => { if (!event.detail) pick(); };
+    button.onpointerdown = event => {
+      if (document.querySelector('dialog:modal')) return;
+      const svg = arrowPaths.ownerSVGElement;
+      const origin = svg.getBoundingClientRect();
+      const fixed = { x: event.clientX - origin.left, y: event.clientY - origin.top };
+      closeDependencyPreview();
+      cancelDependencyDrag = graphView.dragDependency(event, fixed, svg, scheduleViewport, candidates, commit,
+        { reverse, tap: pick });
+    };
+  }
 }
 
 function movedSourceReference(edge) {
@@ -1094,12 +1262,15 @@ function scheduleFromArrow(edge) {
 }
 
 function writeIncomingEdges(plan, node, edges, originalEdges) {
-  const dates = edges.filter(edge => edge.edit.kind !== 'satisfies');
+  const original = config.items[Number(node.dataset.itemIndex)]?.schedule;
+  const supplemental = edges.filter(edge => edge.edit.kind === 'prerequisite');
+  const isPrimary = edge => edge.edit.kind !== 'satisfies' && edge.edit.kind !== 'prerequisite';
+  const dates = edges.filter(isPrimary);
   const weekdays = edges.filter(edge => edge.edit.kind === 'satisfies');
-  const originalDates = originalEdges.filter(edge => edge.edit.kind !== 'satisfies');
+  const originalDates = originalEdges.filter(isPrimary);
   const datesChanged = dates.length !== originalDates.length ||
     dates.some(edge => edge.target !== edge.original.target || edge.source !== edge.original.source);
-  if ((!dates.length && originalDates.length) || weekdays.length > 1) return false;
+  if ((!dates.length && originalDates.length && (!supplemental.length || node.dataset.anchorKey)) || weekdays.length > 1) return false;
   const id = node.dataset.anchorKey;
   if (id && datesChanged && dates.length) {
     if (dates.length !== 1) return false;
@@ -1119,7 +1290,6 @@ function writeIncomingEdges(plan, node, edges, originalEdges) {
   }
   if (!node.dataset.deadlineId) return true;
   const index = Number(node.dataset.itemIndex);
-  const original = config.items[index].schedule;
   let rule = structuredClone(original);
   if (!id && datesChanged && dates.length && dates.every(edge => edge.edit.kind === 'bound')) {
     const after = dates[0].relation.after;
@@ -1164,6 +1334,20 @@ function writeIncomingEdges(plan, node, edges, originalEdges) {
   } else if (!id && datesChanged && dates.length) {
     if (dates.length !== 1) return false;
     rule = scheduleFromArrow(dates[0]);
+  }
+  // Reconstruct added bounds independently of the rule that supplies the date.
+  if (originalDates.length && !dates.length && supplemental.length) rule = { kind: 'next_weekday' };
+  const additional = supplemental.map(edge => {
+    const prior = sessionPathValue(config, edge.edit.path).after[edge.edit.index];
+    if (edge.source === edge.original.source) return structuredClone(prior);
+    const { anchor, baseDate, ...options } = typeof prior === 'object' ? prior : {};
+    return { ...options, ...boundSource(edge) };
+  });
+  if (rule.kind !== 'next_weekday') {
+    if (additional.length) rule.after = additional;
+    else delete rule.after;
+  } else if (additional.length) {
+    rule = graphView.appendDateBounds(rule, additional);
   }
   // Calendar and weekday constraints belong to the recipient, independently of the date edge.
   delete rule.constraints;
@@ -1211,7 +1395,7 @@ function applyDependencyMoves() {
   }
   const all = projectedEdges();
   const projected = all.filter(edge => !edge.removed);
-  const changed = all.filter(edge => edge.removed || edge.source !== edge.original.source || edge.target !== edge.original.target);
+  const changed = all.filter(edge => edge.original.copyKey || edge.removed || edge.source !== edge.original.source || edge.target !== edge.original.target);
   const affected = new Set(changed.flatMap(edge => [edge.target, edge.original.target]));
   const next = structuredClone(authoredConfig);
   const invalid = new Set();
@@ -1276,7 +1460,7 @@ function applyDependencyMoves() {
 }
 
 function updateDependencyDraftActions() {
-  const invalid = pendingGraphChanges() || paletteDrafts.size > 0;
+  const invalid = pendingGraphChanges() || paletteDrafts.size > 0 || Boolean(scheduleCards.querySelector('[data-conflicting-bounds]'));
 
   graphWarning.textContent = t(paletteDrafts.size ? 'Complete or remove the unfinished cards before saving.' : removedNodes.has('start') ? 'The initial object is required. Undo its removal before saving.' : 'Repair the highlighted dependencies before saving.');
   graphWarning.hidden = !invalid;
@@ -1285,6 +1469,8 @@ function updateDependencyDraftActions() {
   for (const [key, node] of graphNodes()) node.classList.toggle('invalid-dependency', invalidDependencyNodes.has(key));
   const nodes = scheduleCards.querySelectorAll('[data-item-index], [data-item-group], [data-virtual-date], .timeline-calendar, .timeline-weekday, .timeline-start, .timeline-initial');
   for (const node of nodes) node.classList.toggle('graph-removed', removedNodes.has(nodeKey(node)));
+  scheduleCards.querySelectorAll('.add-dependency').forEach(button => button.remove());
+  if (editingDeadlines && graphView) paintDependencyConnectors();
 }
 undoDependency.onclick = () => {
   const previous = graphHistory.pop();
@@ -1362,9 +1548,13 @@ function drawDependencyArrows() {
     path.setAttribute('d', route);
     const group = document.createElementNS(path.namespaceURI, 'g');
     if (type) group.dataset.relation = type;
+    if (edge.edit?.kind === 'prerequisite' && target.dataset.conflictingBounds?.split(',').includes(String(edge.edit.index))) {
+      group.classList.add('conflicting-bound');
+    }
     if (description) {
       const title = document.createElementNS(path.namespaceURI, 'title');
-      title.textContent = description;
+      title.textContent = edge.monthNote && (!edge.original || source === edge.original.source)
+        ? description + '\n' + edge.monthNote : description;
       path.append(title);
     }
     paths.append(group);
@@ -1503,7 +1693,7 @@ function comparisonLabel({ after, inclusive }, { amount, unit }, title) {
   return `${sign} ${relation} · ${title}`;
 }
 
-function timelineDependencies(cards, startMarker, startDate, startTitle) {
+function timelineDependencies(cards, startMarker, startDate, startTitle, resolved) {
   const entries = [];
   const edges = [];
   const virtuals = new Map();
@@ -1604,9 +1794,26 @@ function timelineDependencies(cards, startMarker, startDate, startTitle) {
     const rulePath = authoredConfig.items[index].schedule ? ['items', index, 'schedule'] : ['groups', item.group, 'defaults', 'schedule'];
     const target = cards.get(item.id);
     const itemPath = ['items', index, 'schedule'];
-    const connect = (source, relation, description = item.rule?.trim() ? item.rule : source && dependencyLabel(relation, source.title), edit = { path: itemPath, kind: 'schedule' }) => {
-      if (source) edges.push({ source: source.card, target, relation, boundaryKind: source.boundaryKind, nestedDate: source.nestedDate, reference: source.reference, sourceTitle: source.title, description, edit, ruleText: item.rule });
+    const connect = (source, relation, description = item.rule?.trim() ? item.rule : source && dependencyLabel(relation, source.title), edit = { path: itemPath, kind: 'schedule' }, monthNote) => {
+      if (source) edges.push({ source: source.card, target, relation, boundaryKind: source.boundaryKind, nestedDate: source.nestedDate, reference: source.reference, sourceTitle: source.title, description, edit, monthNote, ruleText: item.rule });
     };
+    function connectBound(dep, index, kind) {
+      const source = dep.baseDate ? boundarySource({
+        kind: dep.baseDate.kind ?? 'fixed', definition: dep.baseDate,
+        date: window.scheduleEngine.resolveVirtualDate(dep.baseDate, year, config.display.locale),
+      }, [...rulePath, ...(dep.after ? ['after', index] : ['before'])]) : referenceSource(dep.anchor);
+      if (!source) return;
+      const label = dependencyLabel(dep, source.title);
+      const description = kind === 'prerequisite' ? label : [item.rule?.trim() || label,
+        t('Choose the valid date closest to the limiting bound.')].join('\n');
+      const adjustment = resolved[item.id].monthAdjustments?.find(a => a.after === dep.after && a.index === index);
+      const monthNote = adjustment && t('The month offset from {source} uses {boundary} because the target month has only {days} days.', {
+        source: tooltipDate.format(adjustment.source), boundary: tooltipDate.format(adjustment.boundary),
+        days: adjustment.boundary.getDate(),
+      });
+      connect(source, dep, description, { path: itemPath, kind, index }, monthNote);
+    }
+    window.scheduleEngine.additionalDateBounds(rule).forEach((dep, index) => connectBound(dep, index, 'prerequisite'));
     const boundary = window.scheduleEngine.calendarBoundary(rule, year, config.display.locale);
     if (boundary) {
       connect(boundarySource(boundary, rulePath), boundaryRelation(rule));
@@ -1632,13 +1839,7 @@ function timelineDependencies(cards, startMarker, startDate, startTitle) {
       const source = rule.anchor ? referenceSource(rule.anchor) : fixedSource(date, rulePath);
       connect(source, { type: 'course', direction: rule.direction, weekday: rule.weekday, count: rule.count, skip: rule.skip });
     } else {
-      for (const [index, dep] of window.scheduleEngine.weekdayDependencies(rule).entries()) {
-        const source = dep.baseDate ? boundarySource({
-          kind: dep.baseDate.kind ?? 'fixed', definition: dep.baseDate,
-          date: window.scheduleEngine.resolveVirtualDate(dep.baseDate, year, config.display.locale),
-        }, [...rulePath, ...(dep.after ? ['after', index] : ['before'])]) : referenceSource(dep.anchor);
-        connect(source, dep, [item.rule?.trim() || (source && dependencyLabel(dep, source.title)), t('Choose the valid date closest to the limiting bound.')].filter(Boolean).join('\n'), { path: itemPath, kind: 'bound', index });
-      }
+      window.scheduleEngine.weekdayDependencies(rule).forEach((dep, index) => connectBound(dep, index, 'bound'));
     }
   }
   for (const id of Object.keys(config.anchors)) {
@@ -1932,8 +2133,8 @@ function paintTimeline() {
     .map(card => [card.dataset.deadlineId, card]));
   clearVirtualDates();
   const groups = placeTimelineGroups(cards);
-  const { entries, edges, virtuals } = timelineDependencies(cards, startMarker, startDate, startTitle);
-  scheduleCards.querySelectorAll('.edit-card, .remove-card').forEach(button => button.remove());
+  const { entries, edges, virtuals } = timelineDependencies(cards, startMarker, startDate, startTitle, resolved);
+  scheduleCards.querySelectorAll('.edit-card, .remove-card, .add-dependency').forEach(button => button.remove());
   entries.push(...groups, ...renderPaletteDrafts());
   timelineEdges = edges;
   const prerequisiteCards = new Set(timelineEdges.map(edge => edge.source));
@@ -1946,6 +2147,8 @@ function paintTimeline() {
     card.dataset.dateTypeLabel = t(fixed ? 'Fixed date' : 'Relative date');
     card.toggleAttribute('data-timeline-anchor', item.schedule.kind === 'anchor' || prerequisiteCards.has(card));
     const occurrence = resolved[item.id];
+    if (occurrence.conflictingDateBounds) card.dataset.conflictingBounds = occurrence.conflictingDateBounds.join(',');
+    else delete card.dataset.conflictingBounds;
     paintScheduleConstraints(card, item.schedule, occurrence, visibleCalendars);
     const field = card.querySelector('[data-item-override], [data-anchor-id]');
     if (field) field.value = inputValue(occurrence.date);
@@ -2356,7 +2559,7 @@ function dependencyFields(container, edge) {
     return input;
   }
   const comparisons = { less_than: 'Before', less_or_equal: 'Before or on', greater_than: 'After', greater_or_equal: 'On or after' };
-  if (edit.kind === 'bound') {
+  if (edit.kind === 'bound' || edit.kind === 'prerequisite') {
     const options = Object.entries(comparisons).filter(([type]) => window.scheduleEngine.comparisonBound(type).after === relation.after);
     select('comparison', 'Relation', options.map(([key, label]) => [key, t(label)]), relation.type);
     number('amount', 'Offset', relation.amount);
@@ -2413,7 +2616,7 @@ function setDependency(plan, edge, value) {
   } else if (edit.kind === 'anchor') {
     if (value.comparison === 'default_date') delete owner.defaultDateRelation;
     else owner.defaultDateRelation = value.comparison;
-  } else if (edit.kind === 'bound') {
+  } else if (edit.kind === 'bound' || edit.kind === 'prerequisite') {
     const refs = relation.after ? owner.after : owner.before;
     const ref = refs === undefined ? owner : relation.after ? refs[edit.index] : refs;
     const bound = typeof ref === 'string' ? {} : ref;
@@ -2505,6 +2708,18 @@ function addPaletteCard(kind, position) {
   const card = scheduleCards.querySelector(`[data-palette-draft="${id}"], [data-anchor-key="${id}"], [data-item-group="${id}"], [data-constraint-id="${id}"]`);
   card?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
   card?.querySelector('.edit-card')?.click();
+}
+
+function resolveDraftDeadline(item) {
+  const next = { ...authoredConfig, items: [...authoredConfig.items, item] };
+  const effective = effectiveConfiguration(next);
+  validateSessionConfiguration(effective);
+  authoredConfig = next;
+  config = effective;
+  appendItemCard(item, next.items.length - 1);
+  paletteDrafts.delete(item.id);
+  const layerButton = document.querySelector(`.legend [data-layer="${CSS.escape(item.layer)}"]`);
+  if (layerButton?.getAttribute('aria-pressed') === 'false') layerButton.click();
 }
 
 function renderPaletteDrafts() {
@@ -2614,19 +2829,12 @@ function editDraftDeadline(id) {
       }
     }
     if (item.schedule) {
-      const next = { ...authoredConfig, items: [...authoredConfig.items, item] };
       try {
-        validateSessionConfiguration(effectiveConfiguration(next));
+        resolveDraftDeadline(item);
       } catch (problem) {
         error.textContent = problem.message;
         return;
       }
-      authoredConfig = next;
-      config = effectiveConfiguration(next);
-      appendItemCard(item, next.items.length - 1);
-      paletteDrafts.delete(id);
-      const layerButton = document.querySelector(`.legend [data-layer="${CSS.escape(item.layer)}"]`);
-      if (layerButton?.getAttribute('aria-pressed') === 'false') layerButton.click();
     } else {
       Object.assign(draft, { title: item.title, layer: item.layer });
     }
@@ -2765,7 +2973,7 @@ function openCardEditor(key, title, fields) {
 
 const sourceTexts = new Map(window.annualWheelSourceTexts);
 let graphView;
-const graphReady = import('/lib/config-graph.js?v=24').then(module => {
+const graphReady = import('/lib/config-graph.js?v=27').then(module => {
   graphView = module;
   if (editingTimeline) paintTimeline();
   return module;
@@ -2821,7 +3029,7 @@ async function saveConfirmedConfiguration() {
     showSaveError(t('A date could not be calculated for {titles}. Set a date or add a dependency and try again.', { titles }));
     return false;
   }
-  if (pendingGraphChanges()) {
+  if (pendingGraphChanges() || scheduleCards.querySelector('[data-conflicting-bounds]')) {
     showSaveError(graphWarning.textContent);
     return false;
   }
@@ -3012,7 +3220,7 @@ headerEditor.onsubmit = event => {
 };
 function setTimelineEditor(open, editable) {
   if (!editable && cardEditor.open) cardEditor.close();
-  if (!open) scheduleCards.querySelectorAll('.edit-card, .remove-card').forEach(button => button.remove());
+  if (!open) scheduleCards.querySelectorAll('.edit-card, .remove-card, .add-dependency').forEach(button => button.remove());
   const entering = open && !editingTimeline;
   editingTimeline = open;
   editingDeadlines = editable;
@@ -3039,6 +3247,9 @@ function setTimelineEditor(open, editable) {
   timelineHeading.hidden = !open;
   editDeadlines.setAttribute('aria-expanded', String(open));
   if (open) {
+    // The timeline renders immediately. A queued wheel repaint would interrupt an active drag.
+    clearTimeout(panelCalculationTimer);
+    panelCalculationTimer = pendingPanelCalculation = undefined;
     scheduleCards.getAnimations({ subtree: true }).forEach(animation => animation.cancel());
     scheduleViewport.tabIndex = 0;
     paintTimeline();

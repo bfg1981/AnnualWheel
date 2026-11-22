@@ -572,3 +572,12 @@ msgstr "Fullfør eller fjern de uferdige kortene før du lagrer."
 
 msgid "A date could not be calculated for {titles}. Set a date or add a dependency and try again."
 msgstr "Kunne ikke beregne dato for {titles}. Angi en dato eller legg til en avhengighet, og prøv igjen."
+
+msgid "Drag to the prerequisite"
+msgstr "Dra til kortet fristen avhenger av"
+
+msgid "Drag to the dependent deadline"
+msgstr "Dra til fristen som skal avhenge av dette kortet"
+
+msgid "The month offset from {source} uses {boundary} because the target month has only {days} days."
+msgstr "Med månedsforskyvning fra {source} brukes {boundary} fordi måneden bare har {days} dager."

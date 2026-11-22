@@ -175,11 +175,20 @@ dialog::backdrop { background: rgb(20 32 52 / .42); }
 .timeline-arrows [data-drag-end] { fill: white; stroke: currentColor; stroke-width: 1.5; cursor: grab; pointer-events: all; touch-action: none; }
 .timeline-arrows [data-drag-end="target"] { fill: transparent; stroke: currentColor; stroke-width: 1; }
 .timeline-arrows [data-drag-end]:hover { stroke: currentColor; }
+.add-dependency {
+  width: 1.6rem; height: 1.6rem; padding: 0; border: 1px solid var(--line);
+  border-radius: 50%; background: white; color: #315d9e; font: bold 1rem/1 var(--font-sans);
+  cursor: crosshair; touch-action: none; position: relative; z-index: 2;
+}
+.deadline-card > .card-content > .add-dependency { position: absolute; right: .25rem; bottom: .15rem; }
+.editing-timeline .deadline-card:has(> .card-content > .add-dependency) { min-height: 3.5rem; }
+.timeline-initial .add-dependency { grid-row: 2; grid-column: 2; justify-self: start; }
 .timeline-arrows .dependency-rubberband { stroke: var(--blue); stroke-width: 2; fill: none; stroke-dasharray: 5 3; pointer-events: none; }
 .dependency-draft-warning { color: #972d30; font-weight: 600; }
-.editing-timeline .invalid-dependency { outline: 3px dashed #a53339; background-color: #fff0ee; }
+.timeline-arrows .conflicting-bound { color: #a53339; }
+.editing-timeline :is(.invalid-dependency, [data-conflicting-bounds]) { outline: 3px dashed #a53339; background-color: #fff0ee; }
 .dependency-drop-option { outline: 1px dashed #577dab; outline-offset: -2px; }
-.dependency-drop-hover { outline: 3px solid var(--blue); }
+.editing-timeline .dependency-drop-hover { outline: 3px solid var(--blue); }
 .timeline-arrows :is(.edit-dependency, .remove-dependency) { cursor: pointer; pointer-events: all; }
 .timeline-arrows :is(.edit-dependency, .remove-dependency):is(:hover, :focus-visible) { text-decoration: underline; }
 .editing-timeline .timeline-initial {

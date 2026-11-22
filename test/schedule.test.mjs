@@ -307,6 +307,32 @@ test('a combined date needs a known status in every source, including sources wi
   ]);
 });
 
+test('month adjustment details identify only the bound whose original day is missing', () => {
+  const plan = { groups: { cutoff: { date: { month: 1, day: 31 } } }, items: [
+    { id: 'ordinary', schedule: { kind: 'fixed', month: 1, day: 28 } },
+    { id: 'review', schedule: { kind: 'previous_weekday',
+      before: { baseDate: { kind: 'fixed', month: 3, day: 31 }, offsetMonths: -1 },
+      after: [
+        { anchor: 'ordinary', offsetMonths: 1, inclusive: true },
+        { anchor: { group: 'cutoff' }, offsetMonths: 1, inclusive: true },
+      ],
+    } },
+  ] };
+  for (const [year, end] of [[2026, '02-28'], [2028, '02-29']]) {
+    const result = resolveSchedule(plan, year).review;
+    assert.deepEqual(result.monthAdjustments.map(({ after, index, source, boundary }) =>
+      [after, index, iso(source), iso(boundary)]), [
+      [false, 0, year + '-03-31', year + '-' + end],
+      [true, 1, year + '-01-31', year + '-' + end],
+    ]);
+    assert.ok(result.date < result.monthAdjustments[0].boundary);
+  }
+  const rule = plan.items[1].schedule;
+  rule.before.baseDate.day = 28;
+  plan.groups.cutoff.date.day = 28;
+  assert.equal(resolveSchedule(plan, 2026).review.monthAdjustments, undefined);
+});
+
 test('combines a strict prerequisite with an inclusive calendar-month minimum', () => {
   const plan = { anchors: {}, items: [
     { id: 'first', schedule: { kind: 'fixed', month: 1, day: 31 } },

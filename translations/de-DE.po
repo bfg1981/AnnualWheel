@@ -572,3 +572,12 @@ msgstr "Vervollständige oder entferne die unfertigen Karten vor dem Speichern."
 
 msgid "A date could not be calculated for {titles}. Set a date or add a dependency and try again."
 msgstr "Für {titles} konnte kein Datum berechnet werden. Lege ein Datum fest oder füge eine Abhängigkeit hinzu und versuche es erneut."
+
+msgid "Drag to the prerequisite"
+msgstr "Auf die Voraussetzung ziehen"
+
+msgid "Drag to the dependent deadline"
+msgstr "Auf den abhängigen Termin ziehen"
+
+msgid "The month offset from {source} uses {boundary} because the target month has only {days} days."
+msgstr "Bei der Verschiebung um Monate ab dem {source} wird der {boundary} verwendet, weil der Zielmonat nur {days} Tage hat."

@@ -572,3 +572,12 @@ msgstr "Completa o elimina las tarjetas pendientes antes de guardar."
 
 msgid "A date could not be calculated for {titles}. Set a date or add a dependency and try again."
 msgstr "No se pudo calcular la fecha de {titles}. Fija una fecha o añade una dependencia y vuelve a intentarlo."
+
+msgid "Drag to the prerequisite"
+msgstr "Arrastra hasta el requisito previo"
+
+msgid "Drag to the dependent deadline"
+msgstr "Arrastra hasta el plazo dependiente"
+
+msgid "The month offset from {source} uses {boundary} because the target month has only {days} days."
+msgstr "Al desplazar la fecha {source} por meses, se usa el {boundary} porque el mes de destino solo tiene {days} días."
