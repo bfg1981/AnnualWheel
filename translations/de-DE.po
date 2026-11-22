@@ -581,3 +581,12 @@ msgstr "Auf den abhängigen Termin ziehen"
 
 msgid "The month offset from {source} uses {boundary} because the target month has only {days} days."
 msgstr "Bei der Verschiebung um Monate ab dem {source} wird der {boundary} verwendet, weil der Zielmonat nur {days} Tage hat."
+
+msgid "Saving availability"
+msgstr "Verfügbarkeit der Speicherfunktion"
+
+msgid "You need permission to save. You can still edit in this tab."
+msgstr "Zum Speichern brauchst du eine Berechtigung. Du kannst in diesem Tab weiterarbeiten."
+
+msgid "Could not check whether saving is available. You can edit in this tab. The editor will check again when you save."
+msgstr "Es konnte nicht geprüft werden, ob das Speichern verfügbar ist. Du kannst in diesem Tab weiterarbeiten. Beim Speichern wird die Verfügbarkeit erneut geprüft."

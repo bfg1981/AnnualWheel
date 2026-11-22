@@ -581,3 +581,12 @@ msgstr "Arrastra hasta el plazo dependiente"
 
 msgid "The month offset from {source} uses {boundary} because the target month has only {days} days."
 msgstr "Al desplazar la fecha {source} por meses, se usa el {boundary} porque el mes de destino solo tiene {days} días."
+
+msgid "Saving availability"
+msgstr "Disponibilidad del guardado"
+
+msgid "You need permission to save. You can still edit in this tab."
+msgstr "Necesitas permiso para guardar. Puedes seguir editando en esta pestaña."
+
+msgid "Could not check whether saving is available. You can edit in this tab. The editor will check again when you save."
+msgstr "No se pudo comprobar si es posible guardar. Puedes editar en esta pestaña. El editor volverá a comprobarlo cuando guardes."

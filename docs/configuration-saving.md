@@ -11,4 +11,6 @@ The POST body is the same plan object as the YAML configuration download, encode
 
 Requests use the browser's existing same-origin credentials. The backend must authorize the writer on each POST, validate the configuration, and replace the stored plan atomically. Return `401` when authentication is required or `403` when the user lacks permission. For cookie-based authentication, the backend should also verify the request origin.
 
-The first confirmation with an actual configuration change probes the endpoint. Confirming unchanged values or reverting an edit before confirmation sends no request. After a successful save, the saved configuration becomes the new baseline. A missing route, unsupported method, or successful probe without POST in `Allow` switches the page to session-only editing with one warning. Other failures leave the edits in the tab and allow another save attempt while changes are pending.
+Entering edit mode probes the endpoint, including when opening the edit URL directly. The read-only graph sends no probe. A missing route, unsupported method, or successful probe without POST in `Allow` produces one warning per tab that edits will last only until the tab is closed or reloaded. The editor caches a definitive probe result. A permission or temporary failure allows a later attempt to retry.
+
+Confirming an actual change sends the plan when saving is supported. Confirming unchanged values or reverting an edit before confirmation sends no POST. After a successful save, the saved configuration becomes the new baseline.

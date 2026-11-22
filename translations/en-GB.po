@@ -581,3 +581,12 @@ msgstr "Drag to the dependent deadline"
 
 msgid "The month offset from {source} uses {boundary} because the target month has only {days} days."
 msgstr "The month offset from {source} uses {boundary} because the target month has only {days} days."
+
+msgid "Saving availability"
+msgstr "Saving availability"
+
+msgid "You need permission to save. You can still edit in this tab."
+msgstr "You need permission to save. You can still edit in this tab."
+
+msgid "Could not check whether saving is available. You can edit in this tab. The editor will check again when you save."
+msgstr "Could not check whether saving is available. You can edit in this tab. The editor will check again when you save."

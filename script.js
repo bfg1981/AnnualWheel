@@ -1171,7 +1171,7 @@ function paintDependencyConnectors() {
         config = effective;
       }
     } catch (error) {
-      showSaveError(error.message);
+      showSaveNotice(error.message);
       return;
     }
     paintTimeline();
@@ -3015,22 +3015,50 @@ function configurationForExport() {
   return graphView.readDisplayedConfiguration(panel);
 }
 
-function showSaveError(message) {
+function showSaveNotice(message, heading = 'Configuration not saved') {
   const dialog = document.querySelector('#config-save-notice');
+  dialog.querySelector('h2').textContent = t(heading);
   dialog.querySelector('p').textContent = message;
   if (!dialog.open) dialog.showModal();
 }
 
 let configurationSaver;
+function getConfigurationSaver() {
+  configurationSaver ??= Promise.all([graphReady, import('/lib/config-save.js?v=3')]).then(([graph, module]) =>
+    module.createConfigurationSaver(graph.sourceConfiguration(initialConfiguration, sourceTexts)));
+  return configurationSaver;
+}
+
+let sessionOnlyWarningShown = false;
+function warnSessionOnly() {
+  if (sessionOnlyWarningShown) return;
+  showSaveNotice(t('This setup does not support saving. You can still edit the wheel and see your changes immediately in this tab. Your changes will be lost when you close or reload this tab.'), 'Saving availability');
+  sessionOnlyWarningShown = true;
+}
+
+async function checkSavingOnEdit() {
+  let result;
+  try {
+    const saver = await getConfigurationSaver();
+    result = await saver.preflight();
+  } catch {
+    result = 'failed';
+  }
+  if (!editingDeadlines && !headerDialog.open && !layerDialog.open) return;
+  if (result === 'unsupported') warnSessionOnly();
+  if (result === 'unauthorized') showSaveNotice(t('You need permission to save. You can still edit in this tab.'), 'Saving availability');
+  if (result === 'failed') showSaveNotice(t('Could not check whether saving is available. You can edit in this tab. The editor will check again when you save.'), 'Saving availability');
+}
+
 async function saveConfirmedConfiguration() {
   if (paletteDrafts.size) {
     const deadlines = Array.from(paletteDrafts.values(), draft => draft.title);
     const titles = new Intl.ListFormat(locale).format(deadlines);
-    showSaveError(t('A date could not be calculated for {titles}. Set a date or add a dependency and try again.', { titles }));
+    showSaveNotice(t('A date could not be calculated for {titles}. Set a date or add a dependency and try again.', { titles }));
     return false;
   }
   if (pendingGraphChanges() || scheduleCards.querySelector('[data-conflicting-bounds]')) {
-    showSaveError(graphWarning.textContent);
+    showSaveNotice(graphWarning.textContent);
     return false;
   }
   let plan;
@@ -3039,14 +3067,12 @@ async function saveConfirmedConfiguration() {
     plan = configurationForExport();
     validateSessionConfiguration(effectiveConfiguration(plan));
   } catch (problem) {
-    showSaveError(problem.message);
+    showSaveNotice(problem.message);
     return false;
   }
   try {
     const detachedAtConfirmation = new Map(detachedVirtualDates);
-    configurationSaver ??= import('/lib/config-save.js?v=2').then(module =>
-      module.createConfigurationSaver(graphView.sourceConfiguration(initialConfiguration, sourceTexts)));
-    const save = await configurationSaver;
+    const save = await getConfigurationSaver();
     const result = await save(plan);
     if (result === 'saved' && !pendingGraphChanges()) {
       let removed = false;
@@ -3058,12 +3084,12 @@ async function saveConfirmedConfiguration() {
       }
       if (removed && editingTimeline) paintTimeline();
     }
-    if (result === 'unsupported') showSaveError(t('This setup does not support saving. You can still edit the wheel and see your changes immediately in this tab. Your changes will be lost when you close or reload this tab.'));
-    if (result === 'unauthorized') showSaveError(t('Saving requires permission. Your changes are still in this tab.'));
-    if (result === 'failed') showSaveError(t('Saving failed. Your changes are still in this tab. Confirm again to retry.'));
+    if (result === 'unsupported') warnSessionOnly();
+    if (result === 'unauthorized') showSaveNotice(t('Saving requires permission. Your changes are still in this tab.'));
+    if (result === 'failed') showSaveNotice(t('Saving failed. Your changes are still in this tab. Confirm again to retry.'));
     return result !== 'unauthorized' && result !== 'failed';
   } catch {
-    showSaveError(t('Saving failed. Your changes are still in this tab. Confirm again to retry.'));
+    showSaveNotice(t('Saving failed. Your changes are still in this tab. Confirm again to retry.'));
     return false;
   }
 }
@@ -3148,6 +3174,7 @@ editLayers.onclick = () => whenEditorClosed(() => {
   layerRows.replaceChildren();
   for (const [id, layer] of Object.entries(authoredConfig.layers)) appendLayerRow(id, layer.label);
   layerDialog.showModal();
+  if (!editingDeadlines) checkSavingOnEdit();
   layerEditor.elements.cancel.onclick = guardDiscard(layerDialog, 'Discard changes to the layers?',
     () => Array.from(layerRows.children, row => [row.dataset.layerId, row.querySelector('input').value]),
     () => { closeLayerEditor(); editLayers.focus(); }
@@ -3198,6 +3225,7 @@ editHeader.onclick = () => whenEditorClosed(() => {
   if (!Array.from(select.options).some(option => option.value === type)) select.add(new Option(type, type));
   select.value = type;
   headerDialog.showModal();
+  if (!editingDeadlines) checkSavingOnEdit();
   headerFields.cancel.onclick = guardDiscard(headerDialog, 'Discard changes to the plan details?',
     () => Array.from(new FormData(headerEditor)),
     () => { closeHeaderEditor(); editHeader.focus(); }
@@ -3255,6 +3283,7 @@ function setTimelineEditor(open, editable) {
     paintTimeline();
     if (entering) scheduleViewport.scrollLeft = 0;
     (editable ? done : pencil).focus({ preventScroll: true });
+    if (editable) checkSavingOnEdit();
   } else {
     clearVirtualDates();
     for (const group of scheduleCards.querySelectorAll('.timeline-item-group')) {

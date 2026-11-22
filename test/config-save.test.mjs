@@ -40,6 +40,38 @@ test('static deployments warn once and never receive a configuration', async () 
   }
 });
 
+test('edit-mode preflight sends no plan and shares its result with later confirmations', async () => {
+  for (const available of [true, false]) {
+    const calls = [];
+    const save = createConfigurationSaver({ title: 'Before' }, async (_, options) => {
+      calls.push(options);
+      if (options.method === 'POST') return saved();
+      return available ? supported() : new Response(null, { status: 405 });
+    });
+    const result = available ? 'supported' : 'unsupported';
+    assert.deepEqual(await Promise.all([save.preflight(), save.preflight(), save({ title: 'Before' })]),
+      [result, result, undefined]);
+    assert.equal(calls.length, 1);
+    assert.equal(calls[0].method, 'OPTIONS');
+    assert.equal(calls[0].body, undefined);
+
+    assert.equal(await save({ title: 'After' }), available ? 'saved' : undefined);
+    assert.deepEqual(calls.map(call => call.method), available ? ['OPTIONS', 'POST'] : ['OPTIONS']);
+  }
+});
+
+test('a temporary preflight failure on entry can be retried when saving', async () => {
+  const methods = [];
+  const save = createConfigurationSaver({}, async (_, { method }) => {
+    methods.push(method);
+    if (methods.length === 1) throw new Error('Offline');
+    return method === 'OPTIONS' ? supported() : saved();
+  });
+  assert.equal(await save.preflight(), 'failed');
+  assert.equal(await save({ changed: true }), 'saved');
+  assert.deepEqual(methods, ['OPTIONS', 'OPTIONS', 'POST']);
+});
+
 test('rapid confirmations post distinct snapshots in order after one preflight', async () => {
   const calls = [];
   let release;

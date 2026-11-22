@@ -581,3 +581,12 @@ msgstr "Dra til fristen som skal avhenge av dette kortet"
 
 msgid "The month offset from {source} uses {boundary} because the target month has only {days} days."
 msgstr "Med månedsforskyvning fra {source} brukes {boundary} fordi måneden bare har {days} dager."
+
+msgid "Saving availability"
+msgstr "Mulighet for lagring"
+
+msgid "You need permission to save. You can still edit in this tab."
+msgstr "Du trenger tillatelse for å lagre. Du kan fortsatt redigere i denne fanen."
+
+msgid "Could not check whether saving is available. You can edit in this tab. The editor will check again when you save."
+msgstr "Kunne ikke sjekke om lagring er tilgjengelig. Du kan redigere i denne fanen. Det gjøres et nytt forsøk når du lagrer."
